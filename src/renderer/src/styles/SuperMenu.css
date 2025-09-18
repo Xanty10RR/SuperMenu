@@ -1,0 +1,466 @@
+:root {
+    --sidebar-width: 240px;
+    --sidebar-collapsed-width: 70px;
+    --primary-color: #23395d;
+    --secondary-color: #2f6db2;
+    --hover-color: #1d2f4a;
+    --transition-speed: 0.3s;
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+  }
+  
+  .admin-layout {
+    display: flex;
+    height: 100vh;
+    transition: all var(--transition-speed) ease;
+  }
+  /* Agrega esto a tu AprovacionesTable.css */
+
+.loading {
+  padding: 20px;
+  text-align: center;
+  font-style: italic;
+  color: #666;
+}
+
+.detail-row {
+  background-color: #f9f9f9;
+}
+
+.requisicion-details {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #555;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.status-bubble {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+}
+
+.estado.enviado .status-bubble {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado.pendiente .status-bubble {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.btn-view {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-view:hover {
+  background-color: #138496;
+}
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--primary-color);
+    color: white;
+    padding: 20px 0;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .sidebar-header h2 {
+    margin: 0;
+    font-size: 18px;
+    white-space: nowrap;
+  }
+  
+  .toggle-sidebar {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform var(--transition-speed) ease;
+  }
+  
+  .toggle-sidebar:hover {
+    transform: scale(1.1);
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .sidebar-menu li {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all var(--transition-speed) ease;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  .sidebar-menu li:hover {
+    background-color: var(--hover-color);
+    padding-left: 25px;
+  }
+  
+  .menu-icon {
+    margin-right: 10px;
+    font-size: 16px;
+    min-width: 20px;
+  }
+  
+  .filter-section {
+    padding: 15px 20px;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .filter-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .filter-header:hover {
+    color: #a8c6f8;
+  }
+  
+  .filter-icon {
+    margin-right: 10px;
+    font-size: 14px;
+  }
+  
+  .filter-options {
+    margin-top: 10px;
+    padding-left: 25px;
+    animation: fadeIn var(--transition-speed) ease;
+  }
+  
+  .filter-options label {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-options label:hover {
+    color: #a8c6f8;
+  }
+  
+  .filter-options input {
+    margin-right: 8px;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .top-header {
+    background: #ffffff;
+    padding: 15px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .inicio-btn {
+    background-color: transparent;
+    border: none;
+    font-weight: 600;
+    color: #1e3a8a;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-label {
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .logout-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s;
+  }
+  
+  .logout-btn:hover {
+    color: #d32f2f;
+  }
+  
+  
+  .content-area {
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: white;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .inicio-view {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 18px;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .styled-table thead {
+    background-color: var(--secondary-color);
+    color: white;
+  }
+  
+  .styled-table th,
+  .styled-table td {
+    padding: 12px 15px;
+    text-align: left;
+    transition: all 0.2s ease;
+  }
+  
+  .styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .styled-table tbody tr:nth-of-type(even) {
+    background-color: #f8fafc;
+  }
+  
+  .styled-table tbody tr:hover {
+    background-color: #f1f5f9;
+    transform: translateX(2px);
+  }
+  
+  .estado.aprobado {
+    color: #10b981;
+  }
+  
+  .estado.rechazado {
+    color: #ef4444;
+  }
+  
+  .status-bubble {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .estado.aprobado .status-bubble {
+    background-color: #d1fae5;
+  }
+  
+  .estado.rechazado .status-bubble {
+    background-color: #fee2e2;
+  }
+  
+  .btn {
+    margin-right: 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+  
+  .btn-view {
+    background-color: #3b82f6;
+    color: white;
+  }
+  
+  .btn-edit {
+    background-color: #f59e0b;
+    color: white;
+  }
+  
+  .btn-delete {
+    background-color: #ef4444;
+    color: white;
+  }
+  
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Collapsed state */
+  .sidebar-collapsed .sidebar {
+    width: var(--sidebar-collapsed-width);
+  }
+  
+  .sidebar-collapsed .sidebar-header h2,
+  .sidebar-collapsed .sidebar-menu span,
+  .sidebar-collapsed .filter-header span {
+    display: none;
+  }
+  
+  .sidebar-collapsed .sidebar-header {
+    justify-content: center;
+    padding: 20px 0;
+  }
+  
+  .sidebar-collapsed .sidebar-menu li {
+    justify-content: center;
+    padding: 12px 0;
+  }
+  
+  .sidebar-collapsed .menu-icon {
+    margin-right: 0;
+    font-size: 18px;
+  }
+  
+  .sidebar-collapsed .filter-header {
+    justify-content: center;
+    padding: 8px 0;
+  }
+  
+  .sidebar-collapsed .filter-icon {
+    margin-right: 0;
+    font-size: 16px;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-layout {
+      flex-direction: column;
+    }
+    
+    .sidebar {
+      width: 100%;
+      height: auto;
+    }
+    
+    .sidebar-collapsed .sidebar {
+      width: 100%;
+      height: 60px;
+      overflow: hidden;
+    }
+    
+    .sidebar-collapsed .sidebar-menu,
+    .sidebar-collapsed .filter-section {
+      display: none;
+    }
+    
+    .content-area {
+      margin: 10px;
+    }
+  }
+
+.convenios-view {
+  background-color: #fff;
+  padding: 30px;
+  text-align: center;
+}
+
+.btn-subir-excel {
+  background-color: #28a745;
+  color: white;
+  font-size: 18px;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-subir-excel:hover {
+  background-color: #218838;
+}
+
+.mindmap-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 500px; /* Altura mínima */
+  background-color: #f8f9fa; /* Fondo temporal para debug */
+  border: 1px solid #ddd; /* Borde temporal para debug */
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}

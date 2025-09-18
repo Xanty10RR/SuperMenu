@@ -1,0 +1,223 @@
+.inicio-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
+  padding: 2rem 1rem;
+  position: relative;
+}
+
+/* Header styles */
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.chatbot-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 30px;
+  background-color: #25D366;
+  color: white;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.chatbot-label:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+}
+
+.chatbot-icon {
+  margin-right: 12px;
+}
+
+/* Honeycomb styles */
+.honeycomb-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.honeycomb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.honeycomb-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: -26px;
+}
+
+.honeycomb-row-centered {
+  margin-left: 0;
+  transform: translateX(-50%);
+  transform: translateY(-10px);
+}
+
+.honeycomb-cell {
+  width: 220px;
+  height: 250px;
+  margin: 0 6px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.honeycomb-hex {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.honeycomb-cell:hover .honeycomb-hex {
+  transform: scale(1.1) translateY(-8px);
+  box-shadow: 0 20px 40px rgba(255, 165, 0, 0.3);
+}
+
+.honeycomb-icon {
+  color: #4a6baf;
+  margin-bottom: 20px;
+  transition: all 0.4s ease;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.honeycomb-cell:hover .honeycomb-icon {
+  color: #ff8c00;
+  transform: scale(1.15) rotate(5deg);
+}
+
+.honeycomb-hex-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(74, 107, 175, 0.95) 0%, rgba(58, 87, 149, 0.95) 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: all 0.4s ease;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  transform: scale(0.95);
+}
+
+.honeycomb-cell:hover .honeycomb-hex-content {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.honeycomb-hex-content h3 {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  font-weight: 600;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.honeycomb-hex-content p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.honeycomb-hex-content button {
+  background-color: rgba(255, 165, 0, 0.95);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  font-size: 0.95rem;
+  min-width: 120px;
+}
+
+.honeycomb-hex-content button:hover {
+  background-color: rgba(255, 140, 0, 1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Slogan box styles */
+.slogan-box {
+  width: 100%;
+  max-width: 500px;
+  margin: 3rem auto -1rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, #ffffff, #f0f4f8);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.slogan-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.slogan-content h2 {
+  font-size: 2rem; /* Reducido de 2.5rem */
+  color: #2c3e50;
+  margin-bottom: 0.1rem;
+  font-weight: 700;
+}
+
+.slogan-content p {
+  font-size: 1.2rem; /* Reducido de 1.5rem */
+  color: #4a6baf;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+
+.slogan-decoration {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 165, 0, 0.1);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.slogan-decoration::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
+  background: rgba(74, 107, 175, 0.1);
+  border-radius: 50%;
+}

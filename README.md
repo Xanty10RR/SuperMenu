@@ -1,18 +1,20 @@
-# cancha-jt
+# SuperMenu (Sistema ERP)
 
 A cross-platform desktop application built with Electron and React.
 
 ## Overview
 
-`cancha-jt` is a desktop application created using the Electron framework, with a user interface built on React. It is configured to be packaged for Windows, macOS, and Linux using `electron-builder`.
+`SuperMenu` is a desktop application created using the Electron framework, with a user interface built on React. It is configured to be packaged for Windows, macOS, and Linux using `electron-builder`.
 
 ## Features
 
-*(You can list the main features of your application here)*
-
 - Cross-platform compatibility (Windows, macOS, Linux).
 - Modern and reactive UI built with React.
-- ...
+- **Auto-updates**: The application is configured to receive updates automatically.
+- **Native Installers**: Generates native installers for Windows (.exe), macOS (.dmg), and Linux (AppImage, snap, deb).
+- **Desktop Integration**: Creates desktop shortcuts for easy access.
+- **Hardware Access**: Ready for features involving camera and microphone access (with user permission).
+- **File System Access**: Prepared to interact with the user's Documents and Downloads folders (with user permission).
 
 ## Getting Started
 

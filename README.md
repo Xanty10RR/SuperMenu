@@ -13,7 +13,7 @@ A cross-platform desktop application built with Electron and React.
 
 ## Getting Started
 
-Follow these instructions
+Follow these instructions:
 
 **Recommended IDE Setup**
 VSCode + ESLint + Prettier
@@ -23,8 +23,8 @@ $ npm install
 <br>
 Development
 $ npm run dev
-<br>
-Build
+<br><br>
+**Build**
 # For windows
 $ npm run build:win
 

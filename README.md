@@ -4,7 +4,7 @@ A cross-platform desktop application built with Electron and React.
 
 ## Overview
 
-`SuperMenu` is a desktop application (ERP personalized)created using the Electron framework, with a user interface built on React, designed to centralize requests, deliveries, support, users, and requisitions within a single desktop application — enhancing efficiency, operational control, and business process tracking. It is configured to be packaged for Windows, macOS, and Linux using `electron-builder`.
+`SuperMenu` is a desktop application (custom ERP system) created using the Electron framework, with a user interface built on React, designed to centralize requests, deliveries, support, users, and requisitions within a single desktop application — enhancing efficiency, operational control, and business process tracking. It is configured to be packaged for Windows, macOS, and Linux using `electron-builder`.
 
 ## Features
 

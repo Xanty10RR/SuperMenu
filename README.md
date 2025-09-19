@@ -1,34 +1,67 @@
 # cancha-jt
 
-An Electron application with React and TypeScript
+A cross-platform desktop application built with Electron and React.
 
-## Recommended IDE Setup
+## Overview
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+`cancha-jt` is a desktop application created using the Electron framework, with a user interface built on React. It is configured to be packaged for Windows, macOS, and Linux using `electron-builder`.
 
-## Project Setup
+## Features
 
-### Install
+*(You can list the main features of your application here)*
 
-```bash
-$ npm install
+- Cross-platform compatibility (Windows, macOS, Linux).
+- Modern and reactive UI built with React.
+- ...
+
+## Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+
+### Prerequisites
+
+You need to have Node.js and a package manager like `npm` or `pnpm` installed on your system.
+
+- Node.js
+- pnpm (Recommended, as a `pnpm-lock.yaml` is present in the project configuration)
+
+### Installation
+
+1.  **Clone the repository:**
+    ```sh
+    git clone <your-repository-url>
+    cd SuperMenu
+    ```
+
+2.  **Install dependencies:**
+    Use `pnpm` to install the project's dependencies.
+    ```sh
+    pnpm install
+    ```
+
+## Development
+
+To run the application in development mode with hot-reloading, execute the following command:
+
+```sh
+pnpm dev
 ```
 
-### Development
+This will start the Electron application and open a development window with developer tools enabled.
 
-```bash
-$ npm run dev
+## Building for Production
+
+To build and package the application for your current platform, run:
+
+```sh
+pnpm build
 ```
 
-### Build
+This command will generate the distributable files (e.g., an `.exe` installer for Windows, `.dmg` for macOS) in the `release` or `dist` directory.
 
-```bash
-# For windows
-$ npm run build:win
+## Core Technologies
 
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
-```
+- **Electron**: A framework for creating native applications with web technologies like JavaScript, HTML, and CSS.
+- **React**: A JavaScript library for building user interfaces.
+- **electron-builder**: A complete solution to package and build a ready-for-distribution Electron app.
+- **Electron Vite**: (Inferred from configuration) A fast and opinionated build tool for modern Electron applications.

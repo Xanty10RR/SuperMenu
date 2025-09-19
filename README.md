@@ -15,47 +15,22 @@ A cross-platform desktop application built with Electron and React.
 
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites
+Recommended IDE Setup
+VSCode + ESLint + Prettier
+Project Setup
+Install
+$ npm install
+Development
+$ npm run dev
+Build
+# For windows
+$ npm run build:win
 
-You need to have Node.js and a package manager like `npm` or `pnpm` installed on your system.
+# For macOS
+$ npm run build:mac
 
-- Node.js
-- pnpm (Recommended, as a `pnpm-lock.yaml` is present in the project configuration)
-
-### Installation
-
-1.  **Clone the repository:**
-    ```sh
-    git clone <your-repository-url>
-    cd SuperMenu
-    ```
-
-2.  **Install dependencies:**
-    Use `pnpm` to install the project's dependencies.
-    ```sh
-    pnpm install
-    ```
-
-## Development
-
-To run the application in development mode with hot-reloading, execute the following command:
-
-```sh
-pnpm dev
-```
-
-This will start the Electron application and open a development window with developer tools enabled.
-
-## Building for Production
-
-To build and package the application for your current platform, run:
-
-```sh
-pnpm build
-```
-
-This command will generate the distributable files (e.g., an `.exe` installer for Windows, `.dmg` for macOS) in the `release` or `dist` directory.
-
+# For Linux
+$ npm run build:linux
 ## Core Technologies
 
 - **Electron**: A framework for creating native applications with web technologies like JavaScript, HTML, and CSS.

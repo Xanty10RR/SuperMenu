@@ -24,7 +24,9 @@ $ npm install
 Development
 $ npm run dev
 <br><br>
-**Build**
+
+##Build:
+
 # For windows
 $ npm run build:win
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/InicioView.css';
 import { FaUsers, FaGift, FaLightbulb, FaHeadset, FaHandshake, FaFileInvoice, FaWhatsapp } from 'react-icons/fa';
 
@@ -23,11 +24,18 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
     { nombre: 'Logistica', descripcion: 'Entrega de pedidos', icono: <FaGift size={50} />, view: 'logistica' },
   ];
 
+  const navigate = useNavigate();
+
   return (
     <div className="inicio-container">
-      {/* Header con WhatsApp */}
+      {/* Header con WhatsApp - Ahora es clickeable y lleva al Dashboard */}
       <div className="header">
-        <div className="chatbot-label">
+        <div 
+          className="chatbot-label" 
+          onClick={() => navigate('/chatbot-metrics')}
+          style={{ cursor: 'pointer' }}
+          title="Ver Dashboard de Operaciones del Bot"
+        >
           <FaWhatsapp size={28} className="chatbot-icon" />
           <span>Chat-Bot Whatsapp</span>
         </div>

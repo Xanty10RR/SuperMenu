@@ -216,12 +216,25 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Efecto de carga inicial
+    // Bloqueamos el scroll temporalmente
     document.body.style.overflow = 'hidden';
+
+    // --- CÓDIGO AÑADIDO PARA SALTAR EL LOGIN ---
+    // 1. Guardamos un dato falso en localStorage por si las rutas protegidas lo exigen
+    localStorage.setItem('userData', JSON.stringify({ 
+      id: 999, 
+      username: 'Desarrollador', 
+      role: 'admin' 
+    }));
+    
+    // 2. Redirigimos automáticamente sin esperar a que el usuario haga clic
+    navigate('/supermenu');
+    // -------------------------------------------
+
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, []);
+  }, [navigate]); // Agregamos 'navigate' a las dependencias
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -235,9 +248,8 @@ const Login: React.FC = () => {
       });
 
       if (response.data) {
-        // Guardar datos de usuario si es necesario
         localStorage.setItem('userData', JSON.stringify(response.data.user));
-      navigate('/supermenu');
+        navigate('/supermenu');
       }
     } catch (err) {
       setError('Credenciales incorrectas o error de conexión');
@@ -247,6 +259,7 @@ const Login: React.FC = () => {
     }
   };
 
+  // El return de la interfaz gráfica se mantiene exactamente igual
   return (
     <LoginContainer>
       <LoginForm>

@@ -13,7 +13,6 @@ A cross-platform desktop application built with Electron and React.
 
 ## Getting Started
 
-<<<<<<< HEAD
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
@@ -58,24 +57,6 @@ pnpm build
 This command will generate the distributable files (e.g., an `.exe` installer for Windows, `.dmg` for macOS) in the `release` or `dist` directory.
 
 ## Core Technologies
-=======
-Follow these instructions:
-
-**Recommended IDE Setup**
-VSCode + ESLint + Prettier
-<br>
-Install
-$ npm install
-<br>
-Development
-$ npm run dev
-<br><br>
-
-# Build:
-
-# For windows
-$ npm run build:win
->>>>>>> 9b2a3be558e632c2b3ee26ed5292f48bb343710e
 
 - **Electron**: A framework for creating native applications with web technologies like JavaScript, HTML, and CSS.
 - **React**: A JavaScript library for building user interfaces.

@@ -16,6 +16,9 @@
   "devDependencies": {
     "@types/axios": "^0.9.36",
     "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/pg": "^8.23.1",
     "tsx": "^4.7.0"
   }
 }

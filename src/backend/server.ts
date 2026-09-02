@@ -2,17 +2,25 @@ import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { Pool } from 'pg'
 import * as bcrypt from 'bcryptjs'
+import dotenv from 'dotenv'
+
+// Cargar las variables del archivo .env
+dotenv.config()
+
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-// Configuración de la conexión a PostgreSQL
+// Configuración de la conexión a la base de datos del Chatbot (Supabase / Postgres remoto)
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'Requisicion',
-  password: '8UtHn#V5%FVRBWZ',
-  port: 5432
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT) || 5432,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  ssl: {
+    rejectUnauthorized: false // Requerido para conexiones seguras en Supabase
+  }
 })
 
 // Función para manejar consultas genéricas

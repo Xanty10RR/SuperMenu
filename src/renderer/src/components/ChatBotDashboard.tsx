@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'
 import {
@@ -11,6 +12,10 @@ import {
   FiClock,
   FiShield
 } from 'react-icons/fi'
+
+interface ChatbotMetrics {
+  totalConveniosBancos: number
+}
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -201,6 +206,22 @@ const HealthLabel = styled.div`
 
 const ChatBotDashboard: React.FC = () => {
   const navigate = useNavigate()
+  const [metrics, setMetrics] = useState<ChatbotMetrics>({ totalConveniosBancos: 0 })
+
+  useEffect(() => {
+    const fetchMetrics = async (): Promise<void> => {
+      try {
+        const response = await axios.get<ChatbotMetrics>(
+          'http://localhost:3003/api/chatbot/metrics'
+        )
+        setMetrics(response.data)
+      } catch (error) {
+        console.error('Error al cargar las métricas del chatbot:', error)
+      }
+    }
+
+    fetchMetrics()
+  }, [])
 
   // Datos de actividad simulados para los departamentos boton chatbot whatsapp
   const recentActivity = [
@@ -248,12 +269,21 @@ const ChatBotDashboard: React.FC = () => {
           <BackButton onClick={() => navigate('/supermenu')}>
             <FiArrowLeft /> Volver al Menú
           </BackButton>
-          <Title>Dashboard de Operaciones - ChatBot WhatsApp</Title>
+          <Title>Dashboard de Operaciones - Chatbot WhatsApp</Title>
         </TitleArea>
       </Header>
 
       {/* Tarjetas de Métricas KPI */}
       <GridKpis>
+        <KpiCard>
+          <KpiIcon color="rgba(40, 167, 69, 0.15)" textColor="#2ecc71">
+            <FiUsers />
+          </KpiIcon>
+          <KpiInfo>
+            <KpiValue>{metrics.totalConveniosBancos?.toLocaleString() || 0}</KpiValue>
+            <KpiLabel>Convenios Bancarios Totales</KpiLabel>
+          </KpiInfo>
+        </KpiCard>
         <KpiCard>
           <KpiIcon color="rgba(0, 180, 216, 0.15)" textColor="#00b4d8">
             <FiMessageSquare />

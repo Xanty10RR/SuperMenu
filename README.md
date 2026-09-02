@@ -25,6 +25,7 @@ You need to have Node.js and a package manager like `npm` or `pnpm` installed on
 ### Installation
 
 1.  **Clone the repository:**
+
     ```sh
     git clone <your-repository-url>
     cd SuperMenu

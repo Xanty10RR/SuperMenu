@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { Pool } from 'pg'
 import * as bcrypt from 'bcryptjs'
@@ -16,7 +16,12 @@ const pool = new Pool({
 })
 
 // Función para manejar consultas genéricas
-const handleQuery = async (table, orderField, req, res) => {
+const handleQuery = async (
+  table: string,
+  orderField: string,
+  _req: Request,
+  res: Response
+): Promise<void> => {
   console.log(`Recibida solicitud GET /api/${table}`)
   try {
     const query = `SELECT * FROM ${table} ORDER BY ${orderField} DESC`
@@ -29,7 +34,7 @@ const handleQuery = async (table, orderField, req, res) => {
 }
 
 // Endpoint para registro de aprobaciones modificado
-app.get('/api/aprobaciones', async (req, res) => {
+app.get('/api/aprobaciones', async (_req, res) => {
   console.log('Recibida solicitud GET /api/aprobaciones')
   try {
     const query = `
@@ -151,7 +156,8 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Excluimos el password de la respuesta
-    const { password: _, ...userData } = user
+    const userData = { ...user }
+    delete userData.password
 
     res.json({
       success: true,
@@ -297,4 +303,69 @@ app.delete('/api/mindmap/connections/:id', async (req, res) => {
 // Iniciar el servidor
 app.listen(3003, () => {
   console.log('Servidor backend corriendo en http://localhost:3003')
+})
+
+// Endpoints para el Dashboard del ChatBot saca metricas de Convenios y Requisiciones
+// 1. Endpoint unificado para las métricas (KPIs) de Requisiciones y Bancos
+app.get('/api/chatbot/metrics', async (_req, res) => {
+  try {
+    // Métricas de Requisiciones de hoy
+    const countToday = await pool.query(
+      'SELECT COUNT(*) FROM requisiciones WHERE DATE(created_at) = CURRENT_DATE'
+    )
+    const uniqueUsers = await pool.query(
+      'SELECT COUNT(DISTINCT usuario_whatsapp) FROM requisiciones WHERE DATE(created_at) = CURRENT_DATE'
+    )
+
+    // Métricas de los Bancos (Total de convenios en cada tabla)
+    const bbvaTotal = await pool.query('SELECT COUNT(*) FROM bbva')
+    const agrarioTotal = await pool.query('SELECT COUNT(*) FROM agrario')
+    const avalTotal = await pool.query('SELECT COUNT(*) FROM aval')
+
+    const totalConvenios =
+      parseInt(bbvaTotal.rows[0].count) +
+      parseInt(agrarioTotal.rows[0].count) +
+      parseInt(avalTotal.rows[0].count)
+
+    res.json({
+      messagesToday: parseInt(countToday.rows[0].count || 0), // Requisiciones de hoy
+      activeChats: parseInt(uniqueUsers.rows[0].count || 0), // Usuarios únicos hoy
+      totalConveniosBancos: totalConvenios, // Total de convenios cargados
+      desgloseBancos: {
+        bbva: parseInt(bbvaTotal.rows[0].count || 0),
+        agrario: parseInt(agrarioTotal.rows[0].count || 0),
+        aval: parseInt(avalTotal.rows[0].count || 0)
+      },
+      automationRate: 100,
+      pendingErrors: 0
+    })
+  } catch (error) {
+    console.error('Error al obtener métricas combinadas:', error)
+    res.status(500).json({ error: 'Error al obtener métricas' })
+  }
+})
+
+// 2. Endpoint para Actividad Reciente (Mostrando las últimas requisiciones)
+app.get('/api/chatbot/activity', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, nombre_solicitante, departamento, tipo_solicitud, tipo_elemento, created_at 
+       FROM requisiciones 
+       ORDER BY created_at DESC 
+       LIMIT 5`
+    )
+
+    const activityFormatted = result.rows.map((row, index) => ({
+      id: row.id || index + 1,
+      user: `${row.nombre_solicitante} (${row.departamento})`,
+      intent: `${row.tipo_solicitud}: ${row.tipo_elemento}`,
+      time: 'Reciente',
+      status: 'success' as const
+    }))
+
+    res.json(activityFormatted)
+  } catch (error) {
+    console.error('Error al obtener actividad:', error)
+    res.status(500).json({ error: 'Error al obtener actividad' })
+  }
 })

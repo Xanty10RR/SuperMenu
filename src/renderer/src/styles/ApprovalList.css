@@ -58,8 +58,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {
@@ -537,36 +541,36 @@
     align-items: flex-start;
     gap: 15px;
   }
-  
+
   .header-dates {
     margin: 0;
     width: 100%;
   }
-  
+
   .header-actions {
     width: 100%;
     justify-content: flex-end;
   }
-  
+
   .approval-info {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .tabs {
     flex-direction: column;
   }
-  
+
   .tab-button {
     padding: 12px;
     text-align: left;
   }
-  
+
   .delivery-header {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .delivery-dates {
     width: 100%;
     margin: 0;
@@ -575,7 +579,7 @@
 /* Estilos para entregas */
 .delivered-list .approval-item {
   background-color: #f5e9dc;
-  border-left: 4px solid #8B4513;
+  border-left: 4px solid #8b4513;
 }
 
 .delivered-list .approval-item:hover {
@@ -583,11 +587,11 @@
 }
 
 .delivered-item .status-icon.delivered {
-  color: #8B4513;
+  color: #8b4513;
 }
 
 .delivered-item .status-text.entregado {
-  color: #8B4513;
+  color: #8b4513;
   font-weight: bold;
 }
 

@@ -1,71 +1,65 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react'
 
 // 1. Definimos la interfaz para un objeto Usuario
 interface User {
-  id: number;
-  name: string;
-  email: string;
+  id: number
+  name: string
+  email: string
 }
 
 // Datos iniciales de ejemplo
-const initialUsers: User[] = [
-  { id: 1, name: 'Santiago', email: 'santiago@gmail.com' },
-];
+const initialUsers: User[] = [{ id: 1, name: 'Santiago', email: 'santiago@gmail.com' }]
 
 const Usuarios: React.FC = () => {
   // 2. Estados del componente
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [users, setUsers] = useState<User[]>(initialUsers)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [formData, setFormData] = useState({ name: '', email: '' })
 
   // 3. Manejadores de eventos
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!formData.name || !formData.email) {
-      alert('Nombre y Email son requeridos.');
-      return;
+      alert('Nombre y Email son requeridos.')
+      return
     }
 
     if (editingUser) {
       // Actualizar usuario existente
-      setUsers(
-        users.map((user) =>
-          user.id === editingUser.id ? { ...user, ...formData } : user
-        )
-      );
-      setEditingUser(null);
+      setUsers(users.map((user) => (user.id === editingUser.id ? { ...user, ...formData } : user)))
+      setEditingUser(null)
     } else {
       // Crear nuevo usuario
       const newUser: User = {
         id: Date.now(), // ID simple basado en el timestamp
-        ...formData,
-      };
-      setUsers([...users, newUser]);
+        ...formData
+      }
+      setUsers([...users, newUser])
     }
 
-    setFormData({ name: '', email: '' }); // Limpiar formulario
-  };
+    setFormData({ name: '', email: '' }) // Limpiar formulario
+  }
 
   const handleEdit = (user: User) => {
-    setEditingUser(user);
-    setFormData({ name: user.name, email: user.email });
-  };
+    setEditingUser(user)
+    setFormData({ name: user.name, email: user.email })
+  }
 
   const handleDelete = (id: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
-      setUsers(users.filter((user) => user.id !== id));
+      setUsers(users.filter((user) => user.id !== id))
     }
-  };
+  }
 
   const cancelEdit = () => {
-    setEditingUser(null);
-    setFormData({ name: '', email: '' });
-  };
+    setEditingUser(null)
+    setFormData({ name: '', email: '' })
+  }
 
   // 4. Renderizado del componente
   return (
@@ -116,16 +110,20 @@ const Usuarios: React.FC = () => {
                 <span>{user.email}</span>
               </div>
               <div style={styles.buttonGroup}>
-                <button onClick={() => handleEdit(user)} style={styles.buttonEdit}>Editar</button>
-                <button onClick={() => handleDelete(user.id)} style={styles.buttonDelete}>Eliminar</button>
+                <button onClick={() => handleEdit(user)} style={styles.buttonEdit}>
+                  Editar
+                </button>
+                <button onClick={() => handleDelete(user.id)} style={styles.buttonDelete}>
+                  Eliminar
+                </button>
               </div>
             </li>
           ))}
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
 // 5. Estilos para el componente (CSS-in-JS)
 const styles: { [key: string]: React.CSSProperties } = {
@@ -133,33 +131,33 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: 'Arial, sans-serif',
     maxWidth: '800px',
     margin: '0 auto',
-    padding: '20px',
+    padding: '20px'
   },
   header: {
     textAlign: 'center',
-    color: '#333',
+    color: '#333'
   },
   formCard: {
     background: '#f9f9f9',
     padding: '20px',
     borderRadius: '8px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    marginBottom: '30px',
+    marginBottom: '30px'
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '15px',
+    gap: '15px'
   },
   input: {
     padding: '10px',
     borderRadius: '4px',
     border: '1px solid #ccc',
-    fontSize: '16px',
+    fontSize: '16px'
   },
   buttonGroup: {
     display: 'flex',
-    gap: '10px',
+    gap: '10px'
   },
   buttonPrimary: {
     padding: '10px 15px',
@@ -168,7 +166,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: '#007bff',
     color: 'white',
     fontSize: '16px',
-    cursor: 'pointer',
+    cursor: 'pointer'
   },
   buttonSecondary: {
     padding: '10px 15px',
@@ -177,28 +175,28 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: '#fff',
     color: '#333',
     fontSize: '16px',
-    cursor: 'pointer',
+    cursor: 'pointer'
   },
   listCard: {
     background: '#fff',
     padding: '20px',
     borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
   },
   userList: {
     listStyle: 'none',
-    padding: 0,
+    padding: 0
   },
   userItem: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '15px',
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid #eee'
   },
   userInfo: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   buttonEdit: {
     background: '#ffc107',
@@ -206,7 +204,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: 'none',
     padding: '8px 12px',
     borderRadius: '4px',
-    cursor: 'pointer',
+    cursor: 'pointer'
   },
   buttonDelete: {
     background: '#dc3545',
@@ -214,8 +212,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: 'none',
     padding: '8px 12px',
     borderRadius: '4px',
-    cursor: 'pointer',
+    cursor: 'pointer'
   }
-};
+}
 
-export default Usuarios;
+export default Usuarios

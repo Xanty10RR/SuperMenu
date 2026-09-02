@@ -1,37 +1,77 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../styles/InicioView.css';
-import { FaUsers, FaGift, FaLightbulb, FaHeadset, FaHandshake, FaFileInvoice, FaWhatsapp } from 'react-icons/fa';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import '../styles/InicioView.css'
+import {
+  FaUsers,
+  FaGift,
+  FaLightbulb,
+  FaHeadset,
+  FaHandshake,
+  FaFileInvoice,
+  FaWhatsapp
+} from 'react-icons/fa'
 
 interface Opcion {
-  nombre: string;
-  descripcion: string;
-  icono: React.ReactNode;
-  view: 'usuarios' | 'mejoras' | 'soporte' | 'convenios' | 'requisicion' | 'logistica';
+  nombre: string
+  descripcion: string
+  icono: React.ReactNode
+  view: 'usuarios' | 'mejoras' | 'soporte' | 'convenios' | 'requisicion' | 'logistica'
 }
 
 interface InicioViewProps {
-  onNavigate: (view: 'usuarios' | 'mejoras' | 'soporte' | 'convenios' | 'requisicion' | 'logistica') => void;
+  onNavigate: (
+    view: 'usuarios' | 'mejoras' | 'soporte' | 'convenios' | 'requisicion' | 'logistica'
+  ) => void
 }
 
 export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
   const opciones: Opcion[] = [
-    { nombre: 'Usuarios', descripcion: 'Gestión de usuarios', icono: <FaUsers size={50} />, view: 'usuarios' },
-    { nombre: 'Mejoras', descripcion: 'Ideas y mejoras', icono: <FaLightbulb size={50} />, view: 'mejoras' },
-    { nombre: 'Soporte', descripcion: 'Soporte técnico', icono: <FaHeadset size={50} />, view: 'soporte' },
-    { nombre: 'Convenios', descripcion: 'Gestión de convenios', icono: <FaHandshake size={50} />, view: 'convenios' },
-    { nombre: 'Requisición', descripcion: 'Solicitudes de compras', icono: <FaFileInvoice size={50} />, view: 'requisicion' },
-    { nombre: 'Logistica', descripcion: 'Entrega de pedidos', icono: <FaGift size={50} />, view: 'logistica' },
-  ];
+    {
+      nombre: 'Usuarios',
+      descripcion: 'Gestión de usuarios',
+      icono: <FaUsers size={50} />,
+      view: 'usuarios'
+    },
+    {
+      nombre: 'Mejoras',
+      descripcion: 'Ideas y mejoras',
+      icono: <FaLightbulb size={50} />,
+      view: 'mejoras'
+    },
+    {
+      nombre: 'Soporte',
+      descripcion: 'Soporte técnico',
+      icono: <FaHeadset size={50} />,
+      view: 'soporte'
+    },
+    {
+      nombre: 'Convenios',
+      descripcion: 'Gestión de convenios',
+      icono: <FaHandshake size={50} />,
+      view: 'convenios'
+    },
+    {
+      nombre: 'Requisición',
+      descripcion: 'Solicitudes de compras',
+      icono: <FaFileInvoice size={50} />,
+      view: 'requisicion'
+    },
+    {
+      nombre: 'Logistica',
+      descripcion: 'Entrega de pedidos',
+      icono: <FaGift size={50} />,
+      view: 'logistica'
+    }
+  ]
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <div className="inicio-container">
       {/* Header con WhatsApp - Ahora es clickeable y lleva al Dashboard */}
       <div className="header">
-        <div 
-          className="chatbot-label" 
+        <div
+          className="chatbot-label"
           onClick={() => navigate('/chatbot-metrics')}
           style={{ cursor: 'pointer' }}
           title="Ver Dashboard de Operaciones del Bot"
@@ -50,7 +90,7 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
               <HexagonItem key={idx} opcion={op} onNavigate={onNavigate} />
             ))}
           </div>
-          
+
           {/* Segunda fila de hexágonos (centrada) */}
           <div className="honeycomb-row honeycomb-row-centered">
             {opciones.slice(3).map((op, idx) => (
@@ -69,17 +109,18 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 // Componente Hexágono reutilizable
-const HexagonItem: React.FC<{ opcion: Opcion; onNavigate: InicioViewProps['onNavigate'] }> = ({ opcion, onNavigate }) => {
+const HexagonItem: React.FC<{ opcion: Opcion; onNavigate: InicioViewProps['onNavigate'] }> = ({
+  opcion,
+  onNavigate
+}) => {
   return (
     <div className="honeycomb-cell" onClick={() => onNavigate(opcion.view)}>
       <div className="honeycomb-hex">
-        <div className="honeycomb-icon">
-          {opcion.icono}
-        </div>
+        <div className="honeycomb-icon">{opcion.icono}</div>
         <div className="honeycomb-hex-content">
           <h3>{opcion.nombre}</h3>
           <p>{opcion.descripcion}</p>
@@ -87,5 +128,5 @@ const HexagonItem: React.FC<{ opcion: Opcion; onNavigate: InicioViewProps['onNav
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

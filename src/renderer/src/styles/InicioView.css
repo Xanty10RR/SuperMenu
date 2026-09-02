@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: center;
   padding: 15px 30px;
-  background-color: #25D366;
+  background-color: #25d366;
   color: white;
   border-radius: 30px;
   box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
@@ -97,7 +97,7 @@
   color: #4a6baf;
   margin-bottom: 20px;
   transition: all 0.4s ease;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .honeycomb-cell:hover .honeycomb-icon {
@@ -198,7 +198,6 @@
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
-
 
 .slogan-decoration {
   position: absolute;

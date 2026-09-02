@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import styled, { keyframes } from 'styled-components';
-import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import styled, { keyframes } from 'styled-components'
+import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi'
 
 // Animaciones
 const gradientFlow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
-`;
+`
 
 const floatAnimation = keyframes`
   0% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0px); }
-`;
+`
 
 const pulseAnimation = keyframes`
   0% { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.4); }
   70% { box-shadow: 0 0 0 10px rgba(0, 180, 216, 0); }
   100% { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0); }
-`;
+`
 
 const LoginContainer = styled.div`
   display: flex;
@@ -32,21 +32,22 @@ const LoginContainer = styled.div`
   background-size: 400% 400%;
   animation: ${gradientFlow} 12s ease infinite;
   font-family: 'Segoe UI', 'Roboto', sans-serif;
-`;
+`
 
 const LoginForm = styled.div`
   background: rgba(15, 52, 96, 0.85);
   backdrop-filter: blur(10px);
   padding: 2.5rem 3rem;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
-              0 0 20px rgba(0, 180, 216, 0.2) inset;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(0, 180, 216, 0.2) inset;
   width: 380px;
   transition: all 0.4s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  
+
   &:before {
     content: '';
     position: absolute;
@@ -64,7 +65,7 @@ const LoginForm = styled.div`
     animation: ${floatAnimation} 8s ease-in-out infinite;
     z-index: -1;
   }
-`;
+`
 
 const Title = styled.h2`
   color: #fff;
@@ -75,7 +76,7 @@ const Title = styled.h2`
   letter-spacing: 1px;
   position: relative;
   text-transform: uppercase;
-  
+
   &:after {
     content: '';
     display: block;
@@ -85,12 +86,12 @@ const Title = styled.h2`
     margin: 0.5rem auto 0;
     border-radius: 3px;
   }
-`;
+`
 
 const InputGroup = styled.div`
   margin-bottom: 1.8rem;
   position: relative;
-`;
+`
 
 const Label = styled.label`
   display: block;
@@ -99,7 +100,7 @@ const Label = styled.label`
   font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.5px;
-`;
+`
 
 const Input = styled.input`
   width: 100%;
@@ -111,17 +112,17 @@ const Input = styled.input`
   font-size: 1rem;
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  
+
   &:focus {
     outline: none;
     border-color: #00b4d8;
     box-shadow: 0 0 0 2px rgba(0, 180, 216, 0.3);
   }
-  
+
   &::placeholder {
     color: rgba(255, 255, 255, 0.4);
   }
-`;
+`
 
 const InputIcon = styled.span`
   position: absolute;
@@ -130,7 +131,7 @@ const InputIcon = styled.span`
   transform: translateY(-50%);
   color: rgba(255, 255, 255, 0.6);
   font-size: 1.1rem;
-`;
+`
 
 const Button = styled.button`
   width: 100%;
@@ -150,24 +151,24 @@ const Button = styled.button`
   text-transform: uppercase;
   position: relative;
   overflow: hidden;
-  
+
   &:hover {
     background: linear-gradient(135deg, #0096c7, #0077b6);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 180, 216, 0.4);
   }
-  
+
   &:active {
     transform: translateY(0);
   }
-  
+
   &:disabled {
     background: #555;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
   }
-  
+
   &:after {
     content: '';
     position: absolute;
@@ -179,11 +180,11 @@ const Button = styled.button`
     transform: rotate(45deg);
     transition: all 0.3s ease;
   }
-  
+
   &:hover:after {
     left: 100%;
   }
-`;
+`
 
 const ErrorMessage = styled.div`
   color: #ff6b6b;
@@ -195,69 +196,72 @@ const ErrorMessage = styled.div`
   border-radius: 6px;
   border-left: 3px solid #e94560;
   animation: ${pulseAnimation} 2s infinite;
-`;
+`
 
 const ButtonIcon = styled.span`
   margin-left: 0.5rem;
   display: flex;
   align-items: center;
   transition: transform 0.3s ease;
-  
+
   ${Button}:hover & {
     transform: translateX(3px);
   }
-`;
+`
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Bloqueamos el scroll temporalmente
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'
 
     // --- CÓDIGO AÑADIDO PARA SALTAR EL LOGIN ---
     // 1. Guardamos un dato falso en localStorage por si las rutas protegidas lo exigen
-    localStorage.setItem('userData', JSON.stringify({ 
-      id: 999, 
-      username: 'Desarrollador', 
-      role: 'admin' 
-    }));
-    
+    localStorage.setItem(
+      'userData',
+      JSON.stringify({
+        id: 999,
+        username: 'Desarrollador',
+        role: 'admin'
+      })
+    )
+
     // 2. Redirigimos automáticamente sin esperar a que el usuario haga clic
-    navigate('/supermenu');
+    navigate('/supermenu')
     // -------------------------------------------
 
     return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [navigate]); // Agregamos 'navigate' a las dependencias
+      document.body.style.overflow = 'auto'
+    }
+  }, [navigate]) // Agregamos 'navigate' a las dependencias
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
       const response = await axios.post('http://localhost:3003/api/login', {
         username,
         password
-      });
+      })
 
       if (response.data) {
-        localStorage.setItem('userData', JSON.stringify(response.data.user));
-        navigate('/supermenu');
+        localStorage.setItem('userData', JSON.stringify(response.data.user))
+        navigate('/supermenu')
       }
     } catch (err) {
-      setError('Credenciales incorrectas o error de conexión');
-      console.error('Login error:', err);
+      setError('Credenciales incorrectas o error de conexión')
+      console.error('Login error:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   // El return de la interfaz gráfica se mantiene exactamente igual
   return (
@@ -267,7 +271,9 @@ const Login: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <InputGroup>
             <Label>Usuario</Label>
-            <InputIcon><FiUser /></InputIcon>
+            <InputIcon>
+              <FiUser />
+            </InputIcon>
             <Input
               type="text"
               value={username}
@@ -278,7 +284,9 @@ const Login: React.FC = () => {
           </InputGroup>
           <InputGroup>
             <Label>Contraseña</Label>
-            <InputIcon><FiLock /></InputIcon>
+            <InputIcon>
+              <FiLock />
+            </InputIcon>
             <Input
               type="password"
               value={password}
@@ -289,13 +297,17 @@ const Login: React.FC = () => {
           </InputGroup>
           <Button type="submit" disabled={loading}>
             {loading ? 'Verificando...' : 'Ingresar'}
-            {!loading && <ButtonIcon><FiArrowRight /></ButtonIcon>}
+            {!loading && (
+              <ButtonIcon>
+                <FiArrowRight />
+              </ButtonIcon>
+            )}
           </Button>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </form>
       </LoginForm>
     </LoginContainer>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

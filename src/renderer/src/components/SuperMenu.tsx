@@ -1,66 +1,75 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthService } from './Logout';
-import '../styles/SuperMenu.css';
-import { FaChevronDown, FaGift, FaChevronRight, FaUser, FaChartBar, FaFileExport, FaCog, FaFileAlt, FaChartLine } from 'react-icons/fa';
-import { LogOut } from 'lucide-react';
-import { MindMap } from './Soporte';
-import { InicioView } from './InicioView';
-import { RequisicionesView } from './Requisiciones';
-import {ApprovalList} from './Logistica';
-import {PokeApiComponent} from './Mejoras';
-import ErrorBoundary from './ErrorBoundary';
-import {usuarios} from './Usuarios';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthService } from './Logout'
+import '../styles/SuperMenu.css'
+import {
+  FaChevronDown,
+  FaGift,
+  FaChevronRight,
+  FaUser,
+  FaChartBar,
+  FaFileExport,
+  FaCog,
+  FaFileAlt,
+  FaChartLine
+} from 'react-icons/fa'
+import { LogOut } from 'lucide-react'
+import { MindMap } from './Soporte'
+import { InicioView } from './InicioView'
+import { RequisicionesView } from './Requisiciones'
+import { ApprovalList } from './Logistica'
+import { PokeApiComponent } from './Mejoras'
+import ErrorBoundary from './ErrorBoundary'
+import { usuarios } from './Usuarios'
 
 interface Props {
   // Eliminamos la prop aprobaciones ya que no es necesaria
 }
 
-
 const SuperMenu: React.FC<Props> = () => {
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeView, setActiveView] = useState<
     'inicio' | 'requisicion' | 'mejoras' | 'convenios' | 'soporte' | 'usuarios' | 'logistica'
-  >('inicio');
+  >('inicio')
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
+    setSidebarCollapsed(!sidebarCollapsed)
+  }
 
   const handleRequisicionClick = () => {
-    setActiveView('requisicion');
-  };
+    setActiveView('requisicion')
+  }
 
   const handleInicioClick = () => {
-    setActiveView('inicio');
-  };
+    setActiveView('inicio')
+  }
 
   const handleMejorassClick = () => {
-    setActiveView('mejoras');
-  };
+    setActiveView('mejoras')
+  }
 
   const handleConveniosClick = () => {
-    setActiveView('convenios');
-  };
+    setActiveView('convenios')
+  }
 
   const handleSoporteClick = () => {
-    setActiveView('soporte');
-  };
-  
+    setActiveView('soporte')
+  }
+
   const handleUsuariosClick = () => {
-    setActiveView('usuarios');
-  };
-    const handleLogisticaClick = () => {
-    setActiveView('logistica');
-  };
-  
+    setActiveView('usuarios')
+  }
+  const handleLogisticaClick = () => {
+    setActiveView('logistica')
+  }
+
   const handleLogout = async () => {
-    await AuthService.logout();
-    navigate('/login', { state: { logoutMessage: 'Sesión cerrada correctamente' } });
-  };
+    await AuthService.logout()
+    navigate('/login', { state: { logoutMessage: 'Sesión cerrada correctamente' } })
+  }
 
   return (
     <div className={`admin-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -71,7 +80,7 @@ const SuperMenu: React.FC<Props> = () => {
             {sidebarCollapsed ? <FaChevronRight /> : <FaChevronDown />}
           </button>
         </div>
-        
+
         <ul className="sidebar-menu">
           <li onClick={handleInicioClick}>
             <FaCog className="menu-icon" />
@@ -89,7 +98,7 @@ const SuperMenu: React.FC<Props> = () => {
             <FaChartBar className="menu-icon" />
             {!sidebarCollapsed && <span>Soporte</span>}
           </li>
-          <li onClick={handleConveniosClick}> 
+          <li onClick={handleConveniosClick}>
             <FaFileExport className="menu-icon" />
             {!sidebarCollapsed && <span>Convenios</span>}
           </li>
@@ -106,7 +115,9 @@ const SuperMenu: React.FC<Props> = () => {
 
       <div className="main-content">
         <header className="top-header">
-          <button className="inicio-btn" onClick={handleInicioClick}>Inicio</button>
+          <button className="inicio-btn" onClick={handleInicioClick}>
+            Inicio
+          </button>
           <div className="user-section">
             <span className="user-label">Bienvenido, {userData.nombre_completo}</span>
             <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión">
@@ -121,13 +132,13 @@ const SuperMenu: React.FC<Props> = () => {
           ) : activeView === 'mejoras' ? (
             <PokeApiComponent />
           ) : activeView === 'usuarios' ? (
-            
-            <div className="inicio-view">
-              {/* Vista inicial con fondo blanco */} 
-            </div>
+            <div className="inicio-view">{/* Vista inicial con fondo blanco */}</div>
           ) : activeView === 'soporte' ? (
             <ErrorBoundary>
-              <div className="mindmap-container" style={{ width: '100%', height: 'calc(100vh - 60px)' }}>
+              <div
+                className="mindmap-container"
+                style={{ width: '100%', height: 'calc(100vh - 60px)' }}
+              >
                 <MindMap />
               </div>
             </ErrorBoundary>
@@ -144,7 +155,7 @@ const SuperMenu: React.FC<Props> = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SuperMenu;
+export default SuperMenu

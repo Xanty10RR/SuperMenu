@@ -1,18 +1,15 @@
-# cancha-jt
+# SuperMenu (Sistema ERP)
 
 A cross-platform desktop application built with Electron and React.
 
 ## Overview
 
-`cancha-jt` is a desktop application created using the Electron framework, with a user interface built on React. It is configured to be packaged for Windows, macOS, and Linux using `electron-builder`.
+`SuperMenu` is a desktop application (custom ERP system) created using the Electron framework, with a user interface built on React, designed to centralize requests, deliveries, support, users, and requisitions within a single desktop application — enhancing efficiency, operational control, and business process tracking. It is configured to be packaged for Windows, macOS, and Linux using `electron-builder`.
 
 ## Features
 
-*(You can list the main features of your application here)*
-
 - Cross-platform compatibility (Windows, macOS, Linux).
 - Modern and reactive UI built with React.
-- ...
 
 ## Getting Started
 
@@ -65,3 +62,8 @@ This command will generate the distributable files (e.g., an `.exe` installer fo
 - **React**: A JavaScript library for building user interfaces.
 - **electron-builder**: A complete solution to package and build a ready-for-distribution Electron app.
 - **Electron Vite**: (Inferred from configuration) A fast and opinionated build tool for modern Electron applications.
+
+## Contact me
+
+- 👨🏻‍💻[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/daniel-santiago-rosero-4420a91b0/)
+- 📧 [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:santiagocajamarca.37@gmail.com)

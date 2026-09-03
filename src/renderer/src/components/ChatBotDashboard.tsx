@@ -13,8 +13,21 @@ import {
   FiShield
 } from 'react-icons/fi'
 
+// 1. Ampliamos la interfaz para recibir todas las métricas del backend
 interface ChatbotMetrics {
   totalConveniosBancos: number
+  messagesToday: number
+  activeChats: number
+  automationRate: number
+  pendingErrors: number
+}
+
+interface ActivityItem {
+  id: number | string
+  user: string
+  intent: string
+  time: string
+  status: 'success' | 'warning' | 'info'
 }
 
 const fadeIn = keyframes`
@@ -206,61 +219,39 @@ const HealthLabel = styled.div`
 
 const ChatBotDashboard: React.FC = () => {
   const navigate = useNavigate()
-  const [metrics, setMetrics] = useState<ChatbotMetrics>({ totalConveniosBancos: 0 })
+  const [metrics, setMetrics] = useState<ChatbotMetrics>({
+    totalConveniosBancos: 0,
+    messagesToday: 0,
+    activeChats: 0,
+    automationRate: 98.5,
+    pendingErrors: 0
+  })
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
 
   useEffect(() => {
-    const fetchMetrics = async (): Promise<void> => {
+    const fetchData = async (): Promise<void> => {
       try {
-        const response = await axios.get<ChatbotMetrics>(
+        // Cargar métricas de KPIs
+        const metricsRes = await axios.get<ChatbotMetrics>(
           'http://localhost:3003/api/chatbot/metrics'
         )
-        setMetrics(response.data)
+        setMetrics(metricsRes.data)
+
+        // Cargar actividad real en vivo desde Supabase
+        const activityRes = await axios.get<ActivityItem[]>(
+          'http://localhost:3003/api/chatbot/activity'
+        )
+        setRecentActivity(activityRes.data)
       } catch (error) {
-        console.error('Error al cargar las métricas del chatbot:', error)
+        console.error('Error al cargar datos del dashboard:', error)
       }
     }
 
-    fetchMetrics()
+    fetchData()
+    // Opcional: refrescar cada 10 segundos automáticamente
+    const interval = setInterval(fetchData, 10000)
+    return () => clearInterval(interval)
   }, [])
-
-  // Datos de actividad simulados para los departamentos boton chatbot whatsapp
-  const recentActivity = [
-    {
-      id: 1,
-      user: '+54 9 11 5432-1098',
-      intent: 'Consulta de Envío / Logística',
-      time: 'Hace 2 min',
-      status: 'success' as const
-    },
-    {
-      id: 2,
-      user: '+57 310 876 5432',
-      intent: 'Estado de Pedido #4820',
-      time: 'Hace 5 min',
-      status: 'success' as const
-    },
-    {
-      id: 3,
-      user: '+52 55 1234 5678',
-      intent: 'Soporte Técnico / Convenios',
-      time: 'Hace 12 min',
-      status: 'warning' as const
-    },
-    {
-      id: 4,
-      user: '+54 9 351 987 6543',
-      intent: 'Horarios y Ubicación',
-      time: 'Hace 18 min',
-      status: 'success' as const
-    },
-    {
-      id: 5,
-      user: '+58 412 345 6789',
-      intent: 'Requisición de Materiales',
-      time: 'Hace 25 min',
-      status: 'info' as const
-    }
-  ]
 
   return (
     <Container>
@@ -273,7 +264,7 @@ const ChatBotDashboard: React.FC = () => {
         </TitleArea>
       </Header>
 
-      {/* Tarjetas de Métricas KPI */}
+      {/* Tarjetas de Métricas KPI Dinámicas */}
       <GridKpis>
         <KpiCard>
           <KpiIcon color="rgba(40, 167, 69, 0.15)" textColor="#2ecc71">
@@ -284,12 +275,13 @@ const ChatBotDashboard: React.FC = () => {
             <KpiLabel>Convenios Bancarios Totales</KpiLabel>
           </KpiInfo>
         </KpiCard>
+
         <KpiCard>
           <KpiIcon color="rgba(0, 180, 216, 0.15)" textColor="#00b4d8">
             <FiMessageSquare />
           </KpiIcon>
           <KpiInfo>
-            <KpiValue>1,428</KpiValue>
+            <KpiValue>{metrics.messagesToday?.toLocaleString() || 0}</KpiValue>
             <KpiLabel>Mensajes Procesados Hoy</KpiLabel>
           </KpiInfo>
         </KpiCard>
@@ -299,7 +291,7 @@ const ChatBotDashboard: React.FC = () => {
             <FiUsers />
           </KpiIcon>
           <KpiInfo>
-            <KpiValue>312</KpiValue>
+            <KpiValue>{metrics.activeChats?.toLocaleString() || 0}</KpiValue>
             <KpiLabel>Chats Activos (Últimas 24h)</KpiLabel>
           </KpiInfo>
         </KpiCard>
@@ -309,8 +301,8 @@ const ChatBotDashboard: React.FC = () => {
             <FiActivity />
           </KpiIcon>
           <KpiInfo>
-            <KpiValue>94.2%</KpiValue>
-            <KpiLabel>Tasa de Automatización Chatot</KpiLabel>
+            <KpiValue>{metrics.automationRate}%</KpiValue>
+            <KpiLabel>Tasa de Automatización Chatbot</KpiLabel>
           </KpiInfo>
         </KpiCard>
 
@@ -319,7 +311,7 @@ const ChatBotDashboard: React.FC = () => {
             <FiShield />
           </KpiIcon>
           <KpiInfo>
-            <KpiValue>0</KpiValue>
+            <KpiValue>{metrics.pendingErrors}</KpiValue>
             <KpiLabel>Fallas de API pendientes</KpiLabel>
           </KpiInfo>
         </KpiCard>
@@ -327,10 +319,10 @@ const ChatBotDashboard: React.FC = () => {
 
       {/* Secciones Principales */}
       <SectionGrid>
-        {/* Tabla de Actividad Reciente */}
+        {/* Tabla de Actividad Reciente Dinámica */}
         <Panel>
           <PanelTitle>
-            <FiActivity /> Actividad Reciente de Conversaciones
+            <FiActivity /> Actividad Reciente de Conversaciones (En Vivo)
           </PanelTitle>
           <Table>
             <thead>
@@ -342,27 +334,29 @@ const ChatBotDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {recentActivity.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.user}</td>
-                  <td>{item.intent}</td>
-                  <td>{item.time}</td>
-                  <td>
-                    <StatusBadge status={item.status}>
-                      {item.status === 'success'
-                        ? 'Completado'
-                        : item.status === 'warning'
-                          ? 'Derivado a Humano'
-                          : 'En Proceso'}
-                    </StatusBadge>
+              {recentActivity.length > 0 ? (
+                recentActivity.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.user}</td>
+                    <td>{item.intent}</td>
+                    <td>{item.time}</td>
+                    <td>
+                      <StatusBadge status={item.status}>Completado</StatusBadge>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                    No hay actividad reciente registrada aún.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </Table>
         </Panel>
 
-        {/* Panel de Salud del Servidor (Enfoque TIC / Render & Meta API) */}
+        {/* Panel de Salud del Servidor */}
         <Panel>
           <PanelTitle>
             <FiServer /> Estado del Servidor y API

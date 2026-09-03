@@ -321,28 +321,27 @@ app.listen(3003, () => {
 // Endpoint unificado para las métricas (KPIs) de Requisiciones, Bancos, Sesiones e Interacciones en vivo
 app.get('/api/chatbot/metrics', async (_req, res) => {
   try {
-    // Totales de bancos (los 29,230 convenios)
+    // 1. Total de convenios de los bancos (tus 29,230 registros)
     const agrarioCount = await pool.query('SELECT COUNT(*) FROM agrario')
     const avalCount = await pool.query('SELECT COUNT(*) FROM aval')
     const bbvaCount = await pool.query('SELECT COUNT(*) FROM bbva')
-
     const totalConvenios =
       parseInt(agrarioCount.rows[0].count || 0) +
       parseInt(avalCount.rows[0].count || 0) +
       parseInt(bbvaCount.rows[0].count || 0)
 
-    // Mensajes / Sesiones activas hoy basadas en la tabla nueva sesiones_chat
-    const chatsHoy = await pool.query(
-      'SELECT COUNT(*) FROM sesiones_chat WHERE DATE(ultimo_mensaje) = CURRENT_DATE'
+    // 2. Chats activos en las ÚLTIMAS 24 HORAS (¡Infalible contra problemas de zona horaria!)
+    const chats24h = await pool.query(
+      "SELECT COUNT(*) FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
     )
-    const totalChatsHoy = parseInt(chatsHoy.rows[0].count || 0)
+    const totalChats24h = parseInt(chats24h.rows[0].count || 0)
 
-    // Total histórico de usuarios que han escrito al bot
+    // 3. Total histórico de usuarios que han escrito al bot
     const totalUsuariosQuery = await pool.query('SELECT COUNT(*) FROM sesiones_chat')
     const totalUsuarios = parseInt(totalUsuariosQuery.rows[0].count || 0)
 
     res.json({
-      messagesToday: totalChatsHoy > 0 ? totalChatsHoy : 1, // Refleja interacciones de hoy
+      messagesToday: totalChats24h > 0 ? totalChats24h : 1,
       activeChats: totalUsuarios,
       totalConveniosBancos: totalConvenios,
       desgloseBancos: {
@@ -354,7 +353,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       pendingErrors: 0
     })
   } catch (error) {
-    console.error('Error al obtener métricas de sesiones:', error)
+    console.error('Error al obtener métricas:', error)
     res.status(500).json({ error: 'Error al obtener métricas' })
   }
 })

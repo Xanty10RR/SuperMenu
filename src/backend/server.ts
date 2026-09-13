@@ -341,33 +341,40 @@ app.listen(3003, () => {
 // Endpoint unificado para las métricas (KPIs) de Requisiciones, Bancos, Sesiones e Interacciones en vivo
 app.get('/api/chatbot/metrics', async (_req, res) => {
   try {
-    // Total de convenios de los bancos 29.230 registros
-    const agrarioCount = await pool.query('SELECT COUNT(*) FROM agrario')
-    const avalCount = await pool.query('SELECT COUNT(*) FROM aval')
-    const bbvaCount = await pool.query('SELECT COUNT(*) FROM bbva')
-    const totalConvenios =
-      parseInt(agrarioCount.rows[0].count || 0) +
-      parseInt(avalCount.rows[0].count || 0) +
-      parseInt(bbvaCount.rows[0].count || 0)
+    // Total de convenios de los bancos (29.230 registros)
+    const conteoAgrario = await pool.query('SELECT COUNT(*) FROM agrario')
+    const conteoAval = await pool.query('SELECT COUNT(*) FROM aval')
+    const conteoBbva = await pool.query('SELECT COUNT(*) FROM bbva')
+    const totalConveniosBancos =
+      parseInt(conteoAgrario.rows[0].count || 0) +
+      parseInt(conteoAval.rows[0].count || 0) +
+      parseInt(conteoBbva.rows[0].count || 0)
 
-    // Chats activos en las últimas 24h, contra problemas de zona horaria
-    const chats24h = await pool.query(
+    // Total Histórico de Usuarios (únicos y repetidos tabla total_historico_usuarios)
+    const historicoQuery = await pool.query('SELECT COUNT(*) FROM total_historico_usuarios')
+    const totalHistoricoUsuarios = parseInt(historicoQuery.rows[0].count || 0)
+
+    // Suma total de mensajes procesados en las últimas 24h
+    const consultaMensajesHoy = await pool.query(
+      "SELECT SUM(total_mensajes) as total FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
+    )
+    const totalMensajesHoy = parseInt(consultaMensajesHoy.rows[0].total || 0)
+
+    // Chats Activos (número de usuarios únicos en las últimas 24h tabla sesiones_chat)
+    const consultaChats24h = await pool.query(
       "SELECT COUNT(*) FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
     )
-    const totalChats24h = parseInt(chats24h.rows[0].count || 0)
-
-    // Total histórico de usuarios que han escrito al bot
-    const totalUsuariosQuery = await pool.query('SELECT COUNT(*) FROM sesiones_chat')
-    const totalUsuarios = parseInt(totalUsuariosQuery.rows[0].count || 0)
+    const totalChatsActivos = parseInt(consultaChats24h.rows[0].count || 0)
 
     res.json({
-      messagesToday: totalChats24h > 0 ? totalChats24h : 1,
-      activeChats: totalUsuarios,
-      totalConveniosBancos: totalConvenios,
+      messagesToday: totalMensajesHoy, // Total de mensajes procesados en las últimas 24h
+      activeChats: totalChatsActivos, // Usuarios únicos en las últimas 24h
+      totalConveniosBancos: totalConveniosBancos,  // Total de convenios de los bancos
+      totalHistoricoUsuarios: totalHistoricoUsuarios, // Total de interacciones (únicos y repetidos)
       desgloseBancos: {
-        bbva: parseInt(bbvaCount.rows[0].count || 0),
-        agrario: parseInt(agrarioCount.rows[0].count || 0),
-        aval: parseInt(avalCount.rows[0].count || 0)
+        bbva: parseInt(conteoBbva.rows[0].count || 0),
+        agrario: parseInt(conteoAgrario.rows[0].count || 0),
+        aval: parseInt(conteoAval.rows[0].count || 0)
       },
       automationRate: 98.5,
       pendingErrors: 0
@@ -381,17 +388,20 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
 // Endpoint de Actividad Reciente en Vivo
 app.get('/api/chatbot/activity', async (_req, res) => {
   try {
-    // Trae las últimas interacciones de cualquier tipo desde sesiones_chat
-    const result = await pool.query(
-      'SELECT * FROM sesiones_chat ORDER BY ultimo_mensaje DESC LIMIT 10'
+    // Trae las últimas interacciones convirtiendo el timestamp a la zona horaria de Bogotá
+    const resultadoActividad = await pool.query(
+      `SELECT id, telefono, nombre, ultima_accion, 
+              (ultimo_mensaje AT TIME ZONE 'America/Bogota') as ultimo_mensaje 
+       FROM sesiones_chat 
+       ORDER BY ultimo_mensaje DESC LIMIT 10`
     )
 
-    const activity = result.rows.map((row, index) => ({
-      id: row.id || index + 1,
-      user: row.nombre || row.telefono || 'Usuario WhatsApp',
-      intent: row.ultima_accion || 'Interacción con el Bot',
-      time: row.ultimo_mensaje
-        ? new Date(row.ultimo_mensaje).toLocaleTimeString([], {
+    const listaActividad = resultadoActividad.rows.map((fila, indice) => ({
+      id: fila.id || indice + 1,
+      user: fila.nombre || fila.telefono || 'Usuario WhatsApp',
+      intent: fila.ultima_accion || 'Interacción con el Bot',
+      time: fila.ultimo_mensaje
+        ? new Date(fila.ultimo_mensaje).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit'
           })
@@ -399,7 +409,7 @@ app.get('/api/chatbot/activity', async (_req, res) => {
       status: 'success'
     }))
 
-    res.json(activity)
+    res.json(listaActividad)
   } catch (error) {
     console.error('Error al obtener actividad en vivo:', error)
     res.json([])

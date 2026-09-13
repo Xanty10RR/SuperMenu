@@ -321,7 +321,7 @@ app.listen(3003, () => {
 // Endpoint unificado para las métricas (KPIs) de Requisiciones, Bancos, Sesiones e Interacciones en vivo
 app.get('/api/chatbot/metrics', async (_req, res) => {
   try {
-    // 1. Total de convenios de los bancos (tus 29,230 registros)
+    // Total de convenios de los bancos 29.230 registros
     const agrarioCount = await pool.query('SELECT COUNT(*) FROM agrario')
     const avalCount = await pool.query('SELECT COUNT(*) FROM aval')
     const bbvaCount = await pool.query('SELECT COUNT(*) FROM bbva')
@@ -330,13 +330,13 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       parseInt(avalCount.rows[0].count || 0) +
       parseInt(bbvaCount.rows[0].count || 0)
 
-    // 2. Chats activos en las ÚLTIMAS 24 HORAS (¡Infalible contra problemas de zona horaria!)
+    // Chats activos en las últimas 24h, contra problemas de zona horaria
     const chats24h = await pool.query(
       "SELECT COUNT(*) FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
     )
     const totalChats24h = parseInt(chats24h.rows[0].count || 0)
 
-    // 3. Total histórico de usuarios que han escrito al bot
+    // Total histórico de usuarios que han escrito al bot
     const totalUsuariosQuery = await pool.query('SELECT COUNT(*) FROM sesiones_chat')
     const totalUsuarios = parseInt(totalUsuariosQuery.rows[0].count || 0)
 

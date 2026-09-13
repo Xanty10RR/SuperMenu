@@ -1,8 +1,8 @@
+import dotenv from 'dotenv'
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { Pool } from 'pg'
 import * as bcrypt from 'bcryptjs'
-import dotenv from 'dotenv'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -18,15 +18,17 @@ app.use(express.json())
 
 // Configuración de la conexión a la base de datos del Chatbot (Supabase / Postgres remoto)
 const pool = new Pool({
-  host: 'aws-1-sa-east-1.pooler.supabase.com',
-  port: 5432,
-  database: 'postgres',
-  user: 'postgres.xoopvfdwhbnilwnbaqfh',
-  password: 'fuauF3aK3KihuyVV',
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT) || 5432,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   ssl: {
     rejectUnauthorized: false
   }
 })
+
+export default pool
 
 console.log('✅ Keep-alive para Supabase activado')
 

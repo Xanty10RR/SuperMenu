@@ -28,6 +28,24 @@ const pool = new Pool({
   }
 })
 
+console.log('✅ Keep-alive para Supabase activado')
+
+// Ping cada 2 días para que Supabase no pause la bd
+setInterval(
+  async () => {
+    try {
+      await pool.query('SELECT 1')
+      console.log(
+        'Ping a Supabase OK -',
+        new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' })
+      )
+    } catch (e) {
+      console.error('Ping falló', e)
+    }
+  },
+  1000 * 60 * 60 * 24 * 2
+)
+
 // Función para manejar consultas genéricas
 const handleQuery = async (
   table: string,

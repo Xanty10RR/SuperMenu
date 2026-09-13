@@ -13,9 +13,10 @@ import {
   FiShield
 } from 'react-icons/fi'
 
-// 1. Ampliamos la interfaz para recibir todas las métricas del backend
+// Ampliamos la interfaz para recibir todas las métricas del backend
 interface ChatbotMetrics {
   totalConveniosBancos: number
+  totalHistoricoUsuarios: number
   messagesToday: number
   activeChats: number
   automationRate: number
@@ -221,6 +222,7 @@ const ChatBotDashboard: React.FC = () => {
   const navigate = useNavigate()
   const [metrics, setMetrics] = useState<ChatbotMetrics>({
     totalConveniosBancos: 0,
+    totalHistoricoUsuarios: 0,
     messagesToday: 0,
     activeChats: 0,
     automationRate: 98.5,
@@ -273,6 +275,16 @@ const ChatBotDashboard: React.FC = () => {
           <KpiInfo>
             <KpiValue>{metrics.totalConveniosBancos?.toLocaleString() || 0}</KpiValue>
             <KpiLabel>Convenios Bancarios Totales</KpiLabel>
+          </KpiInfo>
+        </KpiCard>
+
+        <KpiCard>
+          <KpiIcon color="rgba(0, 180, 216, 0.15)" textColor="#00b4d8">
+            <FiMessageSquare />
+          </KpiIcon>
+          <KpiInfo>
+            <KpiValue>{metrics.totalHistoricoUsuarios?.toLocaleString() || 0}</KpiValue>
+            <KpiLabel>Total Histórico de Usuarios</KpiLabel>
           </KpiInfo>
         </KpiCard>
 

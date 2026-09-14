@@ -77,7 +77,7 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
           title="Ver Dashboard de Operaciones del Bot"
         >
           <FaWhatsapp size={28} className="chatbot-icon" />
-          <span>Chatbot Whatsapp</span>
+          <span>Métricas SuperAsistente</span>
         </div>
       </div>
 

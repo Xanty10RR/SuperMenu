@@ -394,6 +394,12 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     )
     const totalChatsActivos = parseInt(consultaChats24h.rows[0].count || 0)
 
+    // Errores pendientes por resolver en la tabla errores_api
+    const conteoErroresApi = await pool.query(
+      'SELECT COUNT(*) FROM errores_api WHERE resuelto = false'
+    )
+    const pendingErrors = parseInt(conteoErroresApi.rows[0].count || 0)
+
     res.json({
       messagesToday: totalMensajesHoy, // Total de mensajes procesados en las últimas 24h
       activeChats: totalChatsActivos, // Usuarios únicos en las últimas 24h
@@ -405,7 +411,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
         aval: parseInt(conteoAval.rows[0].count || 0)
       },
       automationRate: 98.5,
-      pendingErrors: 0
+      pendingErrors: pendingErrors
     })
   } catch (error) {
     console.error('Error al obtener métricas:', error)

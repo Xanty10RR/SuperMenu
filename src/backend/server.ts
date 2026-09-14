@@ -400,6 +400,19 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     )
     const pendingErrors = parseInt(conteoErroresApi.rows[0].count || 0)
 
+    // Errores en las últimas 24h para calcular la tasa de automatización (automationRate) del bot
+    const tasaAutomatizacionBot = await pool.query(
+      "SELECT COUNT(*) FROM errores_api WHERE fecha >= NOW() - INTERVAL '24 hours'"
+    )
+    const errors24h = parseInt(tasaAutomatizacionBot.rows[0].count || 0)
+
+    // Cálculo dinámico de la tasa de automatización (%)
+    let automationRate = 100
+    if (totalMensajesHoy > 0) {
+      const rate = ((totalMensajesHoy - errors24h) / totalMensajesHoy) * 100
+      automationRate = Math.max(0, Number(rate.toFixed(1)))
+    }
+
     res.json({
       messagesToday: totalMensajesHoy, // Total de mensajes procesados en las últimas 24h
       activeChats: totalChatsActivos, // Usuarios únicos en las últimas 24h
@@ -410,7 +423,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
         agrario: parseInt(conteoAgrario.rows[0].count || 0),
         aval: parseInt(conteoAval.rows[0].count || 0)
       },
-      automationRate: 98.5,
+      automationRate: automationRate,
       pendingErrors: pendingErrors
     })
   } catch (error) {

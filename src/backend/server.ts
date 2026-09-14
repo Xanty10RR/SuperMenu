@@ -445,7 +445,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       pendingErrors: pendingErrors,
       saludServidores: {
         serverStatus: `Online (${uptimePorcentaje}%)`,
-        supabaseStatus: 'Conectado', // O podrías poner un try/catch del pool.query('SELECT 1') si fallara
+        supabaseStatus: 'Conectado', // O poner un try/catch del pool.query('SELECT 1') si fallara
         metaApiStatus: metaConectado ? 'Conectado' : 'Sin actividad reciente',
         latencyMs: `${latenciaMs} ms`,
         builderBotStatus: metaConectado ? 'Estable' : 'Revisar'

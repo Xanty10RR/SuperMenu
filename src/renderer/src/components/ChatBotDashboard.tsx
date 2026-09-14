@@ -225,7 +225,7 @@ const ChatBotDashboard: React.FC = () => {
     totalHistoricoUsuarios: 0,
     messagesToday: 0,
     activeChats: 0,
-    automationRate: 98.5,
+    automationRate: 0,
     pendingErrors: 0
   })
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
@@ -250,7 +250,7 @@ const ChatBotDashboard: React.FC = () => {
     }
 
     fetchData()
-    // Opcional: refrescar cada 10 segundos automáticamente
+    // Opcional: Refrescar cada 10 segundos automáticamente
     const interval = setInterval(fetchData, 10000)
     return () => clearInterval(interval)
   }, [])
@@ -385,6 +385,14 @@ const ChatBotDashboard: React.FC = () => {
             <HealthLabel>
               <FiCheckCircle color="#2ecc71" size={18} />
               Meta Cloud API (Webhook)
+            </HealthLabel>
+            <StatusBadge status="success">Conectado</StatusBadge>
+          </HealthItem>
+
+          <HealthItem>
+            <HealthLabel>
+              <FiCheckCircle color="#2ecc71" size={18} />
+              Supabase (Base de Datos)
             </HealthLabel>
             <StatusBadge status="success">Conectado</StatusBadge>
           </HealthItem>

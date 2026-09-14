@@ -21,6 +21,12 @@ interface ChatbotMetrics {
   activeChats: number
   automationRate: number
   pendingErrors: number
+  saludServidores?: {
+    serverStatus: string
+    metaApiStatus: string
+    latencyMs: string
+    builderBotStatus: string
+  }
 }
 
 interface ActivityItem {
@@ -378,7 +384,9 @@ const ChatBotDashboard: React.FC = () => {
               <FiCheckCircle color="#2ecc71" size={18} />
               Servidor Web (Render)
             </HealthLabel>
-            <StatusBadge status="success">Online (100%)</StatusBadge>
+            <StatusBadge status="success">
+              {metrics?.saludServidores?.serverStatus || 'Online (100%)'}
+            </StatusBadge>
           </HealthItem>
 
           <HealthItem>
@@ -386,23 +394,21 @@ const ChatBotDashboard: React.FC = () => {
               <FiCheckCircle color="#2ecc71" size={18} />
               Meta Cloud API (Webhook)
             </HealthLabel>
-            <StatusBadge status="success">Conectado</StatusBadge>
+            <StatusBadge status="success">
+              {metrics?.saludServidores?.metaApiStatus || 'Conectado'}
+            </StatusBadge>
           </HealthItem>
 
-          <HealthItem>
-            <HealthLabel>
-              <FiCheckCircle color="#2ecc71" size={18} />
-              Supabase (Base de Datos)
-            </HealthLabel>
-            <StatusBadge status="success">Conectado</StatusBadge>
-          </HealthItem>
+          
 
           <HealthItem>
             <HealthLabel>
               <FiClock color="#00b4d8" size={18} />
               Latencia Promedio
             </HealthLabel>
-            <span style={{ fontSize: '0.9rem', color: '#00b4d8', fontWeight: 600 }}>185 ms</span>
+            <span style={{ fontSize: '0.9rem', color: '#00b4d8', fontWeight: 600 }}>
+              {metrics?.saludServidores?.latencyMs || '0 ms'}
+            </span>
           </HealthItem>
 
           <HealthItem>
@@ -410,7 +416,9 @@ const ChatBotDashboard: React.FC = () => {
               <FiShield color="#9b59b6" size={18} />
               Motor BuilderBot
             </HealthLabel>
-            <StatusBadge status="success">Estable</StatusBadge>
+            <StatusBadge status="success">
+              {metrics?.saludServidores?.builderBotStatus || 'Estable'}
+            </StatusBadge>
           </HealthItem>
         </Panel>
       </SectionGrid>

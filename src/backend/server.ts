@@ -401,12 +401,12 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     const pendingErrors = parseInt(conteoErroresApi.rows[0].count || 0)
 
     // Errores en las últimas 24h para calcular la tasa de automatización (automationRate) del bot
-    const tasaAutomatizacionBot = await pool.query(
+    const errors24hRes = await pool.query(
       "SELECT COUNT(*) FROM errores_api WHERE fecha >= NOW() - INTERVAL '24 hours'"
     )
-    const errors24h = parseInt(tasaAutomatizacionBot.rows[0].count || 0)
+    const errors24h = parseInt(errors24hRes.rows[0].count || 0)
 
-    // Cálculo dinámico de la tasa de automatización (%)
+    // Cálculo % dinámico de la tasa de automatización del bot
     let automationRate = 100
     if (totalMensajesHoy > 0) {
       const rate = ((totalMensajesHoy - errors24h) / totalMensajesHoy) * 100

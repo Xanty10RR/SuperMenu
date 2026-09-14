@@ -30,6 +30,19 @@ const pool = new Pool({
 
 export default pool
 
+// Función para registrar errores del servidor en la tabla (errores_api)
+const registrarErrorServidor = async (error: unknown, origen: string): Promise<void> => {
+  try {
+    await pool.query(
+      `INSERT INTO errores_api (mensaje, origen, telefono, resuelto, fecha) 
+       VALUES ($1, $2, $3, false, NOW())`,
+      [(error as Error)?.message || 'Error desconocido', origen, null]
+    )
+  } catch (dbErr) {
+    console.error('No se pudo guardar el error en Supabase:', dbErr)
+  }
+}
+
 console.log('✅ Keep-alive para Supabase activado')
 
 // Ping cada 2 días para que Supabase no pause la bd
@@ -62,6 +75,7 @@ const handleQuery = async (
     res.json(result.rows)
   } catch (err) {
     console.error(`Error en la consulta a ${table}:`, err)
+    await registrarErrorServidor(err, `/api/${table}`)
     res.status(500).send(`Error al obtener datos de ${table}`)
   }
 }
@@ -78,8 +92,9 @@ app.get('/api/aprobaciones', async (_req, res) => {
     `
     const result = await pool.query(query)
     res.json(result.rows)
-  } catch (err) {
-    console.error('Error en la consulta a aprobaciones:', err)
+  } catch (error) {
+    console.error('Error en la consulta a aprobaciones:', error)
+    await registrarErrorServidor(error, '/api/aprobaciones')
     res.status(500).send('Error al obtener datos de aprobaciones')
   }
 })
@@ -116,16 +131,18 @@ app.get('/api/requisiciones/todas', async (req, res) => {
     })
 
     res.json(combined)
-  } catch (err) {
-    console.error('Error al combinar requisiciones:', err)
+  } catch (error) {
+    console.error('Error al combinar requisiciones:', error)
+    await registrarErrorServidor(error, '/api/requisiciones/todas')
     res.status(500).send('Error al obtener todas las requisiciones')
   }
 })
 
 // Endpoint para marcar como entregado
 app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
+  const { id } = req.params
+
   try {
-    const { id } = req.params
     const { entregado_por, observaciones } = req.body
 
     const query = `
@@ -141,8 +158,9 @@ app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
 
     const result = await pool.query(query, [entregado_por, observaciones, id])
     res.status(200).json(result.rows[0])
-  } catch (err) {
-    console.error('Error al registrar entrega:', err)
+  } catch (error) {
+    console.error('Error al registrar entrega:', error)
+    await registrarErrorServidor(error, `/api/aprobaciones/${id}/entregar`)
     res.status(500).send('Error al registrar entrega')
   }
 })
@@ -158,8 +176,9 @@ app.get('/api/aprobaciones/entregas-recientes', async (req, res) => {
     `
     const result = await pool.query(query)
     res.json(result.rows)
-  } catch (err) {
-    console.error('Error al obtener entregas recientes:', err)
+  } catch (error) {
+    console.error('Error al obtener entregas recientes:', error)
+    await registrarErrorServidor(error, '/api/aprobaciones/entregas-recientes')
     res.status(500).send('Error al obtener entregas recientes')
   }
 })
@@ -197,8 +216,9 @@ app.post('/api/login', async (req, res) => {
       user: userData, // Incluye nombre_completo y otros datos
       token: 'tu_token_jwt_si_lo_implementas'
     })
-  } catch (err) {
-    console.error('Error en el login:', err)
+  } catch (error) {
+    console.error('Error en el login:', error)
+    await registrarErrorServidor(error, '/api/login')
     res.status(500).json({ error: 'Error en el servidor' })
   }
 })
@@ -211,6 +231,7 @@ app.post('/api/logout', async (req, res) => {
     res.status(200).json({ message: 'Logout successful' })
   } catch (error) {
     console.error('Logout error:', error)
+    await registrarErrorServidor(error, '/api/logout')
     res.status(500).json({ error: 'Error during logout' })
   }
 })
@@ -219,8 +240,9 @@ app.get('/api/mindmap/nodes', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM mindmap_nodes ORDER BY created_at DESC')
     res.json(result.rows)
-  } catch (err) {
-    console.error('Error al obtener nodos:', err)
+  } catch (error) {
+    console.error('Error al obtener nodos:', error)
+    await registrarErrorServidor(error, '/api/mindmap/nodes')
     res.status(500).send('Error al obtener nodos')
   }
 })
@@ -230,8 +252,9 @@ app.get('/api/mindmap/connections', async (req, res) => {
     const result = await pool.query('SELECT * FROM mindmap_connections')
     // Asegura que siempre devuelvas un array
     res.json(result.rows || [])
-  } catch (err) {
-    console.error('Error al obtener conexiones:', err)
+  } catch (error) {
+    console.error('Error al obtener conexiones:', error)
+    await registrarErrorServidor(error, '/api/mindmap/connections')
     // Devuelve un array vacío en caso de error
     res.status(500).json([])
   }
@@ -251,8 +274,9 @@ app.post('/api/mindmap/nodes', async (req, res) => {
     )
 
     res.status(201).json(result.rows[0])
-  } catch (err) {
-    console.error('Error al crear nodo:', err)
+  } catch (error) {
+    console.error('Error al crear nodo:', error)
+    await registrarErrorServidor(error, '/api/mindmap/nodes')
     res.status(500).send('Error al crear nodo')
   }
 })
@@ -270,8 +294,9 @@ app.post('/api/mindmap/connections', async (req, res) => {
     )
 
     res.status(201).json(result.rows[0])
-  } catch (err) {
-    console.error('Error al crear conexión:', err)
+  } catch (error) {
+    console.error('Error al crear conexión:', error)
+    await registrarErrorServidor(error, '/api/mindmap/connections')
     res.status(500).send('Error al crear conexión')
   }
 })
@@ -302,8 +327,9 @@ app.put('/api/mindmap/nodes/:id', async (req, res) => {
     }
 
     res.json(result.rows[0])
-  } catch (err) {
-    console.error('Error al actualizar nodo:', err)
+  } catch (error) {
+    console.error('Error al actualizar nodo:', error)
+    await registrarErrorServidor(error, `/api/mindmap/nodes/${id}`)
     res.status(500).send('Error al actualizar nodo')
   }
 })
@@ -315,8 +341,9 @@ app.delete('/api/mindmap/nodes/:id', async (req, res) => {
     // Las conexiones se eliminarán automáticamente por ON DELETE CASCADE
     await pool.query('DELETE FROM mindmap_nodes WHERE id = $1', [id])
     res.status(204).send()
-  } catch (err) {
-    console.error('Error al eliminar nodo:', err)
+  } catch (error) {
+    console.error('Error al eliminar nodo:', error)
+    await registrarErrorServidor(error, `/api/mindmap/nodes/${id}`)
     res.status(500).send('Error al eliminar nodo')
   }
 })
@@ -327,8 +354,9 @@ app.delete('/api/mindmap/connections/:id', async (req, res) => {
   try {
     await pool.query('DELETE FROM mindmap_connections WHERE id = $1', [id])
     res.status(204).send()
-  } catch (err) {
-    console.error('Error al eliminar conexión:', err)
+  } catch (error) {
+    console.error('Error al eliminar conexión:', error)
+    await registrarErrorServidor(error, `/api/mindmap/connections/${id}`)
     res.status(500).send('Error al eliminar conexión')
   }
 })
@@ -369,7 +397,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     res.json({
       messagesToday: totalMensajesHoy, // Total de mensajes procesados en las últimas 24h
       activeChats: totalChatsActivos, // Usuarios únicos en las últimas 24h
-      totalConveniosBancos: totalConveniosBancos,  // Total de convenios de los bancos
+      totalConveniosBancos: totalConveniosBancos, // Total de convenios de los bancos
       totalHistoricoUsuarios: totalHistoricoUsuarios, // Total de interacciones (únicos y repetidos)
       desgloseBancos: {
         bbva: parseInt(conteoBbva.rows[0].count || 0),
@@ -381,7 +409,26 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     })
   } catch (error) {
     console.error('Error al obtener métricas:', error)
+    await registrarErrorServidor(error, '/api/chatbot/metrics')
     res.status(500).json({ error: 'Error al obtener métricas' })
+  }
+})
+
+// Endpoint para que el bot registre errores de API o de ejecución
+app.post('/api/chatbot/log-error', async (req, res) => {
+  try {
+    const { mensaje, origen, telefono } = req.body
+
+    await pool.query(
+      `INSERT INTO errores_api (mensaje, origen, telefono, resuelto, fecha) 
+       VALUES ($1, $2, $3, false, NOW())`,
+      [mensaje || 'Error desconocido', origen || 'Bot', telefono || null]
+    )
+
+    res.status(201).json({ status: 'ok', message: 'Error registrado correctamente' })
+  } catch (error) {
+    console.error('Error al guardar log de error en /api/chatbot/log-error:', error)
+    res.status(500).json({ error: 'No se pudo registrar el error' })
   }
 })
 
@@ -412,6 +459,7 @@ app.get('/api/chatbot/activity', async (_req, res) => {
     res.json(listaActividad)
   } catch (error) {
     console.error('Error al obtener actividad en vivo:', error)
+    await registrarErrorServidor(error, '/api/chatbot/activity')
     res.json([])
   }
 })

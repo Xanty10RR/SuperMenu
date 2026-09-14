@@ -403,7 +403,7 @@ const ChatBotDashboard: React.FC = () => {
           <HealthItem>
             <HealthLabel>
               <FiCheckCircle color="#2ecc71" size={18} />
-              Supabase (Base de Datos)
+              Supabase (Base de Datos - Servidor)
             </HealthLabel>
             <StatusBadge status="success">
               {metrics?.saludServidores?.supabaseStatus || 'Conectado'}
@@ -413,7 +413,7 @@ const ChatBotDashboard: React.FC = () => {
           <HealthItem>
             <HealthLabel>
               <FiClock color="#00b4d8" size={18} />
-              Latencia Promedio
+              Latencia Base de Datos PostgreSQL
             </HealthLabel>
             <span style={{ fontSize: '0.9rem', color: '#00b4d8', fontWeight: 600 }}>
               {metrics?.saludServidores?.latencyMs || '0 ms'}

@@ -413,7 +413,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       automationRate = Math.max(0, Number(rate.toFixed(1)))
     }
 
-    // Medir latencia real con un ping a Supabase/PostgreSQL/Builderbot
+    // Medir latencia real con un ping a Supabase/PostgreSQL
     const hacerPing = Date.now()
     await pool.query('SELECT 1')
     const latenciaMs = Date.now() - hacerPing
@@ -445,7 +445,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       pendingErrors: pendingErrors,
       saludServidores: {
         serverStatus: `Online (${uptimePorcentaje}%)`,
-        supabaseStatus: 'Conectado', // O poner un try/catch del pool.query('SELECT 1') si fallara
+        supabaseStatus: 'Conectado', // O poner un try/catch del pool.query('SELECT 1') si falla
         metaApiStatus: metaConectado ? 'Conectado' : 'Sin actividad reciente',
         latencyMs: `${latenciaMs} ms`,
         builderBotStatus: metaConectado ? 'Estable' : 'Revisar'

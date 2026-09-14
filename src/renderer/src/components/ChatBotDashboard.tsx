@@ -23,6 +23,7 @@ interface ChatbotMetrics {
   pendingErrors: number
   saludServidores?: {
     serverStatus: string
+    supabaseStatus: string
     metaApiStatus: string
     latencyMs: string
     builderBotStatus: string
@@ -399,7 +400,15 @@ const ChatBotDashboard: React.FC = () => {
             </StatusBadge>
           </HealthItem>
 
-          
+          <HealthItem>
+            <HealthLabel>
+              <FiCheckCircle color="#2ecc71" size={18} />
+              Supabase (Base de Datos)
+            </HealthLabel>
+            <StatusBadge status="success">
+              {metrics?.saludServidores?.supabaseStatus || 'Conectado'}
+            </StatusBadge>
+          </HealthItem>
 
           <HealthItem>
             <HealthLabel>

@@ -262,7 +262,7 @@ const ChatBotDashboard: React.FC = () => {
           <BackButton onClick={() => navigate('/supermenu')}>
             <FiArrowLeft /> Volver al Menú
           </BackButton>
-          <Title>Dashboard de Operaciones - Chatbot WhatsApp</Title>
+          <Title>Dashboard de Métricas - Chatbot SuperAsistente</Title>
         </TitleArea>
       </Header>
 

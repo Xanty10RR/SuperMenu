@@ -20,7 +20,7 @@ import { RequisicionesView } from './Requisiciones'
 import { ApprovalList } from './Logistica'
 import { PokeApiComponent } from './Mejoras'
 import ErrorBoundary from './ErrorBoundary'
-import { usuarios } from './Usuarios'
+import Usuarios from './Usuarios'
 
 interface Props {
   // Eliminamos la prop aprobaciones ya que no es necesaria
@@ -132,7 +132,7 @@ const SuperMenu: React.FC<Props> = () => {
           ) : activeView === 'mejoras' ? (
             <PokeApiComponent />
           ) : activeView === 'usuarios' ? (
-            <div className="inicio-view">{/* Vista inicial con fondo blanco */}</div>
+            <Usuarios />
           ) : activeView === 'soporte' ? (
             <ErrorBoundary>
               <div

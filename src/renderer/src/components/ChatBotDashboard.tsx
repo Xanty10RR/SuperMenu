@@ -44,10 +44,10 @@ const fadeIn = keyframes`
 `
 
 const Container = styled.div`
-  padding: 2.5rem;
-  background: #1a1a2e;
+  padding: 25px 20px;
+  background: #f5f7fa;
   min-height: 100vh;
-  color: #fff;
+  color: #333;
   font-family: 'Segoe UI', sans-serif;
   animation: ${fadeIn} 0.4s ease-out;
   overflow-y: auto;
@@ -58,69 +58,78 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 1rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 15px;
 `
 
 const TitleArea = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 15px;
 `
 
 const BackButton = styled.button`
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
+  background: #2f6db2;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
+  font-weight: 500;
   transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(0, 180, 216, 0.2);
-    border-color: #00b4d8;
+    background: #1d2f4a;
   }
 `
 
 const Title = styled.h1`
-  font-size: 1.8rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #23395d;
+  margin: 0;
 `
 
 const GridKpis = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 const KpiCard = styled.div`
-  background: rgba(15, 52, 96, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  gap: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 `
 
 const KpiIcon = styled.div<{ color?: string; textColor?: string }>`
-  background: ${(props) => props.color || 'rgba(0, 180, 216, 0.15)'};
-  color: ${(props) => props.textColor || '#00b4d8'};
-  width: 55px;
-  height: 55px;
-  border-radius: 12px;
+  background: ${(props) => props.color || 'rgba(47, 109, 178, 0.12)'};
+  color: ${(props) => props.textColor || '#2f6db2'};
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 `
 
 const KpiInfo = styled.div`
@@ -129,78 +138,83 @@ const KpiInfo = styled.div`
 `
 
 const KpiValue = styled.span`
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  color: #fff;
+  color: #23395d;
 `
 
 const KpiLabel = styled.span`
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 0.2rem;
+  color: #666;
+  margin-top: 4px;
 `
 
 const SectionGrid = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
 `
 
 const Panel = styled.div`
-  background: rgba(15, 52, 96, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 `
 
 const PanelTitle = styled.h3`
-  font-size: 1.2rem;
-  margin-bottom: 1.2rem;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
   font-weight: 600;
-  color: #fff;
+  color: #23395d;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 8px;
 `
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  border-radius: 6px;
+  overflow: hidden;
+
+  thead {
+    background-color: #2f6db2;
+    color: white;
+  }
 
   th,
   td {
-    padding: 0.9rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    font-size: 0.9rem;
+    padding: 12px 14px;
+    font-size: 0.88rem;
   }
 
   th {
-    color: rgba(255, 255, 255, 0.6);
     font-weight: 500;
   }
 
-  td {
-    color: rgba(255, 255, 255, 0.9);
+  tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+
+  tbody tr:nth-of-type(even) {
+    background-color: #f8fafc;
+  }
+
+  tbody tr:hover {
+    background-color: #f1f5f9;
   }
 `
 
 const StatusBadge = styled.span<{ status: 'success' | 'warning' | 'info' }>`
   background: ${(props) =>
-    props.status === 'success'
-      ? 'rgba(40, 167, 69, 0.2)'
-      : props.status === 'warning'
-        ? 'rgba(255, 193, 7, 0.2)'
-        : 'rgba(0, 180, 216, 0.2)'};
+    props.status === 'success' ? '#d1fae5' : props.status === 'warning' ? '#fef3c7' : '#dbeafe'};
   color: ${(props) =>
-    props.status === 'success' ? '#2ecc71' : props.status === 'warning' ? '#f1c40f' : '#00b4d8'};
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
+    props.status === 'success' ? '#10b981' : props.status === 'warning' ? '#d97706' : '#2f6db2'};
+  padding: 4px 10px;
+  border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 600;
   display: inline-block;
@@ -210,8 +224,8 @@ const HealthItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
 
   &:last-child {
     border-bottom: none;
@@ -221,9 +235,18 @@ const HealthItem = styled.div`
 const HealthLabel = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  font-size: 0.95rem;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: #333;
 `
+const colorLatencia = (latencyStr?: string): string => {
+  if (!latencyStr) return '#2f6db2'
+  const milliseconds = Number.parseInt(latencyStr.replace(/[^0-9]/g, ''), 10)
+  if (Number.isNaN(milliseconds)) return '#2f6db2'
+  if (milliseconds < 150) return '#10b981'
+  if (milliseconds <= 300) return '#f59e0b'
+  return '#ef4444' // Rojo
+}
 
 const ChatBotDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -267,7 +290,7 @@ const ChatBotDashboard: React.FC = () => {
       <Header>
         <TitleArea>
           <BackButton onClick={() => navigate('/supermenu')}>
-            <FiArrowLeft /> Volver al Menú
+            <FiArrowLeft /> Volver
           </BackButton>
           <Title>Centro de Operaciones - Chatbot SuperAsistente</Title>
         </TitleArea>
@@ -410,10 +433,16 @@ const ChatBotDashboard: React.FC = () => {
 
           <HealthItem>
             <HealthLabel>
-              <FiClock color="#00b4d8" size={18} />
+              <FiClock color={colorLatencia(metrics?.saludServidores?.latencyMs)} size={18} />
               Latencia Base de Datos PostgreSQL
             </HealthLabel>
-            <span style={{ fontSize: '0.9rem', color: '#00b4d8', fontWeight: 600 }}>
+            <span
+              style={{
+                fontSize: '0.9rem',
+                color: colorLatencia(metrics?.saludServidores?.latencyMs),
+                fontWeight: 600
+              }}
+            >
               {metrics?.saludServidores?.latencyMs || '0 ms'}
             </span>
           </HealthItem>

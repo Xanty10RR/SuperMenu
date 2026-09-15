@@ -414,7 +414,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     }
 
     // Estado del Servidor y API
-    // Función auxiliar para formatear el uptime del servidor en Render [cite: User Summary]
+    // Función para formatear el tiempo activo (uptime) del servidor en Render
     function formatUptime(seconds: number): string {
       const days = Math.floor(seconds / (3600 * 24))
       const hours = Math.floor((seconds % (3600 * 24)) / 3600)
@@ -429,11 +429,11 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       return `Online - ${minutes}m activo`
     }
 
-    // 1. Servidor Web (Render): Uptime
+    // Servidor Web (Render) con Uptime
     const uptimeSegundos = process.uptime()
     const serverStatus = formatUptime(uptimeSegundos)
 
-    // 2. Meta Cloud API (Webhook): Última interacción [cite: User Summary]
+    // Meta Cloud API (Webhook): Última interacción
     const ultimaActividadRes = await pool.query(
       'SELECT ultimo_mensaje FROM sesiones_chat ORDER BY ultimo_mensaje DESC LIMIT 1'
     )
@@ -468,19 +468,19 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
         : `Inactivo • Últ. vez: ${tiempoRelativo}`
     }
 
-    // 3. Supabase (Base de Datos - Servidor) + Almacenamiento en MB [cite: User Summary]
+    // Supabase (Base de Datos - Servidor) + Almacenamiento MB
     let supabaseStatusText = 'Conectado'
     try {
       const sizeRes = await pool.query('SELECT pg_database_size(current_database()) AS size')
       const bytes = parseInt(sizeRes.rows[0]?.size || 0, 10)
       const usedMB = (bytes / (1024 * 1024)).toFixed(1)
-      // El plan gratuito de Supabase son 500 MB [cite: User Summary]
+      // Plan gratuito de Supabase de 500 MB
       supabaseStatusText = `Conectado • Storage: ${usedMB} MB / 500 MB`
     } catch {
       supabaseStatusText = 'Desconectado'
     }
 
-    // 4. Latencia Base de Datos PostgreSQL (Ping real en ms) [cite: User Summary]
+    // Latencia Base de Datos PostgreSQL (Ping real)
     const hacerPing = Date.now()
     let latenciaMs = 0
 
@@ -505,11 +505,11 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       automationRate: automationRate,
       pendingErrors: pendingErrors,
       saludServidores: {
-        serverStatus: serverStatus, // 1. Servidor Web (Render) [cite: User Summary]
-        metaApiStatus: metaTexto, // 2. Meta Cloud API (Webhook) [cite: User Summary]
-        supabaseStatus: supabaseStatusText, // 3. Supabase (Base de Datos) [cite: User Summary]
-        latencyMs: `${latenciaMs} ms`, // 4. Latencia Base de Datos PostgreSQL [cite: User Summary]
-        builderBotStatus: metaConectado ? 'Estable' : 'Revisar' // 5. Motor BuilderBot [cite: User Summary]
+        serverStatus: serverStatus, // Servidor Web (Render)
+        metaApiStatus: metaTexto, // Meta Cloud API (Webhook)
+        supabaseStatus: supabaseStatusText, // Supabase (Base de Datos)
+        latencyMs: `${latenciaMs} ms`, // Latencia Base de Datos PostgreSQL
+        builderBotStatus: metaConectado ? 'Estable' : 'Revisar' // Motor BuilderBot
       }
     })
   } catch (error) {

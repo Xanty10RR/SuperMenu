@@ -336,9 +336,7 @@ const ChatBotDashboard: React.FC = () => {
         </KpiCard>
       </GridKpis>
 
-      {/* Secciones Principales */}
       <SectionGrid>
-        {/* Tabla de Actividad Reciente Dinámica */}
         <Panel>
           <PanelTitle>
             <FiActivity /> Actividad Reciente de Conversaciones (En Vivo)

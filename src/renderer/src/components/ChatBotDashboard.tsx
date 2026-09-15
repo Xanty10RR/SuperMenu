@@ -89,7 +89,7 @@ const BackButton = styled.button`
 
 const Title = styled.h1`
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.5px;
 `
 
@@ -269,7 +269,7 @@ const ChatBotDashboard: React.FC = () => {
           <BackButton onClick={() => navigate('/supermenu')}>
             <FiArrowLeft /> Volver al Menú
           </BackButton>
-          <Title>Dashboard de Métricas - Chatbot SuperAsistente</Title>
+          <Title>Centro de Operaciones - Chatbot SuperAsistente</Title>
         </TitleArea>
       </Header>
 

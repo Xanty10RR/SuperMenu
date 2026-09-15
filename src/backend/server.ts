@@ -413,23 +413,72 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       automationRate = Math.max(0, Number(rate.toFixed(1)))
     }
 
-    // Medir latencia real con un ping a Supabase/PostgreSQL
-    const hacerPing = Date.now()
-    await pool.query('SELECT 1')
-    const latenciaMs = Date.now() - hacerPing
+    // Estado del Servidor y API
+    // Servidor Web (Render)
+    function formatUptime(seconds: number): string {
+      const days = Math.floor(seconds / (3600 * 24))
+      const hours = Math.floor((seconds % (3600 * 24)) / 3600)
+      const minutes = Math.floor((seconds % 3600) / 60)
 
-    // Verificar la última interacción para saber si Meta / BuilderBot están activos
+      if (days > 0) {
+        return `Online - ${days}d ${hours}h activo`
+      }
+      if (hours > 0) {
+        return `Online - ${hours}h ${minutes}m activo`
+      }
+      return `Online - ${minutes}m activo`
+    }
+
+    const uptimeSegundos = process.uptime()
+    const serverStatus = formatUptime(uptimeSegundos)
+
+    // Medir latencia real con un ping a Supabase (Base de Datos - Servidor)
+    const hacerPing = Date.now()
+    let supabaseStatusText = 'Conectado'
+    let latenciaMs = 0
+
+    try {
+      await pool.query('SELECT 1')
+      latenciaMs = Date.now() - hacerPing
+    } catch {
+      supabaseStatusText = 'Desconectado'
+      latenciaMs = 999
+    }
+
+    // Meta Cloud API (Webhook)
     const ultimaActividadRes = await pool.query(
       'SELECT ultimo_mensaje FROM sesiones_chat ORDER BY ultimo_mensaje DESC LIMIT 1'
     )
-    const ultimoMsj = ultimaActividadRes.rows[0]?.ultimo_mensaje
-    const ahora = new Date()
-    const diferenciaMinutos = ultimoMsj
-      ? (ahora.getTime() - new Date(ultimoMsj).getTime()) / 60000
-      : 999
 
-    const metaConectado = diferenciaMinutos < 1440 // Si hubo actividad en las últimas 24h
-    const uptimePorcentaje = 100 // O calcular uptime de Node con process.uptime()
+    const ultimoMsjDate = ultimaActividadRes.rows[0]?.ultimo_mensaje
+      ? new Date(ultimaActividadRes.rows[0].ultimo_mensaje)
+      : null
+
+    const ahora = new Date()
+    let metaTexto = 'Sin actividad reciente'
+    let metaConectado = false
+
+    if (ultimoMsjDate) {
+      const diffSegundos = Math.floor((ahora.getTime() - ultimoMsjDate.getTime()) / 1000)
+      const diffMinutos = Math.floor(diffSegundos / 60)
+      const diffHoras = Math.floor(diffMinutos / 60)
+
+      let tiempoRelativo = ''
+      if (diffSegundos < 60) {
+        tiempoRelativo = `hace ${diffSegundos} seg`
+      } else if (diffMinutos < 60) {
+        tiempoRelativo = `hace ${diffMinutos} min`
+      } else if (diffHoras < 24) {
+        tiempoRelativo = `hace ${diffHoras} h`
+      } else {
+        tiempoRelativo = `hace más de 1 día`
+      }
+
+      metaConectado = diffSegundos < 86400 // Activo si hubo movimiento en 24h
+      metaTexto = metaConectado
+        ? `Conectado • Último evento: ${tiempoRelativo}`
+        : `Inactivo • Último evento: ${tiempoRelativo}`
+    }
 
     res.json({
       messagesToday: totalMensajesHoy,
@@ -444,9 +493,9 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       automationRate: automationRate,
       pendingErrors: pendingErrors,
       saludServidores: {
-        serverStatus: `Online (${uptimePorcentaje}%)`,
-        supabaseStatus: 'Conectado', // O poner un try/catch del pool.query('SELECT 1') si falla
-        metaApiStatus: metaConectado ? 'Conectado' : 'Sin actividad reciente',
+        serverStatus: serverStatus,
+        metaApiStatus: metaTexto,
+        supabaseStatus: supabaseStatusText,
         latencyMs: `${latenciaMs} ms`,
         builderBotStatus: metaConectado ? 'Estable' : 'Revisar'
       }

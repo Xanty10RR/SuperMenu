@@ -414,7 +414,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     }
 
     // Estado del Servidor y API
-    // Servidor Web (Render)
+    // Función auxiliar para formatear el uptime del servidor en Render [cite: User Summary]
     function formatUptime(seconds: number): string {
       const days = Math.floor(seconds / (3600 * 24))
       const hours = Math.floor((seconds % (3600 * 24)) / 3600)
@@ -429,23 +429,11 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       return `Online - ${minutes}m activo`
     }
 
+    // 1. Servidor Web (Render): Uptime
     const uptimeSegundos = process.uptime()
     const serverStatus = formatUptime(uptimeSegundos)
 
-    // Medir latencia real con un ping a Supabase (Base de Datos - Servidor)
-    const hacerPing = Date.now()
-    let supabaseStatusText = 'Conectado'
-    let latenciaMs = 0
-
-    try {
-      await pool.query('SELECT 1')
-      latenciaMs = Date.now() - hacerPing
-    } catch {
-      supabaseStatusText = 'Desconectado'
-      latenciaMs = 999
-    }
-
-    // Meta Cloud API (Webhook)
+    // 2. Meta Cloud API (Webhook): Última interacción [cite: User Summary]
     const ultimaActividadRes = await pool.query(
       'SELECT ultimo_mensaje FROM sesiones_chat ORDER BY ultimo_mensaje DESC LIMIT 1'
     )
@@ -476,10 +464,34 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
 
       metaConectado = diffSegundos < 86400 // Activo si hubo movimiento en 24h
       metaTexto = metaConectado
-        ? `Conectado • Último evento: ${tiempoRelativo}`
-        : `Inactivo • Último evento: ${tiempoRelativo}`
+        ? `Conectado • Últ. vez: ${tiempoRelativo}`
+        : `Inactivo • Últ. vez: ${tiempoRelativo}`
     }
 
+    // 3. Supabase (Base de Datos - Servidor) + Almacenamiento en MB [cite: User Summary]
+    let supabaseStatusText = 'Conectado'
+    try {
+      const sizeRes = await pool.query('SELECT pg_database_size(current_database()) AS size')
+      const bytes = parseInt(sizeRes.rows[0]?.size || 0, 10)
+      const usedMB = (bytes / (1024 * 1024)).toFixed(1)
+      // El plan gratuito de Supabase son 500 MB [cite: User Summary]
+      supabaseStatusText = `Conectado • Storage: ${usedMB} MB / 500 MB`
+    } catch {
+      supabaseStatusText = 'Desconectado'
+    }
+
+    // 4. Latencia Base de Datos PostgreSQL (Ping real en ms) [cite: User Summary]
+    const hacerPing = Date.now()
+    let latenciaMs = 0
+
+    try {
+      await pool.query('SELECT 1')
+      latenciaMs = Date.now() - hacerPing
+    } catch {
+      latenciaMs = 999
+    }
+
+    // Respuesta estructurada al Dashboard
     res.json({
       messagesToday: totalMensajesHoy,
       activeChats: totalChatsActivos,
@@ -493,17 +505,17 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       automationRate: automationRate,
       pendingErrors: pendingErrors,
       saludServidores: {
-        serverStatus: serverStatus,
-        metaApiStatus: metaTexto,
-        supabaseStatus: supabaseStatusText,
-        latencyMs: `${latenciaMs} ms`,
-        builderBotStatus: metaConectado ? 'Estable' : 'Revisar'
+        serverStatus: serverStatus, // 1. Servidor Web (Render) [cite: User Summary]
+        metaApiStatus: metaTexto, // 2. Meta Cloud API (Webhook) [cite: User Summary]
+        supabaseStatus: supabaseStatusText, // 3. Supabase (Base de Datos) [cite: User Summary]
+        latencyMs: `${latenciaMs} ms`, // 4. Latencia Base de Datos PostgreSQL [cite: User Summary]
+        builderBotStatus: metaConectado ? 'Estable' : 'Revisar' // 5. Motor BuilderBot [cite: User Summary]
       }
     })
   } catch (error) {
-    console.error('Error al obtener métricas:', error)
+    console.error('Error al obtener métricas del chatbot:', error)
     await registrarErrorServidor(error, '/api/chatbot/metrics')
-    res.status(500).json({ error: 'Error al obtener métricas' })
+    res.status(500).json({ error: 'No se pudieron obtener las métricas' })
   }
 })
 

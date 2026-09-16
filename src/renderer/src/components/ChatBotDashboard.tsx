@@ -28,8 +28,8 @@ interface ChatbotMetrics {
     serverStatus: string
     supabaseStatus: string
     metaApiStatus: string
-    latencyMs: string
     builderBotStatus: string
+    latencyMs: string
   }
 }
 
@@ -430,7 +430,7 @@ const ChatBotDashboard: React.FC = () => {
         </KpiCard>
 
         <KpiCard>
-          <KpiIcon color="rgba(139, 92, 246, 0.15)" textColor="#8b5cf6">
+          <KpiIcon color="rgba(155, 89, 182, 0.15)" textColor="#9b59b6">
             <FiActivity />
           </KpiIcon>
           <KpiInfo>
@@ -565,6 +565,16 @@ const ChatBotDashboard: React.FC = () => {
 
           <HealthItem>
             <HealthLabel>
+              <FiCpu color="#9b59b6" size={18} />
+              Motor BuilderBot
+            </HealthLabel>
+            <StatusBadge status="success">
+              {metrics?.saludServidores?.builderBotStatus || 'Estable'}
+            </StatusBadge>
+          </HealthItem>
+
+          <HealthItem>
+            <HealthLabel>
               <FiClock color={colorLatencia(metrics?.saludServidores?.latencyMs)} size={18} />
               Latencia Base de Datos PostgreSQL
             </HealthLabel>
@@ -577,16 +587,6 @@ const ChatBotDashboard: React.FC = () => {
             >
               {metrics?.saludServidores?.latencyMs || '0 ms'}
             </span>
-          </HealthItem>
-
-          <HealthItem>
-            <HealthLabel>
-              <FiCpu color="#9b59b6" size={18} />
-              Motor BuilderBot
-            </HealthLabel>
-            <StatusBadge status="success">
-              {metrics?.saludServidores?.builderBotStatus || 'Estable'}
-            </StatusBadge>
           </HealthItem>
         </Panel>
       </SectionGrid>

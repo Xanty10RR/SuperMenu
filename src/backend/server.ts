@@ -475,7 +475,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       const bytes = parseInt(sizeRes.rows[0]?.size || 0, 10)
       const usedMB = (bytes / (1024 * 1024)).toFixed(1)
       // Plan gratuito de Supabase de 500 MB
-      supabaseStatusText = `Conectado • Storage: ${usedMB} MB / 500 MB`
+      supabaseStatusText = `Conectado • Storage: ${usedMB} / 500 MB`
     } catch {
       supabaseStatusText = 'Desconectado'
     }
@@ -508,8 +508,8 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
         serverStatus: serverStatus, // Servidor Web (Render)
         metaApiStatus: metaTexto, // Meta Cloud API (Webhook)
         supabaseStatus: supabaseStatusText, // Supabase (Base de Datos)
+        builderBotStatus: metaConectado ? 'Estable' : 'Revisar', // Motor BuilderBot
         latencyMs: `${latenciaMs} ms`, // Latencia Base de Datos PostgreSQL
-        builderBotStatus: metaConectado ? 'Estable' : 'Revisar' // Motor BuilderBot
       }
     })
   } catch (error) {

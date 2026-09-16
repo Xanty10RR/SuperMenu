@@ -18,7 +18,7 @@ interface ApprovalItem {
     departamento_origen: string
     descripcion: string
     fecha_solicitud: string
-    [key: string]: any
+    [key: string]: unknown
   }
   estado: string
   aprobador: string
@@ -45,8 +45,8 @@ export const ApprovalList: React.FC = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
+  useEffect((): void => {
+    const fetchData = async (): Promise<void> => {
       try {
         setLoading(true)
         setError(null)
@@ -92,11 +92,11 @@ export const ApprovalList: React.FC = () => {
     fetchData()
   }, [])
 
-  const toggleExpand = (id: number) => {
+  const toggleExpand = (id: number): void => {
     setExpandedId(expandedId === id ? null : id)
   }
 
-  const handleDelivery = async (aprobacionId: number) => {
+  const handleDelivery = async (aprobacionId: number): Promise<void> => {
     if (!deliveryData.entregado_por.trim()) {
       alert('Por favor ingrese el nombre de quien realiza la entrega')
       return
@@ -140,7 +140,7 @@ export const ApprovalList: React.FC = () => {
 
   const handleDeliveryInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  ): void => {
     const { name, value } = e.target
     setDeliveryData((prev) => ({
       ...prev,
@@ -148,7 +148,7 @@ export const ApprovalList: React.FC = () => {
     }))
   }
 
-  const renderStatusIcon = (status: string) => {
+  const renderStatusIcon = (status: string): React.ReactNode => {
     const statusLower = status.toLowerCase()
     if (statusLower === 'aprobado') {
       return <FontAwesomeIcon icon={faCheckCircle} className="status-icon approved" />
@@ -162,7 +162,7 @@ export const ApprovalList: React.FC = () => {
     return <FontAwesomeIcon icon={faClock} className="status-icon pending" />
   }
 
-  const renderTabContent = () => {
+  const renderTabContent = (): React.ReactNode | null => {
     switch (activeTab) {
       case 'approved':
         return renderApprovalList(approvals, true)
@@ -179,7 +179,7 @@ export const ApprovalList: React.FC = () => {
     items: ApprovalItem[],
     showDeliveryButton: boolean,
     isDelivered: boolean = false
-  ) => {
+  ): React.ReactNode => {
     if (items.length === 0) {
       return <div className="no-results">No hay elementos para mostrar</div>
     }

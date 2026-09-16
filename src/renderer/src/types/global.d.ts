@@ -4,11 +4,11 @@ declare global {
   interface Window {
     electron: ElectronAPI & {
       ipcRenderer: {
-        invoke: (channel: string, ...args: any[]) => Promise<any>
-        send: (channel: string, ...args: any[]) => void
-        on: (channel: string, listener: (...args: any[]) => void) => void
-        once: (channel: string, listener: (...args: any[]) => void) => void
-        removeListener: (channel: string, listener: (...args: any[]) => void) => void
+        invoke: (channel: string, ...args: unknown[]) => Promise<unknown>
+        send: (channel: string, ...args: unknown[]) => void
+        on: (channel: string, listener: (...args: unknown[]) => void) => void
+        once: (channel: string, listener: (...args: unknown[]) => void) => void
+        removeListener: (channel: string, listener: (...args: unknown[]) => void) => void
         removeAllListeners: (channel: string) => void
       }
     }
@@ -18,8 +18,8 @@ declare global {
       minimizeWindow: () => void
       maximizeWindow: () => void
       closeWindow: () => void
-      send: (channel: string, data?: any) => void
-      receive: (channel: string, callback: (...args: any[]) => void) => void
+      send: (channel: string, data?: unknown) => void
+      receive: (channel: string, callback: (...args: unknown[]) => void) => void
       removeListener: (channel: string) => void
     }
   }

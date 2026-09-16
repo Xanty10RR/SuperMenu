@@ -245,8 +245,88 @@ const colorLatencia = (latencyStr?: string): string => {
   if (Number.isNaN(milliseconds)) return '#2f6db2'
   if (milliseconds < 150) return '#10b981'
   if (milliseconds <= 300) return '#f59e0b'
-  return '#ef4444' // Rojo
+  return '#ef4444'
 }
+
+const pulse = keyframes`
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+`
+
+const PanelHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+`
+
+const LiveIndicator = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #10b981;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+`
+
+const LiveDot = styled.span`
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  animation: ${pulse} 1.5s infinite;
+`
+
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  font-size: 0.85rem;
+  color: #666;
+`
+
+const PaginationControls = styled.div`
+  display: flex;
+  gap: 6px;
+  align-items: center;
+`
+
+const PageButton = styled.button<{ active?: boolean }>`
+  background: ${(props) => (props.active ? '#2f6db2' : '#f8fafc')};
+  color: ${(props) => (props.active ? '#fff' : '#333')};
+  border: 1px solid #cbd5e1;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: ${(props) => (props.active ? '#1d2f4a' : '#e2e8f0')};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`
 
 const ChatBotDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -259,6 +339,14 @@ const ChatBotDashboard: React.FC = () => {
     pendingErrors: 0
   })
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const itemsPerPage = 10
+
+  // Cálculo paginación de (Actividad Reciente de Conversaciones) max registros 10 por página
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentActivity = recentActivity.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(recentActivity.length / itemsPerPage) || 1
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -361,9 +449,16 @@ const ChatBotDashboard: React.FC = () => {
 
       <SectionGrid>
         <Panel>
-          <PanelTitle>
-            <FiActivity /> Actividad Reciente de Conversaciones (En Vivo)
-          </PanelTitle>
+          <PanelHeader>
+            <PanelTitle style={{ margin: 0 }}>
+              <FiActivity /> Actividad Reciente de Conversaciones
+            </PanelTitle>
+            <LiveIndicator>
+              <LiveDot />
+              Actualización en vivo
+            </LiveIndicator>
+          </PanelHeader>
+
           <Table>
             <thead>
               <tr>
@@ -374,8 +469,8 @@ const ChatBotDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {recentActivity.length > 0 ? (
-                recentActivity.map((item) => (
+              {currentActivity.length > 0 ? (
+                currentActivity.map((item) => (
                   <tr key={item.id}>
                     <td>{item.user}</td>
                     <td>{item.intent}</td>
@@ -387,16 +482,50 @@ const ChatBotDashboard: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                  <td colSpan={4} style={{ textAlign: 'center', color: '#666' }}>
                     No hay actividad reciente registrada aún.
                   </td>
                 </tr>
               )}
             </tbody>
           </Table>
+
+          {/* Paginación tabla*/}
+          {recentActivity.length > 0 && (
+            <PaginationContainer>
+              <span>
+                Mostrando {indexOfFirstItem + 1} -{' '}
+                {Math.min(indexOfLastItem, recentActivity.length)} de {recentActivity.length}{' '}
+                registros
+              </span>
+              <PaginationControls>
+                <PageButton
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </PageButton>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                  <PageButton
+                    key={pageNumber}
+                    active={currentPage === pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                  >
+                    {pageNumber}
+                  </PageButton>
+                ))}
+                <PageButton
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                </PageButton>
+              </PaginationControls>
+            </PaginationContainer>
+          )}
         </Panel>
 
-        {/* Panel de Salud del Servidor */}
+        {/* Panel Salud de Servidorvidores */}
         <Panel>
           <PanelTitle>
             <FiServer /> Estado del Servidor y API

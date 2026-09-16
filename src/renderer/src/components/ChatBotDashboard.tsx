@@ -415,7 +415,7 @@ const ChatBotDashboard: React.FC = () => {
           </KpiIcon>
           <KpiInfo>
             <KpiValue>{metrics.messagesToday?.toLocaleString() || 0}</KpiValue>
-            <KpiLabel>Mensajes Procesados Hoy</KpiLabel>
+            <KpiLabel>Flujos Conversacionales Ejecutados Hoy</KpiLabel>
           </KpiInfo>
         </KpiCard>
 
@@ -425,7 +425,7 @@ const ChatBotDashboard: React.FC = () => {
           </KpiIcon>
           <KpiInfo>
             <KpiValue>{metrics.activeChats?.toLocaleString() || 0}</KpiValue>
-            <KpiLabel>Chats Activos (Últimas 24h)</KpiLabel>
+            <KpiLabel>Chats Únicos (Últimas 24h)</KpiLabel>
           </KpiInfo>
         </KpiCard>
 
@@ -445,7 +445,7 @@ const ChatBotDashboard: React.FC = () => {
           </KpiIcon>
           <KpiInfo>
             <KpiValue>{metrics.pendingErrors}</KpiValue>
-            <KpiLabel>Fallas de API pendientes</KpiLabel>
+            <KpiLabel>Fallas de API Pendientes</KpiLabel>
           </KpiInfo>
         </KpiCard>
       </GridKpis>
@@ -467,7 +467,7 @@ const ChatBotDashboard: React.FC = () => {
               <tr>
                 <th>Usuario / Remitente</th>
                 <th>Intención / Flujo</th>
-                <th>Tiempo</th>
+                <th>Hora</th>
                 <th>Estado</th>
               </tr>
             </thead>

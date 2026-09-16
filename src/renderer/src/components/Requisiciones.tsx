@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -19,7 +19,7 @@ interface Requisicion {
   descripcion: string
   fecha_solicitud: string
   tipo?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export const RequisicionesView: React.FC = () => {
@@ -30,11 +30,7 @@ export const RequisicionesView: React.FC = () => {
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>('')
 
-  useEffect(() => {
-    fetchRequisiciones()
-  }, [activeTab])
-
-  const fetchRequisiciones = async () => {
+  const fetchRequisiciones = useCallback(async (): Promise<void> => {
     setLoading(true)
     setError(null)
     try {
@@ -51,9 +47,13 @@ export const RequisicionesView: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [activeTab])
 
-  const toggleExpand = (id: number) => {
+  useEffect((): void => {
+    void fetchRequisiciones()
+  }, [fetchRequisiciones])
+
+  const toggleExpand = (id: number): void => {
     setExpandedId(expandedId === id ? null : id)
   }
 
@@ -64,7 +64,7 @@ export const RequisicionesView: React.FC = () => {
       req.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): string => {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'long',
@@ -75,7 +75,7 @@ export const RequisicionesView: React.FC = () => {
     return new Date(dateString).toLocaleDateString('es-ES', options)
   }
 
-  const getBadgeClass = (tipo?: string) => {
+  const getBadgeClass = (tipo?: string): string => {
     switch (tipo) {
       case 'TIC':
         return styles.badgeTic

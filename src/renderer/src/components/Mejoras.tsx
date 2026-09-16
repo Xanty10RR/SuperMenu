@@ -18,7 +18,7 @@ export const PokeApiComponent: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchPokemon = async () => {
+    const fetchPokemon = async (): Promise<void> => {
       try {
         const response = await fetch('https://pokeapi.co/api/v2/pokemon/pikachu')
         if (!response.ok) {

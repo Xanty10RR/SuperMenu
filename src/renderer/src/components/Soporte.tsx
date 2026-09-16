@@ -176,8 +176,8 @@ export const MindMap: React.FC = () => {
     '#1E40AF' // Azul más oscuro
   ]
 
-  useEffect(() => {
-    const fetchData = async () => {
+  useEffect((): void => {
+    const fetchData = async (): Promise<void> => {
       try {
         console.log('Iniciando carga de datos...')
         const [nodesRes, connectionsRes] = await Promise.all([
@@ -208,7 +208,7 @@ export const MindMap: React.FC = () => {
     fetchData()
   }, [])
 
-  const handleNodeDrag = (id: number, xy: [number, number]) => {
+  const handleNodeDrag = (id: number, xy: [number, number]): void => {
     const [x, y] = xy
 
     axios
@@ -226,7 +226,7 @@ export const MindMap: React.FC = () => {
     )
   }
 
-  const handleAddNode = async () => {
+  const handleAddNode = async (): Promise<void> => {
     if (!newNode.title.trim()) return
 
     try {
@@ -267,7 +267,7 @@ export const MindMap: React.FC = () => {
     }
   }
 
-  const handleDeleteNode = async (id: number) => {
+  const handleDeleteNode = async (id: number): Promise<void> => {
     try {
       await axios.delete(`/api/mindmap/nodes/${id}`)
       setNodes(nodes.filter((node) => node.id !== id))
@@ -280,7 +280,7 @@ export const MindMap: React.FC = () => {
     }
   }
 
-  const calculatePath = (source: Node, target: Node) => {
+  const calculatePath = (source: Node, target: Node): string => {
     const startX = source.position_x + 100
     const startY = source.position_y + 40
     const endX = target.position_x + 100

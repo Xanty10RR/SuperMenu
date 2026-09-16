@@ -10,7 +10,10 @@ import {
   FiServer,
   FiCheckCircle,
   FiClock,
-  FiShield
+  FiCpu,
+  FiBriefcase,
+  FiMessageCircle,
+  FiAlertTriangle
 } from 'react-icons/fi'
 
 // Ampliamos la interfaz para recibir todas las métricas del backend
@@ -387,8 +390,8 @@ const ChatBotDashboard: React.FC = () => {
       {/* Tarjetas de Métricas KPI Dinámicas */}
       <GridKpis>
         <KpiCard>
-          <KpiIcon color="rgba(40, 167, 69, 0.15)" textColor="#2ecc71">
-            <FiUsers />
+          <KpiIcon color="rgba(47, 109, 178, 0.12)" textColor="#2f6db2">
+            <FiBriefcase />
           </KpiIcon>
           <KpiInfo>
             <KpiValue>{metrics.totalConveniosBancos?.toLocaleString() || 0}</KpiValue>
@@ -397,8 +400,8 @@ const ChatBotDashboard: React.FC = () => {
         </KpiCard>
 
         <KpiCard>
-          <KpiIcon color="rgba(0, 180, 216, 0.15)" textColor="#00b4d8">
-            <FiMessageSquare />
+          <KpiIcon color="rgba(47, 109, 178, 0.12)" textColor="#2f6db2">
+            <FiUsers />
           </KpiIcon>
           <KpiInfo>
             <KpiValue>{metrics.totalHistoricoUsuarios?.toLocaleString() || 0}</KpiValue>
@@ -407,7 +410,7 @@ const ChatBotDashboard: React.FC = () => {
         </KpiCard>
 
         <KpiCard>
-          <KpiIcon color="rgba(0, 180, 216, 0.15)" textColor="#00b4d8">
+          <KpiIcon color="rgba(47, 109, 178, 0.12)" textColor="#2f6db2">
             <FiMessageSquare />
           </KpiIcon>
           <KpiInfo>
@@ -417,8 +420,8 @@ const ChatBotDashboard: React.FC = () => {
         </KpiCard>
 
         <KpiCard>
-          <KpiIcon color="rgba(40, 167, 69, 0.15)" textColor="#2ecc71">
-            <FiUsers />
+          <KpiIcon color="rgba(16, 185, 129, 0.15)" textColor="#10b981">
+            <FiMessageCircle />
           </KpiIcon>
           <KpiInfo>
             <KpiValue>{metrics.activeChats?.toLocaleString() || 0}</KpiValue>
@@ -427,7 +430,7 @@ const ChatBotDashboard: React.FC = () => {
         </KpiCard>
 
         <KpiCard>
-          <KpiIcon color="rgba(155, 89, 182, 0.15)" textColor="#9b59b6">
+          <KpiIcon color="rgba(139, 92, 246, 0.15)" textColor="#8b5cf6">
             <FiActivity />
           </KpiIcon>
           <KpiInfo>
@@ -437,8 +440,8 @@ const ChatBotDashboard: React.FC = () => {
         </KpiCard>
 
         <KpiCard>
-          <KpiIcon color="rgba(241, 196, 15, 0.15)" textColor="#f1c40f">
-            <FiShield />
+          <KpiIcon color="rgba(245, 158, 11, 0.15)" textColor="#f59e0b">
+            <FiAlertTriangle />
           </KpiIcon>
           <KpiInfo>
             <KpiValue>{metrics.pendingErrors}</KpiValue>
@@ -578,7 +581,7 @@ const ChatBotDashboard: React.FC = () => {
 
           <HealthItem>
             <HealthLabel>
-              <FiShield color="#9b59b6" size={18} />
+              <FiCpu color="#9b59b6" size={18} />
               Motor BuilderBot
             </HealthLabel>
             <StatusBadge status="success">

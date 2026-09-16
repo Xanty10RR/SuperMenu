@@ -80,6 +80,104 @@ const handleQuery = async (
   }
 }
 
+// NUEVO Endpoint para Requisiciones Pendientes (según el área del jefe)
+app.get('/api/requisiciones/filtro', async (req, res) => {
+  try {
+    const { usuario, esAdmin } = req.query
+
+    // Si es admin, traemos todo combinado de todas las áreas
+    if (esAdmin === 'true' || usuario === 'admin') {
+      const [tic, logistica, compras] = await Promise.all([
+        pool
+          .query("SELECT *, 'IT/Sistemas' as depto_origen FROM requisiciones_tic")
+          .catch(() => ({ rows: [] })),
+        pool
+          .query("SELECT *, 'Logística' as depto_origen FROM requisiciones_logistica")
+          .catch(() => ({ rows: [] })),
+        pool
+          .query("SELECT *, 'Compras' as depto_origen FROM requisiciones_compras")
+          .catch(() => ({ rows: [] }))
+      ])
+      return res.json([...tic.rows, ...logistica.rows, ...compras.rows])
+    }
+
+    // Si es un jefe de área específico, determinamos su tabla según su usuario
+    let tabla = 'requisiciones'
+    if (usuario === 'jefesistemas') tabla = 'requisiciones_tic'
+    else if (usuario === 'jefelogistica') tabla = 'requisiciones_logistica'
+    else if (usuario === 'jefecomercial') tabla = 'requisiciones_compras'
+    else if (usuario === 'jeferrhh') tabla = 'requisiciones_rrhh'
+    else if (usuario === 'jefeotros') tabla = 'requisiciones_otros'
+
+    const result = await pool.query(`SELECT * FROM ${tabla}`)
+    res.json(result.rows)
+  } catch {
+    res.status(500).json({ error: 'Error al cargar las requisiciones' })
+  }
+})
+
+// NUEVO Endpoint para el Historial de Solicitudes Aprobadas/Rechazadas (registro_aprobaciones)
+app.get('/api/registro-aprobaciones', async (req, res) => {
+  try {
+    const { usuario, esAdmin } = req.query
+
+    let query = 'SELECT * FROM registro_aprobaciones'
+    const values: string[] = []
+
+    // Si NO es admin, filtramos estrictamente por el aprobador que tomó la decisión
+    if (esAdmin !== 'true' && usuario !== 'admin') {
+      query += ' WHERE aprobador = $1'
+      values.push(String(usuario ?? ''))
+    }
+
+    query += ' ORDER BY id DESC'
+    const result = await pool.query(query, values)
+    res.json(result.rows)
+  } catch {
+    res.status(500).json({ error: 'Error al cargar los datos' })
+  }
+})
+
+// NUEVO Endpoint para obtener todos los usuarios
+app.get('/api/usuarios', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, usuario, departamento, tabla_asignada FROM usuarios_aprobadores ORDER BY id ASC'
+    )
+    res.json(result.rows)
+  } catch {
+    res.status(500).send('Error al obtener usuarios')
+  }
+})
+
+// Crear un nuevo usuario aprobador
+app.post('/api/usuarios', async (req, res) => {
+  try {
+    const { usuario, clave, departamento, tabla_asignada } = req.body
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(clave, salt)
+
+    await pool.query(
+      'INSERT INTO usuarios_aprobadores (usuario, clave, departamento, tabla_asignada) VALUES ($1, $2, $3, $4)',
+      [usuario, hash, departamento, tabla_asignada || 'requisiciones']
+    )
+    res.status(201).send('Usuario creado con éxito')
+  } catch {
+    res.status(500).send('Error al crear usuario')
+  }
+})
+
+// Eliminar usuario
+app.delete('/api/usuarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    await pool.query('DELETE FROM usuarios_aprobadores WHERE id = $1', [id])
+    res.send('Usuario eliminado')
+  } catch {
+    res.status(500).send('Error al eliminar usuario')
+  }
+})
+
 // Endpoint para registro de aprobaciones modificado
 app.get('/api/aprobaciones', async (_req, res) => {
   console.log('Recibida solicitud GET /api/aprobaciones')
@@ -509,7 +607,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
         metaApiStatus: metaTexto, // Meta Cloud API (Webhook)
         supabaseStatus: supabaseStatusText, // Supabase (Base de Datos)
         builderBotStatus: metaConectado ? 'Estable' : 'Revisar', // Motor BuilderBot
-        latencyMs: `${latenciaMs} ms`, // Latencia Base de Datos PostgreSQL
+        latencyMs: `${latenciaMs} ms` // Latencia Base de Datos PostgreSQL
       }
     })
   } catch (error) {

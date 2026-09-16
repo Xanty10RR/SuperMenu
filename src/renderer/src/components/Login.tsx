@@ -240,7 +240,7 @@ const Login: React.FC = () => {
     }
   }, [navigate]) // Agregamos 'navigate' a las dependencias
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     setLoading(true)
     setError('')

@@ -421,12 +421,12 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       const minutes = Math.floor((seconds % 3600) / 60)
 
       if (days > 0) {
-        return `Online - ${days}d ${hours}h activo`
+        return `Online • ${days}d ${hours}h activo`
       }
       if (hours > 0) {
-        return `Online - ${hours}h ${minutes}m activo`
+        return `Online • ${hours}h ${minutes}m activo`
       }
-      return `Online - ${minutes}m activo`
+      return `Online • ${minutes}m activo`
     }
 
     // Servidor Web (Render) con Uptime

@@ -35,38 +35,38 @@ const SuperMenu: React.FC<Props> = () => {
 
   const navigate = useNavigate()
 
-  const toggleSidebar = () => {
+  const toggleSidebar = (): void => {
     setSidebarCollapsed(!sidebarCollapsed)
   }
 
-  const handleRequisicionClick = () => {
+  const handleRequisicionClick = (): void => {
     setActiveView('requisicion')
   }
 
-  const handleInicioClick = () => {
+  const handleInicioClick = (): void => {
     setActiveView('inicio')
   }
 
-  const handleMejorassClick = () => {
+  const handleMejorassClick = (): void => {
     setActiveView('mejoras')
   }
 
-  const handleConveniosClick = () => {
+  const handleConveniosClick = (): void => {
     setActiveView('convenios')
   }
 
-  const handleSoporteClick = () => {
+  const handleSoporteClick = (): void => {
     setActiveView('soporte')
   }
 
-  const handleUsuariosClick = () => {
+  const handleUsuariosClick = (): void => {
     setActiveView('usuarios')
   }
-  const handleLogisticaClick = () => {
+  const handleLogisticaClick = (): void => {
     setActiveView('logistica')
   }
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await AuthService.logout()
     navigate('/login', { state: { logoutMessage: 'Sesión cerrada correctamente' } })
   }

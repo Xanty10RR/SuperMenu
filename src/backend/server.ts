@@ -382,13 +382,13 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
     const historicoQuery = await pool.query('SELECT COUNT(*) FROM total_historico_usuarios')
     const totalHistoricoUsuarios = parseInt(historicoQuery.rows[0].count || 0)
 
-    // Suma total de mensajes procesados en las últimas 24h
+    // Flujos Conversacionales Ejecutados Hoy
     const consultaMensajesHoy = await pool.query(
       "SELECT SUM(total_mensajes) as total FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
     )
     const totalMensajesHoy = parseInt(consultaMensajesHoy.rows[0].total || 0)
 
-    // Chats Activos (número de usuarios únicos en las últimas 24h tabla sesiones_chat)
+    // Chats Únicos Últimas 24h tabla (sesiones_chat)
     const consultaChats24h = await pool.query(
       "SELECT COUNT(*) FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
     )

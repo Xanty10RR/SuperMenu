@@ -1,92 +1,154 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react'
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 
-// 1. Definimos la interfaz para un objeto Usuario
 interface User {
   id: number
-  name: string
-  email: string
+  usuario: string
+  departamento: string
+  tabla_asignada: string
 }
 
-// Datos iniciales de ejemplo
-const initialUsers: User[] = [{ id: 1, name: 'Santiago', email: 'santiago@gmail.com' }]
-
 const Usuarios: React.FC = () => {
-  // 2. Estados del componente
-  const [users, setUsers] = useState<User[]>(initialUsers)
+  const [users, setUsers] = useState<User[]>([])
   const [editingUser, setEditingUser] = useState<User | null>(null)
-  const [formData, setFormData] = useState({ name: '', email: '' })
+  const [formData, setFormData] = useState({
+    usuario: '',
+    clave: '',
+    departamento: 'IT/Sistemas',
+    tabla_asignada: 'requisiciones'
+  })
 
-  // 3. Manejadores de eventos
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  useEffect((): void => {
+    fetchUsuarios()
+  }, [])
+
+  const fetchUsuarios = async (): Promise<void> => {
+    try {
+      const response = await fetch('/api/usuarios')
+      if (response.ok) {
+        const data: User[] = await response.json()
+        setUsers(data)
+      }
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error)
+    }
+  }
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
-    if (!formData.name || !formData.email) {
-      alert('Nombre y Email son requeridos.')
+    if (!formData.usuario) {
+      alert('El nombre de usuario es requerido.')
       return
     }
 
-    if (editingUser) {
-      // Actualizar usuario existente
-      setUsers(users.map((user) => (user.id === editingUser.id ? { ...user, ...formData } : user)))
-      setEditingUser(null)
-    } else {
-      // Crear nuevo usuario
-      const newUser: User = {
-        id: Date.now(), // ID simple basado en el timestamp
-        ...formData
+    try {
+      if (editingUser) {
+        const response = await fetch(`/api/usuarios/${editingUser.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        })
+        if (response.ok) {
+          setEditingUser(null)
+          await fetchUsuarios()
+        }
+      } else {
+        const response = await fetch('/api/usuarios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        })
+        if (response.ok) {
+          await fetchUsuarios()
+        }
       }
-      setUsers([...users, newUser])
-    }
 
-    setFormData({ name: '', email: '' }) // Limpiar formulario
+      setFormData({
+        usuario: '',
+        clave: '',
+        departamento: 'IT/Sistemas',
+        tabla_asignada: 'requisiciones'
+      })
+    } catch (error) {
+      console.error('Error al guardar el usuario:', error)
+    }
   }
 
-  const handleEdit = (user: User) => {
+  const handleEdit = (user: User): void => {
     setEditingUser(user)
-    setFormData({ name: user.name, email: user.email })
+    setFormData({
+      usuario: user.usuario,
+      clave: '',
+      departamento: user.departamento,
+      tabla_asignada: user.tabla_asignada
+    })
   }
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
-      setUsers(users.filter((user) => user.id !== id))
+  const handleDelete = async (id: number): Promise<void> => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este jefe de área?')) {
+      try {
+        const response = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' })
+        if (response.ok) {
+          await fetchUsuarios()
+        }
+      } catch (error) {
+        console.error('Error al eliminar usuario:', error)
+      }
     }
   }
 
-  const cancelEdit = () => {
+  const cancelEdit = (): void => {
     setEditingUser(null)
-    setFormData({ name: '', email: '' })
+    setFormData({
+      usuario: '',
+      clave: '',
+      departamento: 'IT/Sistemas',
+      tabla_asignada: 'requisiciones'
+    })
   }
 
-  // 4. Renderizado del componente
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Gestión de Usuarios</h1>
+      <h1 style={styles.header}>Gestión de Jefes y Usuarios Aprobadores</h1>
 
       <div style={styles.formCard}>
-        <h2>{editingUser ? 'Editar Usuario' : 'Añadir Nuevo Usuario'}</h2>
+        <h2>{editingUser ? 'Editar Jefe de Área' : 'Añadir Nuevo Jefe de Área'}</h2>
         <form onSubmit={handleFormSubmit} style={styles.form}>
           <input
             type="text"
-            name="name"
-            placeholder="Nombre"
-            value={formData.name}
+            name="usuario"
+            placeholder="Usuario (ej. jefelogistica)"
+            value={formData.usuario}
             onChange={handleInputChange}
             style={styles.input}
             required
           />
           <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
+            type="password"
+            name="clave"
+            placeholder={editingUser ? 'Nueva contraseña (opcional)' : 'Contraseña'}
+            value={formData.clave}
             onChange={handleInputChange}
             style={styles.input}
-            required
+            {...(!editingUser ? { required: true } : {})}
           />
+          <select
+            name="departamento"
+            value={formData.departamento}
+            onChange={handleInputChange}
+            style={styles.input}
+          >
+            <option value="IT/Sistemas">IT/Sistemas</option>
+            <option value="Logística">Logística</option>
+            <option value="RRHH">RRHH</option>
+            <option value="Comercial">Comercial</option>
+            <option value="Otros">Otros</option>
+          </select>
+
           <div style={styles.buttonGroup}>
             <button type="submit" style={styles.buttonPrimary}>
               {editingUser ? 'Actualizar' : 'Añadir'}
@@ -101,13 +163,13 @@ const Usuarios: React.FC = () => {
       </div>
 
       <div style={styles.listCard}>
-        <h2>Lista de Usuarios</h2>
+        <h2>Lista de Jefes Registrados</h2>
         <ul style={styles.userList}>
           {users.map((user) => (
             <li key={user.id} style={styles.userItem}>
               <div style={styles.userInfo}>
-                <strong>{user.name}</strong>
-                <span>{user.email}</span>
+                <strong>{user.usuario}</strong>
+                <span>Departamento: {user.departamento}</span>
               </div>
               <div style={styles.buttonGroup}>
                 <button onClick={() => handleEdit(user)} style={styles.buttonEdit}>
@@ -125,7 +187,6 @@ const Usuarios: React.FC = () => {
   )
 }
 
-// 5. Estilos para el componente (CSS-in-JS)
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     fontFamily: 'Arial, sans-serif',
@@ -133,10 +194,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: '0 auto',
     padding: '20px'
   },
-  header: {
-    textAlign: 'center',
-    color: '#333'
-  },
+  header: { textAlign: 'center', color: '#23395d' },
   formCard: {
     background: '#f9f9f9',
     padding: '20px',
@@ -144,26 +202,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     marginBottom: '30px'
   },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px'
-  },
-  input: {
-    padding: '10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    fontSize: '16px'
-  },
-  buttonGroup: {
-    display: 'flex',
-    gap: '10px'
-  },
+  form: { display: 'flex', flexDirection: 'column', gap: '15px' },
+  input: { padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' },
+  buttonGroup: { display: 'flex', gap: '10px' },
   buttonPrimary: {
     padding: '10px 15px',
     border: 'none',
     borderRadius: '4px',
-    background: '#007bff',
+    background: '#23395d',
     color: 'white',
     fontSize: '16px',
     cursor: 'pointer'
@@ -183,10 +229,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: '8px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
   },
-  userList: {
-    listStyle: 'none',
-    padding: 0
-  },
+  userList: { listStyle: 'none', padding: 0 },
   userItem: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -194,13 +237,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '15px',
     borderBottom: '1px solid #eee'
   },
-  userInfo: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
+  userInfo: { display: 'flex', flexDirection: 'column' },
   buttonEdit: {
-    background: '#ffc107',
-    color: 'black',
+    background: '#2f6db2',
+    color: 'white',
     border: 'none',
     padding: '8px 12px',
     borderRadius: '4px',

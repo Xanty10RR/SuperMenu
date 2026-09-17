@@ -214,48 +214,42 @@ app.get('/api/requisiciones/todas', async (_req, res) => {
   }
 })
 
-// Endpoint para marcar como entregado
+// Endpoint para registrar la entrega completa
+// Endpoint para registrar la entrega completa (con PATCH)
 app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
-  const { id } = req.params
-
   try {
+    const { id } = req.params
     const { entregado_por, observaciones } = req.body
 
-    const query = `
-      UPDATE registro_aprobaciones 
-      SET 
-        estado = 'Entregado',
-        entregado_por = $1,
-        observaciones = $2,
-        fecha_entrega = NOW()
-      WHERE id = $3
-      RETURNING *;
-    `
+    const fechaActual = new Date().toISOString()
 
-    const result = await pool.query(query, [entregado_por, observaciones, id])
-    res.status(200).json(result.rows[0])
+    await pool.query(
+      `UPDATE registro_aprobaciones 
+       SET fecha_entrega = $1, 
+           entregado_por = $2, 
+           observaciones = $3 
+       WHERE id = $4`,
+      [fechaActual, entregado_por, observaciones, id]
+    )
+
+    res.json({ message: 'Entrega registrada con éxito' })
   } catch (error) {
     console.error('Error al registrar entrega:', error)
-    await registrarErrorServidor(error, `/api/aprobaciones/${id}/entregar`)
-    res.status(500).send('Error al registrar entrega')
+    res.status(500).send('Error al registrar la entrega')
   }
 })
 
-// Nuevo endpoint para obtener entregas recientes (opcional)
-app.get('/api/aprobaciones/entregas-recientes', async (req, res) => {
+// Nuevo
+app.get('/api/aprobaciones/entregadas', async (_req, res) => {
   try {
-    const query = `
-      SELECT * FROM registro_aprobaciones
-      WHERE estado = 'Entregado'
-        AND fecha_entrega >= CURRENT_DATE - INTERVAL '60 days'
-      ORDER BY fecha_entrega DESC;
-    `
-    const result = await pool.query(query)
+    const result = await pool.query(
+      "SELECT * FROM registro_aprobaciones WHERE fecha_entrega IS NOT NULL AND fecha_entrega != 'NULL' ORDER BY id DESC"
+    )
     res.json(result.rows)
   } catch (error) {
-    console.error('Error al obtener entregas recientes:', error)
-    await registrarErrorServidor(error, '/api/aprobaciones/entregas-recientes')
-    res.status(500).send('Error al obtener entregas recientes')
+    console.error('Error al obtener entregas:', error)
+    await registrarErrorServidor(error, '/api/chatbot/metrics')
+    res.status(500).send('Error al obtener entregas')
   }
 })
 

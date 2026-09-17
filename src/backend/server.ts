@@ -80,38 +80,31 @@ const handleQuery = async (
   }
 }
 
-// NUEVO Endpoint para Requisiciones Pendientes (según el área del jefe)
+// NUEVO
 app.get('/api/requisiciones/filtro', async (req, res) => {
   try {
     const { usuario, esAdmin } = req.query
 
-    // Si es admin, traemos todo combinado de todas las áreas
+    // Si es admin, traemos todo de la tabla única 'requisiciones'
     if (esAdmin === 'true' || usuario === 'admin') {
-      const [tic, logistica, compras] = await Promise.all([
-        pool
-          .query("SELECT *, 'IT/Sistemas' as depto_origen FROM requisiciones_tic")
-          .catch(() => ({ rows: [] })),
-        pool
-          .query("SELECT *, 'Logística' as depto_origen FROM requisiciones_logistica")
-          .catch(() => ({ rows: [] })),
-        pool
-          .query("SELECT *, 'Compras' as depto_origen FROM requisiciones_compras")
-          .catch(() => ({ rows: [] }))
-      ])
-      return res.json([...tic.rows, ...logistica.rows, ...compras.rows])
+      const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
+      return res.json(result.rows)
     }
 
-    // Si es un jefe de área específico, determinamos su tabla según su usuario
-    let tabla = 'requisiciones'
-    if (usuario === 'jefesistemas') tabla = 'requisiciones_tic'
-    else if (usuario === 'jefelogistica') tabla = 'requisiciones_logistica'
-    else if (usuario === 'jefecomercial') tabla = 'requisiciones_compras'
-    else if (usuario === 'jeferrhh') tabla = 'requisiciones_rrhh'
-    else if (usuario === 'jefeotros') tabla = 'requisiciones_otros'
+    // Si es un jefe de área, filtramos por su departamento correspondiente
+    let deptoFiltro = 'IT/Sistemas'
+    if (usuario === 'jefelogistica') deptoFiltro = 'Logística'
+    else if (usuario === 'jefecomercial') deptoFiltro = 'Comercial'
+    else if (usuario === 'jeferrhh') deptoFiltro = 'RRHH'
 
-    const result = await pool.query(`SELECT * FROM ${tabla}`)
+    // Asumiendo que tu tabla 'requisiciones' tiene una columna llamada 'departamento' o 'area'
+    const result = await pool.query(
+      'SELECT * FROM requisiciones WHERE departamento = $1 OR area = $1 ORDER BY id DESC',
+      [deptoFiltro]
+    )
     res.json(result.rows)
-  } catch {
+  } catch (error) {
+    console.error('Error al obtener requisiciones filtradas:', error)
     res.status(500).json({ error: 'Error al cargar las requisiciones' })
   }
 })
@@ -184,15 +177,12 @@ app.get('/api/aprobaciones', async (_req, res) => {
   try {
     const query = `
       SELECT * FROM registro_aprobaciones 
-      WHERE fecha_entrega IS NULL 
-      OR fecha_entrega >= CURRENT_DATE - INTERVAL '60 days'
-      ORDER BY fecha_decision DESC;
+      ORDER BY id DESC LIMIT 100;
     `
     const result = await pool.query(query)
     res.json(result.rows)
   } catch (error) {
     console.error('Error en la consulta a aprobaciones:', error)
-    await registrarErrorServidor(error, '/api/aprobaciones')
     res.status(500).send('Error al obtener datos de aprobaciones')
   }
 })
@@ -213,25 +203,13 @@ app.get('/api/requisiciones/compras', async (req, res) => {
 })
 
 // Endpoint para obtener todas las requisiciones combinadas (opcional)
-app.get('/api/requisiciones/todas', async (req, res) => {
+app.get('/api/requisiciones/todas', async (_req, res) => {
   console.log('Recibida solicitud GET /api/requisiciones/todas')
   try {
-    const [tic, logistica, compras] = await Promise.all([
-      pool.query("SELECT *, 'TIC' as tipo FROM requisiciones_tic"),
-      pool.query("SELECT *, 'Logística' as tipo FROM requisiciones_logistica"),
-      pool.query("SELECT *, 'Compras' as tipo FROM requisiciones_compras")
-    ])
-
-    const combined = [...tic.rows, ...logistica.rows, ...compras.rows].sort((a, b) => {
-      const dateA = new Date(a.fecha_solicitud).getTime()
-      const dateB = new Date(b.fecha_solicitud).getTime()
-      return dateB - dateA
-    })
-
-    res.json(combined)
+    const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
+    res.json(result.rows)
   } catch (error) {
     console.error('Error al combinar requisiciones:', error)
-    await registrarErrorServidor(error, '/api/requisiciones/todas')
     res.status(500).send('Error al obtener todas las requisiciones')
   }
 })

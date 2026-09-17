@@ -15,9 +15,9 @@ interface ApprovalItem {
   id: number
   datos_completos: {
     nombre_solicitante: string
-    departamento_origen: string
+    departamento: string
     descripcion: string
-    fecha_solicitud: string
+    fecha_creacion: string
     [key: string]: unknown
   }
   estado: string
@@ -194,14 +194,14 @@ export const ApprovalList: React.FC = () => {
             <div className="item-header" onClick={() => toggleExpand(item.id)}>
               <div className="header-info">
                 <h3>{item.datos_completos.nombre_solicitante}</h3>
-                <p className="department">{item.datos_completos.departamento_origen}</p>
+                <p className="department">{item.datos_completos.departamento}</p>
                 <p className="description">{item.datos_completos.descripcion}</p>
               </div>
 
               <div className="header-dates">
                 <p className="request-date">
                   <span>Solicitud:</span>{' '}
-                  {new Date(item.datos_completos.fecha_solicitud).toLocaleDateString()}
+                  {new Date(item.datos_completos.fecha_creacion).toLocaleDateString()}
                 </p>
                 {isDelivered ? (
                   <p className="delivery-date">
@@ -237,7 +237,7 @@ export const ApprovalList: React.FC = () => {
                     {Object.entries(item.datos_completos).map(
                       ([key, value]) =>
                         key !== 'nombre_solicitante' &&
-                        key !== 'departamento_origen' &&
+                        key !== 'departamento' &&
                         key !== 'descripcion' &&
                         key !== 'fecha_solicitud' && (
                           <div key={key} className="detail-item">

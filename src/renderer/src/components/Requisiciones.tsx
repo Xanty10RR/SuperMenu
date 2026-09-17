@@ -15,9 +15,9 @@ import styles from '../styles/RequisicionesView.module.css'
 interface Requisicion {
   id: number
   nombre_solicitante: string
-  departamento_origen: string
+  departamento: string
   descripcion: string
-  fecha_solicitud: string
+  fecha_creacion: string
   tipo?: string
   [key: string]: unknown
 }
@@ -60,7 +60,7 @@ export const RequisicionesView: React.FC = () => {
   const filteredRequisiciones = requisiciones.filter(
     (req) =>
       req.nombre_solicitante.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      req.departamento_origen.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      req.departamento.toLowerCase().includes(searchTerm.toLowerCase()) ||
       req.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -171,7 +171,7 @@ export const RequisicionesView: React.FC = () => {
                           <h3 className={styles.requisicionName}>{req.nombre_solicitante}</h3>
                         </div>
                         <p className={styles.requisicionMeta}>
-                          {req.departamento_origen} • {formatDate(req.fecha_solicitud)}
+                          {req.departamento} • {formatDate(req.fecha_creacion)}
                         </p>
                         <p className={styles.requisicionDesc}>{req.descripcion}</p>
                       </div>
@@ -219,9 +219,9 @@ export const RequisicionesView: React.FC = () => {
                                   ![
                                     'id',
                                     'nombre_solicitante',
-                                    'departamento_origen',
+                                    'departamento',
                                     'descripcion',
-                                    'fecha_solicitud',
+                                    'fecha_creacion',
                                     'tipo'
                                   ].includes(key)
                               )

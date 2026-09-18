@@ -117,7 +117,7 @@ export const RequisicionesView: React.FC = () => {
                 {tab === 'todas'
                   ? 'Todas'
                   : tab === 'tic'
-                    ? 'TIC'
+                    ? 'IT/Sistemas'
                     : tab === 'logistica'
                       ? 'Logística'
                       : tab === 'rrhh'

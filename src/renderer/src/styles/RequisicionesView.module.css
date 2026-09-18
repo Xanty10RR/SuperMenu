@@ -189,6 +189,21 @@
   color: #805ad5;
 }
 
+.badgeRrhh {
+  background: #fff7ed;
+  color: #c05621;
+}
+
+.badgeComercial {
+  background: #ecfeff;
+  color: #0f766e;
+}
+
+.badgeOtros {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
 .requisicionButtons {
   display: flex;
   gap: 10px;

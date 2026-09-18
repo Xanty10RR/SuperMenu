@@ -205,11 +205,15 @@ app.post('/api/aprobaciones', async (req, res) => {
   }
 })
 
-// Endpoint para obtener todas las requisiciones
+// Endpoint para obtener todas las requisiciones pendientes
 app.get('/api/requisiciones/todas', async (_req, res) => {
   console.log('Recibida solicitud GET /api/requisiciones/todas')
   try {
-    const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
+    const result = await pool.query(`
+      SELECT * FROM requisiciones 
+      WHERE estado IS NULL OR estado = 'pendiente' 
+      ORDER BY id DESC
+    `)
     res.json(result.rows)
   } catch (error) {
     console.error('Error al obtener todas las requisiciones:', error)
@@ -217,12 +221,15 @@ app.get('/api/requisiciones/todas', async (_req, res) => {
   }
 })
 
-// Endpoint para requisiciones IT/Sistemas
+// Endpoint para requisiciones IT/Sistemas pendientes
 app.get('/api/requisiciones/tic', async (_req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%IT/Sistemas%' ORDER BY id DESC"
-    )
+    const result = await pool.query(`
+      SELECT * FROM requisiciones 
+      WHERE departamento ILIKE '%IT/Sistemas%' 
+      AND (estado IS NULL OR estado = 'pendiente') 
+      ORDER BY id DESC
+    `)
     res.json(result.rows)
   } catch (error) {
     console.error('Error al obtener requisiciones IT/Sistemas:', error)
@@ -230,12 +237,15 @@ app.get('/api/requisiciones/tic', async (_req, res) => {
   }
 })
 
-// Endpoint para requisiciones de Logística
+// Endpoint para requisiciones de Logística pendientes
 app.get('/api/requisiciones/logistica', async (_req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%Logística%' ORDER BY id DESC"
-    )
+    const result = await pool.query(`
+      SELECT * FROM requisiciones 
+      WHERE departamento ILIKE '%Logística%' 
+      AND (estado IS NULL OR estado = 'pendiente') 
+      ORDER BY id DESC
+    `)
     res.json(result.rows)
   } catch (error) {
     console.error('Error al obtener requisiciones de Logística:', error)
@@ -243,12 +253,15 @@ app.get('/api/requisiciones/logistica', async (_req, res) => {
   }
 })
 
-// Endpoint para requisiciones de RRHH
+// Endpoint para requisiciones de RRHH pendientes
 app.get('/api/requisiciones/rrhh', async (_req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%RRHH%' ORDER BY id DESC"
-    )
+    const result = await pool.query(`
+      SELECT * FROM requisiciones 
+      WHERE departamento ILIKE '%RRHH%' 
+      AND (estado IS NULL OR estado = 'pendiente') 
+      ORDER BY id DESC
+    `)
     res.json(result.rows)
   } catch (error) {
     console.error('Error al obtener requisiciones de RRHH:', error)
@@ -256,12 +269,15 @@ app.get('/api/requisiciones/rrhh', async (_req, res) => {
   }
 })
 
-// Endpoint para requisiciones de Comercial
+// Endpoint para requisiciones de Comercial pendientes
 app.get('/api/requisiciones/comercial', async (_req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%Comercial%' ORDER BY id DESC"
-    )
+    const result = await pool.query(`
+      SELECT * FROM requisiciones 
+      WHERE departamento ILIKE '%Comercial%' 
+      AND (estado IS NULL OR estado = 'pendiente') 
+      ORDER BY id DESC
+    `)
     res.json(result.rows)
   } catch (error) {
     console.error('Error al obtener requisiciones de Comercial:', error)
@@ -269,12 +285,15 @@ app.get('/api/requisiciones/comercial', async (_req, res) => {
   }
 })
 
-// Endpoint para requisiciones de Otros departamentos
+// Endpoint para requisiciones de Otros departamentos pendientes
 app.get('/api/requisiciones/otros', async (_req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%Otros%' ORDER BY id DESC"
-    )
+    const result = await pool.query(`
+      SELECT * FROM requisiciones 
+      WHERE departamento ILIKE '%Otros%' 
+      AND (estado IS NULL OR estado = 'pendiente') 
+      ORDER BY id DESC
+    `)
     res.json(result.rows)
   } catch (error) {
     console.error('Error al obtener requisiciones de otros departamentos:', error)

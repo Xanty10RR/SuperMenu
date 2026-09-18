@@ -168,56 +168,55 @@ app.get('/api/aprobaciones', async (_req, res) => {
   }
 })
 
-// Endpoint para requisiciones TIC
+// Endpoint para requisiciones IT/Sistemas
 app.get('/api/requisiciones/tic', async (_req, res) => {
   try {
-    // Cambia 'tipo_solicitud' o 'area' por el nombre real de tu columna en la tabla requisiciones
     const result = await pool.query(
       "SELECT * FROM requisiciones WHERE departamento ILIKE '%IT/Sistemas%' ORDER BY id DESC"
     )
     res.json(result.rows)
   } catch (error) {
-    console.error('Error al obtener requisiciones TIC:', error)
-    res.status(500).send('Error al obtener requisiciones TIC')
+    console.error('Error al obtener requisiciones IT/Sistemas:', error)
+    res.status(500).send('Error al obtener requisiciones IT/Sistemas')
   }
 })
 
-// Endpoint para requisiciones de logística
+// Endpoint para requisiciones de Logística
 app.get('/api/requisiciones/logistica', async (_req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%logistica%' ORDER BY id DESC"
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%Logística%' ORDER BY id DESC"
     )
     res.json(result.rows)
   } catch (error) {
-    console.error('Error al obtener requisiciones de logística:', error)
-    res.status(500).send('Error al obtener requisiciones de logística')
+    console.error('Error al obtener requisiciones de Logística:', error)
+    res.status(500).send('Error al obtener requisiciones de Logística')
   }
 })
 
-// Endpoint para requisiciones de rrhh
+// Endpoint para requisiciones de RRHH
 app.get('/api/requisiciones/rrhh', async (_req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%rrhh%' ORDER BY id DESC"
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%RRHH%' ORDER BY id DESC"
     )
     res.json(result.rows)
   } catch (error) {
-    console.error('Error al obtener requisiciones de rrhh:', error)
-    res.status(500).send('Error al obtener requisiciones de rrhh')
+    console.error('Error al obtener requisiciones de RRHH:', error)
+    res.status(500).send('Error al obtener requisiciones de RRHH')
   }
 })
 
-// Endpoint para requisiciones de comercial
+// Endpoint para requisiciones de Comercial
 app.get('/api/requisiciones/comercial', async (_req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%comercial%' ORDER BY id DESC"
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%Comercial%' ORDER BY id DESC"
     )
     res.json(result.rows)
   } catch (error) {
-    console.error('Error al obtener requisiciones de comercial:', error)
-    res.status(500).send('Error al obtener requisiciones de comercial')
+    console.error('Error al obtener requisiciones de Comercial:', error)
+    res.status(500).send('Error al obtener requisiciones de Comercial')
   }
 })
 
@@ -225,7 +224,7 @@ app.get('/api/requisiciones/comercial', async (_req, res) => {
 app.get('/api/requisiciones/otros', async (_req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM requisiciones WHERE departamento ILIKE '%otros%' ORDER BY id DESC"
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%Otros%' ORDER BY id DESC"
     )
     res.json(result.rows)
   } catch (error) {
@@ -241,12 +240,11 @@ app.get('/api/requisiciones/todas', async (_req, res) => {
     const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
     res.json(result.rows)
   } catch (error) {
-    console.error('Error al combinar requisiciones:', error)
+    console.error('Error al obtener todas las requisiciones:', error)
     res.status(500).send('Error al obtener todas las requisiciones')
   }
 })
 
-// Endpoint para registrar la entrega completa
 // Endpoint para registrar la entrega completa (con PATCH)
 app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
   try {

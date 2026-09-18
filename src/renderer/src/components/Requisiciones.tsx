@@ -31,8 +31,10 @@ export const RequisicionesView: React.FC = () => {
   >('todas')
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>('')
-  // Agrega este estado junto con tus otros useState
-  const [procesandoId, setProcesandoId] = useState<number | null>(null)
+  const [procesando, setProcesando] = useState<{
+    id: number
+    estado: 'aprobado' | 'rechazado'
+  } | null>(null)
 
   const fetchRequisiciones = useCallback(async (): Promise<void> => {
     setLoading(true)
@@ -59,12 +61,11 @@ export const RequisicionesView: React.FC = () => {
 
   const handleAprobarRechazar = async (
     requisicion: Requisicion,
-    nuevoEstado: 'Aprobada' | 'Rechazada'
+    nuevoEstado: 'aprobado' | 'rechazado'
   ): Promise<void> => {
-    // Si ya se está procesando esta misma requisición, ignoramos nuevos clics
-    if (procesandoId === requisicion.id) return
+    if (procesando?.id === requisicion.id) return
 
-    setProcesandoId(requisicion.id)
+    setProcesando({ id: requisicion.id, estado: nuevoEstado })
 
     try {
       const nombreAprobador = 'jefesistemas'
@@ -77,16 +78,13 @@ export const RequisicionesView: React.FC = () => {
       })
 
       if (response.status === 200) {
-        // Quitamos el alert molesto o lo cambiamos para que la UI fluya más rápido
-        // Actualizamos el estado de inmediato para que desaparezca la tarjeta
         setRequisiciones((prev) => prev.filter((item) => item.id !== requisicion.id))
       }
     } catch (err) {
       console.error('Error al enviar la decisión:', err)
       alert('Hubo un error al procesar la solicitud.')
     } finally {
-      // Liberamos el bloqueo al terminar
-      setProcesandoId(null)
+      setProcesando(null)
     }
   }
 
@@ -238,28 +236,36 @@ export const RequisicionesView: React.FC = () => {
 
                         <button
                           className={`${styles.button} ${styles.buttonApprove}`}
-                          onClick={() => handleAprobarRechazar(req, 'Aprobada')}
-                          disabled={procesandoId === req.id}
+                          onClick={() => handleAprobarRechazar(req, 'aprobado')}
+                          disabled={procesando?.id === req.id}
                           style={{
-                            opacity: procesandoId === req.id ? 0.6 : 1,
-                            cursor: procesandoId === req.id ? 'not-allowed' : 'pointer'
+                            opacity: procesando?.id === req.id ? 0.6 : 1,
+                            cursor: procesando?.id === req.id ? 'not-allowed' : 'pointer'
                           }}
                         >
                           <FiCheckCircle className={styles.buttonIcon} />
-                          <span>{procesandoId === req.id ? 'Procesando...' : 'Aprobar'}</span>
+                          <span>
+                            {procesando?.id === req.id && procesando?.estado === 'aprobado'
+                              ? 'Procesando...'
+                              : 'Aprobar'}
+                          </span>
                         </button>
 
                         <button
                           className={`${styles.button} ${styles.buttonReject}`}
-                          onClick={() => handleAprobarRechazar(req, 'Rechazada')}
-                          disabled={procesandoId === req.id}
+                          onClick={() => handleAprobarRechazar(req, 'rechazado')}
+                          disabled={procesando?.id === req.id}
                           style={{
-                            opacity: procesandoId === req.id ? 0.6 : 1,
-                            cursor: procesandoId === req.id ? 'not-allowed' : 'pointer'
+                            opacity: procesando?.id === req.id ? 0.6 : 1,
+                            cursor: procesando?.id === req.id ? 'not-allowed' : 'pointer'
                           }}
                         >
                           <FiXCircle className={styles.buttonIcon} />
-                          <span>{procesandoId === req.id ? 'Procesando...' : 'Rechazar'}</span>
+                          <span>
+                            {procesando?.id === req.id && procesando?.estado === 'rechazado'
+                              ? 'Procesando...'
+                              : 'Rechazar'}
+                          </span>
                         </button>
                       </div>
                     </div>

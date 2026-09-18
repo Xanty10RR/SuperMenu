@@ -26,7 +26,9 @@ export const RequisicionesView: React.FC = () => {
   const [requisiciones, setRequisiciones] = useState<Requisicion[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'tic' | 'logistica' | 'compras' | 'todas'>('todas')
+  const [activeTab, setActiveTab] = useState<
+    'tic' | 'logistica' | 'rrhh' | 'comercial' | 'otros' | 'todas'
+  >('todas')
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>('')
 
@@ -81,8 +83,12 @@ export const RequisicionesView: React.FC = () => {
         return styles.badgeTic
       case 'Logística':
         return styles.badgeLogistica
-      case 'Compras':
-        return styles.badgeCompras
+      case 'RRHH':
+        return styles.badgeRrhh
+      case 'Comercial':
+        return styles.badgeComercial
+      case 'Otros':
+        return styles.badgeOtros
       default:
         return ''
     }
@@ -100,7 +106,7 @@ export const RequisicionesView: React.FC = () => {
         {/* Filtros y búsqueda */}
         <div className={styles.filterContainer}>
           <div className={styles.tabs}>
-            {(['todas', 'tic', 'logistica', 'compras'] as const).map((tab) => (
+            {(['todas', 'tic', 'logistica', 'rrhh', 'comercial', 'otros'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -114,7 +120,11 @@ export const RequisicionesView: React.FC = () => {
                     ? 'TIC'
                     : tab === 'logistica'
                       ? 'Logística'
-                      : 'Compras'}
+                      : tab === 'rrhh'
+                        ? 'RRHH'
+                        : tab === 'comercial'
+                          ? 'Comercial'
+                          : 'Otros'}
               </button>
             ))}
           </div>

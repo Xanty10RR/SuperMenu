@@ -61,7 +61,7 @@ setInterval(
   1000 * 60 * 60 * 24 * 2
 )
 
-// NUEVO
+// Endpoint para obtener requisiciones filtradas por usuario y rol
 app.get('/api/requisiciones/filtro', async (req, res) => {
   try {
     const { usuario, esAdmin } = req.query
@@ -90,7 +90,7 @@ app.get('/api/requisiciones/filtro', async (req, res) => {
   }
 })
 
-// NUEVO Endpoint para el Historial de Solicitudes Aprobadas/Rechazadas (registro_aprobaciones)
+// Endpoint Logística para el Historial de Solicitudes Aprobadas/Rechazadas (registro_aprobaciones)
 app.get('/api/registro-aprobaciones', async (req, res) => {
   try {
     const { usuario, esAdmin } = req.query
@@ -112,7 +112,7 @@ app.get('/api/registro-aprobaciones', async (req, res) => {
   }
 })
 
-// NUEVO Endpoint para obtener todos los usuarios
+// Endpoint de Usuarios para obtener todos los usuarios
 app.get('/api/usuarios', async (req, res) => {
   try {
     const result = await pool.query(
@@ -152,7 +152,7 @@ app.delete('/api/usuarios/:id', async (req, res) => {
   }
 })
 
-// Endpoint para registro de aprobaciones modificado
+// Endpoint para registro de aprobaciones
 app.get('/api/aprobaciones', async (_req, res) => {
   console.log('Recibida solicitud GET /api/aprobaciones')
   try {
@@ -165,6 +165,55 @@ app.get('/api/aprobaciones', async (_req, res) => {
   } catch (error) {
     console.error('Error en la consulta a aprobaciones:', error)
     res.status(500).send('Error al obtener datos de aprobaciones')
+  }
+})
+
+// Endpoint para registrar una aprobación o rechazo de una Requisición en Gestión de Requisiciones
+app.post('/api/aprobaciones', async (req, res) => {
+  try {
+    const { id_requisicion, estado, aprobador, datos_completos } = req.body
+
+    const fechaDecision = new Date().toISOString()
+
+    const query = `
+      INSERT INTO registro_aprobaciones 
+      (estado, aprobador, tabla_origen, fecha_decision, datos_completos) 
+      VALUES ($1, $2, $3, $4, $5) 
+      RETURNING *;
+    `
+
+    const values = [
+      estado,
+      aprobador || 'jefesistemas', // el usuario que esté logueado
+      'requisiciones',
+      fechaDecision,
+      JSON.stringify(datos_completos)
+    ]
+
+    const result = await pool.query(query, values)
+
+    // Actualizar el estado de la requisición original a aprobado o rechazado
+    await pool.query('UPDATE requisiciones SET estado = $1 WHERE id = $2', [estado, id_requisicion])
+
+    res.json({
+      message: 'Acción registrada con éxito',
+      registro: result.rows[0]
+    })
+  } catch (error) {
+    console.error('Error al registrar la aprobación/rechazo:', error)
+    res.status(500).send('Error al procesar la aprobación')
+  }
+})
+
+// Endpoint para obtener todas las requisiciones
+app.get('/api/requisiciones/todas', async (_req, res) => {
+  console.log('Recibida solicitud GET /api/requisiciones/todas')
+  try {
+    const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error al obtener todas las requisiciones:', error)
+    res.status(500).send('Error al obtener todas las requisiciones')
   }
 })
 
@@ -220,7 +269,7 @@ app.get('/api/requisiciones/comercial', async (_req, res) => {
   }
 })
 
-// Endpoint para requisiciones de otros departamentos
+// Endpoint para requisiciones de Otros departamentos
 app.get('/api/requisiciones/otros', async (_req, res) => {
   try {
     const result = await pool.query(
@@ -230,18 +279,6 @@ app.get('/api/requisiciones/otros', async (_req, res) => {
   } catch (error) {
     console.error('Error al obtener requisiciones de otros departamentos:', error)
     res.status(500).send('Error al obtener requisiciones de otros departamentos')
-  }
-})
-
-// Endpoint para obtener todas las requisiciones (opcional)
-app.get('/api/requisiciones/todas', async (_req, res) => {
-  console.log('Recibida solicitud GET /api/requisiciones/todas')
-  try {
-    const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
-    res.json(result.rows)
-  } catch (error) {
-    console.error('Error al obtener todas las requisiciones:', error)
-    res.status(500).send('Error al obtener todas las requisiciones')
   }
 })
 

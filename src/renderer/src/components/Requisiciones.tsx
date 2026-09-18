@@ -31,6 +31,8 @@ export const RequisicionesView: React.FC = () => {
   >('todas')
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>('')
+  // Agrega este estado junto con tus otros useState
+  const [procesandoId, setProcesandoId] = useState<number | null>(null)
 
   const fetchRequisiciones = useCallback(async (): Promise<void> => {
     setLoading(true)
@@ -54,6 +56,39 @@ export const RequisicionesView: React.FC = () => {
   useEffect((): void => {
     void fetchRequisiciones()
   }, [fetchRequisiciones])
+
+  const handleAprobarRechazar = async (
+    requisicion: Requisicion,
+    nuevoEstado: 'Aprobada' | 'Rechazada'
+  ): Promise<void> => {
+    // Si ya se está procesando esta misma requisición, ignoramos nuevos clics
+    if (procesandoId === requisicion.id) return
+
+    setProcesandoId(requisicion.id)
+
+    try {
+      const nombreAprobador = 'jefesistemas'
+
+      const response = await axios.post('http://localhost:3003/api/aprobaciones', {
+        id_requisicion: requisicion.id,
+        estado: nuevoEstado,
+        aprobador: nombreAprobador,
+        datos_completos: requisicion
+      })
+
+      if (response.status === 200) {
+        // Quitamos el alert molesto o lo cambiamos para que la UI fluya más rápido
+        // Actualizamos el estado de inmediato para que desaparezca la tarjeta
+        setRequisiciones((prev) => prev.filter((item) => item.id !== requisicion.id))
+      }
+    } catch (err) {
+      console.error('Error al enviar la decisión:', err)
+      alert('Hubo un error al procesar la solicitud.')
+    } finally {
+      // Liberamos el bloqueo al terminar
+      setProcesandoId(null)
+    }
+  }
 
   const toggleExpand = (id: number): void => {
     setExpandedId(expandedId === id ? null : id)
@@ -201,14 +236,30 @@ export const RequisicionesView: React.FC = () => {
                           )}
                         </button>
 
-                        <button className={`${styles.button} ${styles.buttonApprove}`}>
+                        <button
+                          className={`${styles.button} ${styles.buttonApprove}`}
+                          onClick={() => handleAprobarRechazar(req, 'Aprobada')}
+                          disabled={procesandoId === req.id}
+                          style={{
+                            opacity: procesandoId === req.id ? 0.6 : 1,
+                            cursor: procesandoId === req.id ? 'not-allowed' : 'pointer'
+                          }}
+                        >
                           <FiCheckCircle className={styles.buttonIcon} />
-                          <span>Aprobar</span>
+                          <span>{procesandoId === req.id ? 'Procesando...' : 'Aprobar'}</span>
                         </button>
 
-                        <button className={`${styles.button} ${styles.buttonReject}`}>
+                        <button
+                          className={`${styles.button} ${styles.buttonReject}`}
+                          onClick={() => handleAprobarRechazar(req, 'Rechazada')}
+                          disabled={procesandoId === req.id}
+                          style={{
+                            opacity: procesandoId === req.id ? 0.6 : 1,
+                            cursor: procesandoId === req.id ? 'not-allowed' : 'pointer'
+                          }}
+                        >
                           <FiXCircle className={styles.buttonIcon} />
-                          <span>Rechazar</span>
+                          <span>{procesandoId === req.id ? 'Procesando...' : 'Rechazar'}</span>
                         </button>
                       </div>
                     </div>

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import express, { Request, Response } from 'express'
+import express from 'express'
 import cors from 'cors'
 import { Pool } from 'pg'
 import * as bcrypt from 'bcryptjs'
@@ -60,25 +60,6 @@ setInterval(
   },
   1000 * 60 * 60 * 24 * 2
 )
-
-// Función para manejar consultas genéricas
-const handleQuery = async (
-  table: string,
-  orderField: string,
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  console.log(`Recibida solicitud GET /api/${table}`)
-  try {
-    const query = `SELECT * FROM ${table} ORDER BY ${orderField} DESC`
-    const result = await pool.query(query)
-    res.json(result.rows)
-  } catch (err) {
-    console.error(`Error en la consulta a ${table}:`, err)
-    await registrarErrorServidor(err, `/api/${table}`)
-    res.status(500).send(`Error al obtener datos de ${table}`)
-  }
-}
 
 // NUEVO
 app.get('/api/requisiciones/filtro', async (req, res) => {
@@ -188,21 +169,72 @@ app.get('/api/aprobaciones', async (_req, res) => {
 })
 
 // Endpoint para requisiciones TIC
-app.get('/api/requisiciones/tic', async (req, res) => {
-  await handleQuery('requisiciones_tic', 'fecha_solicitud', req, res)
+app.get('/api/requisiciones/tic', async (_req, res) => {
+  try {
+    // Cambia 'tipo_solicitud' o 'area' por el nombre real de tu columna en la tabla requisiciones
+    const result = await pool.query(
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%IT/Sistemas%' ORDER BY id DESC"
+    )
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error al obtener requisiciones TIC:', error)
+    res.status(500).send('Error al obtener requisiciones TIC')
+  }
 })
 
 // Endpoint para requisiciones de logística
-app.get('/api/requisiciones/logistica', async (req, res) => {
-  await handleQuery('requisiciones_logistica', 'fecha_solicitud', req, res)
+app.get('/api/requisiciones/logistica', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%logistica%' ORDER BY id DESC"
+    )
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error al obtener requisiciones de logística:', error)
+    res.status(500).send('Error al obtener requisiciones de logística')
+  }
 })
 
-// Endpoint para requisiciones de compras
-app.get('/api/requisiciones/compras', async (req, res) => {
-  await handleQuery('requisiciones_compras', 'fecha_solicitud', req, res)
+// Endpoint para requisiciones de rrhh
+app.get('/api/requisiciones/rrhh', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%rrhh%' ORDER BY id DESC"
+    )
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error al obtener requisiciones de rrhh:', error)
+    res.status(500).send('Error al obtener requisiciones de rrhh')
+  }
 })
 
-// Endpoint para obtener todas las requisiciones combinadas (opcional)
+// Endpoint para requisiciones de comercial
+app.get('/api/requisiciones/comercial', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%comercial%' ORDER BY id DESC"
+    )
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error al obtener requisiciones de comercial:', error)
+    res.status(500).send('Error al obtener requisiciones de comercial')
+  }
+})
+
+// Endpoint para requisiciones de otros departamentos
+app.get('/api/requisiciones/otros', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM requisiciones WHERE departamento ILIKE '%otros%' ORDER BY id DESC"
+    )
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error al obtener requisiciones de otros departamentos:', error)
+    res.status(500).send('Error al obtener requisiciones de otros departamentos')
+  }
+})
+
+// Endpoint para obtener todas las requisiciones (opcional)
 app.get('/api/requisiciones/todas', async (_req, res) => {
   console.log('Recibida solicitud GET /api/requisiciones/todas')
   try {

@@ -305,13 +305,18 @@ app.get('/api/requisiciones/otros', async (_req, res) => {
 app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
   try {
     const { id } = req.params
-    const { entregado_por, observaciones } = req.body
+    const { entregado_por, observaciones } = req.body // O puedes enviarlo por headers
+
+    // Validación de seguridad en backend (opcional pero recomendada)
+    // if (rol_usuario !== 'logistica' && rol_usuario !== 'admin') {
+    //   return res.status(403).json({ error: 'No tienes permisos para registrar entregas.' })
+    // }
 
     const fechaActual = new Date().toISOString()
 
     const resultado = await pool.query(
       `UPDATE registro_aprobaciones 
-       SET estado = 'entregado',
+       SET estado = 'Entregado',
            fecha_entrega = $1, 
            entregado_por = $2, 
            observaciones = $3 
@@ -320,9 +325,7 @@ app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
     )
 
     if (resultado.rowCount === 0) {
-      return res
-        .status(400)
-        .json({ error: 'La solicitud no existe o no está en estado aprobado para ser entregada.' })
+      return res.status(400).json({ error: 'La solicitud no existe o no está en estado aprobado.' })
     }
 
     res.json({ message: 'Entrega registrada con éxito' })
@@ -354,8 +357,10 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
+    // 1. Consultamos a tu tabla real: usuarios_aprobadores
+    // 2. Mapeamos los campos 'usuario' y 'clave' de tu Supabase
     const userQuery = await pool.query(
-      'SELECT id, username, password, nombre_completo, rol FROM usuarios WHERE username = $1 AND activo = TRUE',
+      'SELECT id, usuario, clave, departamento FROM usuarios_aprobadores WHERE usuario = $1',
       [username]
     )
 
@@ -364,20 +369,27 @@ app.post('/api/login', async (req, res) => {
     }
 
     const user = userQuery.rows[0]
-    const isMatch = await bcrypt.compare(password, user.password)
+
+    // Comparamos la contraseña con la columna 'clave' de tu base de datos
+    const isMatch = await bcrypt.compare(password, user.clave)
 
     if (!isMatch) {
       return res.status(401).json({ error: 'Credenciales inválidas' })
     }
 
-    // Excluimos el password de la respuesta
-    const userData = { ...user }
-    delete userData.password
+    // Preparamos los datos del usuario para enviarlos al frontend
+    const userData = {
+      id: user.id,
+      username: user.usuario,
+      departamento: user.departamento,
+      // Le asignamos el rol basándonos en su departamento o usuario para que el frontend lo lea perfecto
+      rol: user.departamento.toLowerCase().includes('logística') ? 'logistica' : 'jefe'
+    }
 
     res.json({
       success: true,
-      user: userData, // Incluye nombre_completo y otros datos
-      token: 'tu_token_jwt_si_lo_implementas'
+      user: userData,
+      token: 'token_valido'
     })
   } catch (error) {
     console.error('Error en el login:', error)

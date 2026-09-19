@@ -119,7 +119,9 @@ const SuperMenu: React.FC<Props> = () => {
             Inicio
           </button>
           <div className="user-section">
-            <span className="user-label">Bienvenido, {userData.nombre_completo}</span>
+            <span className="user-label">
+              Bienvenido, {userData.username || userData.usuario || 'Invitado'}
+            </span>
             <button className="logout-btn" onClick={handleLogout} title="Cerrar sesión">
               <LogOut size={18} />
             </button>

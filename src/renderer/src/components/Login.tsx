@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import styled, { keyframes } from 'styled-components'
@@ -215,7 +215,8 @@ const Login: React.FC = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
+  {
+    /* 
   useEffect(() => {
     // Bloqueamos el scroll temporalmente
     document.body.style.overflow = 'hidden'
@@ -234,12 +235,12 @@ const Login: React.FC = () => {
     // 2. Redirigimos automáticamente sin esperar a que el usuario haga clic
     navigate('/supermenu')
     // -------------------------------------------
-
     return () => {
       document.body.style.overflow = 'auto'
     }
   }, [navigate]) // Agregamos 'navigate' a las dependencias
-
+*/
+  }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     setLoading(true)

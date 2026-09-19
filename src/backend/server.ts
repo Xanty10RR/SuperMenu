@@ -90,28 +90,6 @@ app.get('/api/requisiciones/filtro', async (req, res) => {
   }
 })
 
-// Endpoint Logística para el Historial de Solicitudes Aprobadas/Rechazadas (registro_aprobaciones)
-app.get('/api/registro-aprobaciones', async (req, res) => {
-  try {
-    const { usuario, esAdmin } = req.query
-
-    let query = 'SELECT * FROM registro_aprobaciones'
-    const values: string[] = []
-
-    // Si NO es admin, filtramos estrictamente por el aprobador que tomó la decisión
-    if (esAdmin !== 'true' && usuario !== 'admin') {
-      query += ' WHERE aprobador = $1'
-      values.push(String(usuario ?? ''))
-    }
-
-    query += ' ORDER BY id DESC'
-    const result = await pool.query(query, values)
-    res.json(result.rows)
-  } catch {
-    res.status(500).json({ error: 'Error al cargar los datos' })
-  }
-})
-
 // Endpoint de Usuarios para obtener todos los usuarios
 app.get('/api/usuarios', async (req, res) => {
   try {
@@ -149,6 +127,28 @@ app.delete('/api/usuarios/:id', async (req, res) => {
     res.send('Usuario eliminado')
   } catch {
     res.status(500).send('Error al eliminar usuario')
+  }
+})
+
+// Endpoint Logística para el Historial de Solicitudes Aprobadas/Rechazadas/Entregadas (registro_aprobaciones)
+app.get('/api/registro-aprobaciones', async (req, res) => {
+  try {
+    const { usuario, esAdmin } = req.query
+
+    let query = 'SELECT * FROM registro_aprobaciones'
+    const values: string[] = []
+
+    // Si NO es admin, filtramos estrictamente por el aprobador que tomó la decisión
+    if (esAdmin !== 'true' && usuario !== 'admin') {
+      query += ' WHERE aprobador = $1'
+      values.push(String(usuario ?? ''))
+    }
+
+    query += ' ORDER BY id DESC'
+    const result = await pool.query(query, values)
+    res.json(result.rows)
+  } catch {
+    res.status(500).json({ error: 'Error al cargar los datos' })
   }
 })
 
@@ -309,14 +309,21 @@ app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
 
     const fechaActual = new Date().toISOString()
 
-    await pool.query(
+    const resultado = await pool.query(
       `UPDATE registro_aprobaciones 
-       SET fecha_entrega = $1, 
+       SET estado = 'entregado',
+           fecha_entrega = $1, 
            entregado_por = $2, 
            observaciones = $3 
-       WHERE id = $4`,
+       WHERE id = $4 AND LOWER(estado) = 'aprobado'`,
       [fechaActual, entregado_por, observaciones, id]
     )
+
+    if (resultado.rowCount === 0) {
+      return res
+        .status(400)
+        .json({ error: 'La solicitud no existe o no está en estado aprobado para ser entregada.' })
+    }
 
     res.json({ message: 'Entrega registrada con éxito' })
   } catch (error) {

@@ -44,8 +44,7 @@ export const ApprovalList: React.FC = () => {
     observaciones: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  // --- AQUÍ VALIDAMOS EL ROL DEL USUARIO LOGUEADO ---
-  // --- 1. LEEMOS EL USUARIO DESDE EL LOCALSTORAGE ---
+  // Se valida usuario logueado desde LOCALSTORAGE para determinar si puede ver el botón de entrega o no. Los jefes no pueden ver el botón, solo logística y admin
   const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
 
   // Verificamos su departamento o nombre de usuario de tu tabla usuarios_aprobadores
@@ -55,12 +54,12 @@ export const ApprovalList: React.FC = () => {
   const canManageDeliveries =
     departamento === 'logística' || username === 'jefelogistica' || username === 'admin'
 
-  // --- 2. DEFINIMOS EL RENDER DE LAS PESTAÑAS ---
+  // Se define Render de las pestañas
   const renderTabContent = (): React.ReactNode | null => {
     switch (activeTab) {
       case 'approved':
-        // Si es logística o admin, canManageDeliveries es true (ven el botón).
-        // Si es un jefe, canManageDeliveries es false (el botón estará oculto).
+        // Si es logística o admin, canManageDeliveries es true (ven el botón)
+        // Si es un jefe, canManageDeliveries es false (el botón estará oculto)
         return renderApprovalList(approvals, canManageDeliveries)
       case 'pending':
         return renderApprovalList(pending, false)
@@ -71,45 +70,57 @@ export const ApprovalList: React.FC = () => {
     }
   }
 
-  useEffect((): void => {
+  useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
         setLoading(true)
         setError(null)
 
         const response = await axios.get('http://localhost:3003/api/aprobaciones')
+        const allItems = response.data
 
-        const approvedItems = response.data
+        // Lee el usuario logueado del localStorage
+        const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
+        const userDept = (storedUser.departamento || '').toLowerCase().trim()
+        const username = (storedUser.usuario || storedUser.username || '').toLowerCase().trim()
+
+        // Definir si el usuario tiene permiso global (Logistica o Admin pueden ver toda la sección de Requisiciones y Logistica)
+        const isGlobalUser =
+          userDept.includes('logísti') ||
+          userDept.includes('logistica') ||
+          username === 'admin' ||
+          username === 'jefelogistica'
+
+        // Si NO es usuario global, filtramos estrictamente por su departamento
+        const filteredItems = isGlobalUser
+          ? allItems
+          : allItems.filter((req: ApprovalItem) => {
+              const itemDept = (req.datos_completos.departamento || '').toLowerCase().trim()
+              return itemDept === userDept
+            })
+
+        // Con los datos ya filtrados, se arman las pestañas correspondientes
+        const approvedItems = filteredItems
           .filter((item: ApprovalItem) => item.estado.toLowerCase() === 'aprobado')
           .sort(
             (a: ApprovalItem, b: ApprovalItem) =>
               new Date(b.fecha_decision).getTime() - new Date(a.fecha_decision).getTime()
           )
 
-        const pendingItems = response.data
-          .filter(
-            (item: ApprovalItem) =>
-              item.estado.toLowerCase() !== 'aprobado' && item.estado.toLowerCase() !== 'entregado'
-          )
-          .sort(
-            (a: ApprovalItem, b: ApprovalItem) =>
-              new Date(b.fecha_decision).getTime() - new Date(a.fecha_decision).getTime()
-          )
+        const pendingItems = filteredItems.filter(
+          (item: ApprovalItem) => item.estado.toLowerCase() === 'pendiente'
+        )
 
-        const deliveredItems = response.data
-          .filter((item: ApprovalItem) => item.estado.toLowerCase() === 'entregado')
-          .sort(
-            (a: ApprovalItem, b: ApprovalItem) =>
-              new Date(b.fecha_entrega || b.fecha_decision).getTime() -
-              new Date(a.fecha_entrega || a.fecha_decision).getTime()
-          )
+        const deliveredItems = filteredItems.filter(
+          (item: ApprovalItem) => item.estado.toLowerCase() === 'entregado'
+        )
 
         setApprovals(approvedItems)
         setPending(pendingItems)
         setDelivered(deliveredItems)
       } catch (err) {
-        console.error('Error fetching data:', err)
-        setError('Error al cargar los datos. Por favor intente nuevamente.')
+        console.error('Error al cargar aprobaciones:', err)
+        setError('No se pudieron cargar las solicitudes')
       } finally {
         setLoading(false)
       }
@@ -368,7 +379,7 @@ export const ApprovalList: React.FC = () => {
           className={`tab-button ${activeTab === 'delivered' ? 'active' : ''}`}
           onClick={() => setActiveTab('delivered')}
         >
-          Entregados
+          Entregadas
         </button>
       </div>
 

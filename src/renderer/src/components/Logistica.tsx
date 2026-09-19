@@ -44,6 +44,32 @@ export const ApprovalList: React.FC = () => {
     observaciones: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // --- AQUÍ VALIDAMOS EL ROL DEL USUARIO LOGUEADO ---
+  // --- 1. LEEMOS EL USUARIO DESDE EL LOCALSTORAGE ---
+  const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
+
+  // Verificamos su departamento o nombre de usuario de tu tabla usuarios_aprobadores
+  const departamento = (storedUser.departamento || '').toLowerCase()
+  const username = (storedUser.usuario || storedUser.username || '').toLowerCase()
+
+  const canManageDeliveries =
+    departamento === 'logística' || username === 'jefelogistica' || username === 'admin'
+
+  // --- 2. DEFINIMOS EL RENDER DE LAS PESTAÑAS ---
+  const renderTabContent = (): React.ReactNode | null => {
+    switch (activeTab) {
+      case 'approved':
+        // Si es logística o admin, canManageDeliveries es true (ven el botón).
+        // Si es un jefe, canManageDeliveries es false (el botón estará oculto).
+        return renderApprovalList(approvals, canManageDeliveries)
+      case 'pending':
+        return renderApprovalList(pending, false)
+      case 'delivered':
+        return renderApprovalList(delivered, false, true)
+      default:
+        return null
+    }
+  }
 
   useEffect((): void => {
     const fetchData = async (): Promise<void> => {
@@ -160,19 +186,6 @@ export const ApprovalList: React.FC = () => {
       return <FontAwesomeIcon icon={faBoxOpen} className="status-icon delivered" />
     }
     return <FontAwesomeIcon icon={faClock} className="status-icon pending" />
-  }
-
-  const renderTabContent = (): React.ReactNode | null => {
-    switch (activeTab) {
-      case 'approved':
-        return renderApprovalList(approvals, true)
-      case 'pending':
-        return renderApprovalList(pending, false)
-      case 'delivered':
-        return renderApprovalList(delivered, false, true)
-      default:
-        return null
-    }
   }
 
   const renderApprovalList = (

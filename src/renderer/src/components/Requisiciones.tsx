@@ -16,6 +16,9 @@ interface Requisicion {
   id: number
   nombre_solicitante: string
   departamento: string
+  datos_completos?: {
+    departamento?: string
+  }
   descripcion: string
   fecha_creacion: string
   tipo?: string
@@ -59,6 +62,27 @@ export const RequisicionesView: React.FC = () => {
     void fetchRequisiciones()
   }, [fetchRequisiciones])
 
+  // Obtenemos el usuario logueado
+  const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
+  const userDept = (storedUser.departamento || '').toLowerCase().trim()
+  const username = (storedUser.usuario || storedUser.username || '').toLowerCase().trim()
+
+  const isGlobalUser =
+    userDept.includes('logísti') ||
+    userDept.includes('logistica') ||
+    username === 'admin' ||
+    username === 'jefelogistica'
+
+  // Filtrado estricto: Si NO es global, solo ve las de su departamento
+  const requisicionesVisibles = isGlobalUser
+    ? requisiciones
+    : requisiciones.filter((req) => {
+        const deptoReq = (req.departamento || req.datos_completos?.departamento || '')
+          .toLowerCase()
+          .trim()
+        return deptoReq === userDept
+      })
+
   const handleAprobarRechazar = async (
     requisicion: Requisicion,
     nuevoEstado: 'aprobado' | 'rechazado'
@@ -92,7 +116,7 @@ export const RequisicionesView: React.FC = () => {
     setExpandedId(expandedId === id ? null : id)
   }
 
-  const filteredRequisiciones = requisiciones.filter(
+  const filteredRequisiciones = requisicionesVisibles.filter(
     (req) =>
       req.nombre_solicitante.toLowerCase().includes(searchTerm.toLowerCase()) ||
       req.departamento.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -138,30 +162,34 @@ export const RequisicionesView: React.FC = () => {
 
         {/* Filtros y búsqueda */}
         <div className={styles.filterContainer}>
-          <div className={styles.tabs}>
-            {(['todas', 'tic', 'logistica', 'rrhh', 'comercial', 'otros'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`${styles.tab} ${
-                  activeTab === tab ? styles.tabActive : styles.tabInactive
-                }`}
-              >
-                {tab === 'todas'
-                  ? 'Todas'
-                  : tab === 'tic'
-                    ? 'IT/Sistemas'
-                    : tab === 'logistica'
-                      ? 'Logística'
-                      : tab === 'rrhh'
-                        ? 'RRHH'
-                        : tab === 'comercial'
-                          ? 'Comercial'
-                          : 'Otros'}
-              </button>
-            ))}
-          </div>
+          {/* Las pestañas de departamentos SOLO para Logística y Admin */}
+          {isGlobalUser && (
+            <div className={styles.tabs}>
+              {(['todas', 'tic', 'logistica', 'rrhh', 'comercial', 'otros'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`${styles.tab} ${
+                    activeTab === tab ? styles.tabActive : styles.tabInactive
+                  }`}
+                >
+                  {tab === 'todas'
+                    ? 'Todas'
+                    : tab === 'tic'
+                      ? 'IT/Sistemas'
+                      : tab === 'logistica'
+                        ? 'Logística'
+                        : tab === 'rrhh'
+                          ? 'RRHH'
+                          : tab === 'comercial'
+                            ? 'Comercial'
+                            : 'Otros'}
+                </button>
+              ))}
+            </div>
+          )}
 
+          {/* La barra de búsqueda y actualizar SÍ aparecen para TODOS */}
           <div className={styles.searchContainer}>
             <FiSearch className={styles.searchIcon} size={18} />
             <input

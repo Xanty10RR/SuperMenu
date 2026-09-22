@@ -29,11 +29,11 @@ interface ApprovalItem {
   observaciones?: string
 }
 
-type TabType = 'approved' | 'pending' | 'delivered'
+type TabType = 'approved' | 'rejected' | 'delivered'
 
 export const ApprovalList: React.FC = () => {
   const [approvals, setApprovals] = useState<ApprovalItem[]>([])
-  const [pending, setPending] = useState<ApprovalItem[]>([])
+  const [rejected, setRejected] = useState<ApprovalItem[]>([])
   const [delivered, setDelivered] = useState<ApprovalItem[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,11 +58,9 @@ export const ApprovalList: React.FC = () => {
   const renderTabContent = (): React.ReactNode | null => {
     switch (activeTab) {
       case 'approved':
-        // Si es logística o admin, canManageDeliveries es true (ven el botón)
-        // Si es un jefe, canManageDeliveries es false (el botón estará oculto)
         return renderApprovalList(approvals, canManageDeliveries)
-      case 'pending':
-        return renderApprovalList(pending, false)
+      case 'rejected':
+        return renderApprovalList(rejected, false)
       case 'delivered':
         return renderApprovalList(delivered, false, true)
       default:
@@ -95,28 +93,39 @@ export const ApprovalList: React.FC = () => {
         const filteredItems = isGlobalUser
           ? allItems
           : allItems.filter((req: ApprovalItem) => {
-              const itemDept = (req.datos_completos.departamento || '').toLowerCase().trim()
+              let detalles = req.datos_completos
+              // Si viene como texto plano de la base de datos, lo convertimos a objeto
+              if (typeof detalles === 'string') {
+                try {
+                  detalles = JSON.parse(detalles)
+                } catch {
+                  detalles = {} as typeof detalles
+                }
+              }
+              const itemDept = (detalles?.departamento || '').toLowerCase().trim()
               return itemDept === userDept
             })
 
         // Con los datos ya filtrados, se arman las pestañas correspondientes
+        // Con los datos ya filtrados, se arman las pestañas con protección contra nulos
         const approvedItems = filteredItems
-          .filter((item: ApprovalItem) => item.estado.toLowerCase() === 'aprobado')
+          .filter((item: ApprovalItem) => (item.estado || '').toLowerCase() === 'aprobado')
           .sort(
             (a: ApprovalItem, b: ApprovalItem) =>
-              new Date(b.fecha_decision).getTime() - new Date(a.fecha_decision).getTime()
+              new Date(b.fecha_decision || 0).getTime() - new Date(a.fecha_decision || 0).getTime()
           )
 
-        const pendingItems = filteredItems.filter(
-          (item: ApprovalItem) => item.estado.toLowerCase() === 'pendiente'
-        )
+        const rejectedItems = filteredItems.filter((item: ApprovalItem) => {
+          const est = (item.estado || '').toLowerCase().trim()
+          return est.includes('rechaz')
+        })
 
         const deliveredItems = filteredItems.filter(
-          (item: ApprovalItem) => item.estado.toLowerCase() === 'entregado'
+          (item: ApprovalItem) => (item.estado || '').toLowerCase() === 'entregado'
         )
 
         setApprovals(approvedItems)
-        setPending(pendingItems)
+        setRejected(rejectedItems)
         setDelivered(deliveredItems)
       } catch (err) {
         console.error('Error al cargar aprobaciones:', err)
@@ -358,7 +367,7 @@ export const ApprovalList: React.FC = () => {
     <div className="approval-list-container">
       <h2 className="list-title">
         {activeTab === 'approved' && 'Solicitudes Aprobadas'}
-        {activeTab === 'pending' && 'Solicitudes Pendientes'}
+        {activeTab === 'rejected' && 'Solicitudes Rechazadas'}
         {activeTab === 'delivered' && 'Entregas Realizadas'}
       </h2>
 
@@ -370,8 +379,8 @@ export const ApprovalList: React.FC = () => {
           Aprobadas
         </button>
         <button
-          className={`tab-button ${activeTab === 'pending' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pending')}
+          className={`tab-button ${activeTab === 'rejected' ? 'active' : ''}`}
+          onClick={() => setActiveTab('rejected')}
         >
           Rechazadas
         </button>

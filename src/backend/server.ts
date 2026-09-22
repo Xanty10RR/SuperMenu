@@ -152,19 +152,15 @@ app.get('/api/registro-aprobaciones', async (req, res) => {
   }
 })
 
-// Endpoint para registro de aprobaciones
-app.get('/api/aprobaciones', async (_req, res) => {
-  console.log('Recibida solicitud GET /api/aprobaciones')
+// Endpoint para obtener todas las aprobaciones, rechazos y entregas
+app.get('/api/aprobaciones', async (req, res) => {
   try {
-    const query = `
-      SELECT * FROM registro_aprobaciones 
-      ORDER BY id DESC LIMIT 100;
-    `
+    const query = 'SELECT * FROM registro_aprobaciones ORDER BY fecha_decision DESC;'
     const result = await pool.query(query)
     res.json(result.rows)
   } catch (error) {
-    console.error('Error en la consulta a aprobaciones:', error)
-    res.status(500).send('Error al obtener datos de aprobaciones')
+    console.error('Error al obtener las aprobaciones:', error)
+    res.status(500).send('Error al obtener las aprobaciones')
   }
 })
 
@@ -175,6 +171,19 @@ app.post('/api/aprobaciones', async (req, res) => {
 
     const fechaDecision = new Date().toISOString()
 
+    // Aseguramos que el estado dentro del JSON de datos_completos refleje el nuevo estado
+    let datosActualizados = datos_completos
+    if (datosActualizados) {
+      if (typeof datosActualizados === 'string') {
+        try {
+          datosActualizados = JSON.parse(datosActualizados)
+        } catch {
+          // Si no es un JSON válido, lo dejamos como viene
+        }
+      }
+      datosActualizados.estado = estado
+    }
+
     const query = `
       INSERT INTO registro_aprobaciones 
       (estado, aprobador, tabla_origen, fecha_decision, datos_completos) 
@@ -184,15 +193,15 @@ app.post('/api/aprobaciones', async (req, res) => {
 
     const values = [
       estado,
-      aprobador || 'jefesistemas', // el usuario que esté logueado
+      aprobador || 'jefesistemas',
       'requisiciones',
       fechaDecision,
-      JSON.stringify(datos_completos)
+      JSON.stringify(datosActualizados)
     ]
 
     const result = await pool.query(query, values)
 
-    // Actualizar el estado de la requisición original a aprobado o rechazado
+    // Actualizar el estado de la requisición original
     await pool.query('UPDATE requisiciones SET estado = $1 WHERE id = $2', [estado, id_requisicion])
 
     res.json({

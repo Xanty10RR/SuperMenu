@@ -106,7 +106,6 @@ export const ApprovalList: React.FC = () => {
               return itemDept === userDept
             })
 
-        // Con los datos ya filtrados, se arman las pestañas correspondientes
         // Con los datos ya filtrados, se arman las pestañas con protección contra nulos
         const approvedItems = filteredItems
           .filter((item: ApprovalItem) => (item.estado || '').toLowerCase() === 'aprobado')

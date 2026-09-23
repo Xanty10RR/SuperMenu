@@ -61,35 +61,6 @@ setInterval(
   1000 * 60 * 60 * 24 * 2
 )
 
-// Endpoint para obtener requisiciones filtradas por usuario y rol
-app.get('/api/requisiciones/filtro', async (req, res) => {
-  try {
-    const { usuario, esAdmin } = req.query
-
-    // Si es admin, traemos todo de la tabla única 'requisiciones'
-    if (esAdmin === 'true' || usuario === 'admin') {
-      const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
-      return res.json(result.rows)
-    }
-
-    // Si es un jefe de área, filtramos por su departamento correspondiente
-    let deptoFiltro = 'IT/Sistemas'
-    if (usuario === 'jefelogistica') deptoFiltro = 'Logística'
-    else if (usuario === 'jefecomercial') deptoFiltro = 'Comercial'
-    else if (usuario === 'jeferrhh') deptoFiltro = 'RRHH'
-
-    // Asumiendo que tu tabla 'requisiciones' tiene una columna llamada 'departamento' o 'area'
-    const result = await pool.query(
-      'SELECT * FROM requisiciones WHERE departamento = $1 OR area = $1 ORDER BY id DESC',
-      [deptoFiltro]
-    )
-    res.json(result.rows)
-  } catch (error) {
-    console.error('Error al obtener requisiciones filtradas:', error)
-    res.status(500).json({ error: 'Error al cargar las requisiciones' })
-  }
-})
-
 // Endpoint de Usuarios para obtener todos los usuarios
 app.get('/api/usuarios', async (req, res) => {
   try {
@@ -214,13 +185,42 @@ app.post('/api/aprobaciones', async (req, res) => {
   }
 })
 
+// Endpoint para obtener requisiciones filtradas por usuario y rol
+app.get('/api/requisiciones/filtro', async (req, res) => {
+  try {
+    const { usuario, esAdmin } = req.query
+
+    // Si es admin, traemos todo de la tabla única 'requisiciones'
+    if (esAdmin === 'true' || usuario === 'admin') {
+      const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
+      return res.json(result.rows)
+    }
+
+    // Si es un jefe de área, filtramos por su departamento correspondiente
+    let deptoFiltro = 'IT/Sistemas'
+    if (usuario === 'jefelogistica') deptoFiltro = 'Logística'
+    else if (usuario === 'jefecomercial') deptoFiltro = 'Comercial'
+    else if (usuario === 'jeferrhh') deptoFiltro = 'RRHH'
+
+    // Asumiendo que tu tabla 'requisiciones' tiene una columna llamada 'departamento' o 'area'
+    const result = await pool.query(
+      'SELECT * FROM requisiciones WHERE departamento = $1 OR area = $1 ORDER BY id DESC',
+      [deptoFiltro]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error al obtener requisiciones filtradas:', error)
+    res.status(500).json({ error: 'Error al cargar las requisiciones' })
+  }
+})
+
 // Endpoint para obtener todas las requisiciones pendientes
 app.get('/api/requisiciones/todas', async (_req, res) => {
   console.log('Recibida solicitud GET /api/requisiciones/todas')
   try {
     const result = await pool.query(`
       SELECT * FROM requisiciones 
-      WHERE estado IS NULL OR estado = 'pendiente' 
+      WHERE estado IS NULL OR estado = 'pendiente'
       ORDER BY id DESC
     `)
     res.json(result.rows)

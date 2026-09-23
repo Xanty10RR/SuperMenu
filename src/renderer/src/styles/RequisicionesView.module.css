@@ -167,6 +167,24 @@
   overflow: hidden;
 }
 
+.reqId {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.badgePendiente {
+  background-color: #fef08a;
+  color: #854d0e;          
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .requisicionBadge {
   padding: 3px 10px;
   border-radius: 12px;

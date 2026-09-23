@@ -73,16 +73,6 @@ export const RequisicionesView: React.FC = () => {
     username === 'admin' ||
     username === 'jefelogistica'
 
-  // Filtrado estricto: Si NO es global, solo ve las de su departamento
-  const requisicionesVisibles = isGlobalUser
-    ? requisiciones
-    : requisiciones.filter((req) => {
-        const deptoReq = (req.departamento || req.datos_completos?.departamento || '')
-          .toLowerCase()
-          .trim()
-        return deptoReq === userDept
-      })
-
   const handleAprobarRechazar = async (
     requisicion: Requisicion,
     nuevoEstado: 'aprobado' | 'rechazado'
@@ -115,13 +105,6 @@ export const RequisicionesView: React.FC = () => {
   const toggleExpand = (id: number): void => {
     setExpandedId(expandedId === id ? null : id)
   }
-
-  const filteredRequisiciones = requisicionesVisibles.filter(
-    (req) =>
-      req.nombre_solicitante.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      req.departamento.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      req.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
-  )
 
   const formatDate = (dateInput: string | Date): string => {
     if (!dateInput) return ''
@@ -162,6 +145,75 @@ export const RequisicionesView: React.FC = () => {
     }
   }
 
+  // Contador basados en el total de requisiciones
+  const pendientesArea = (tabKey: string): number => {
+    if (tabKey === 'todas') return requisiciones.length
+
+    return requisiciones.filter((req) => {
+      const depto = (req.departamento || '').toLowerCase().trim()
+      switch (tabKey) {
+        case 'tic':
+          return depto.includes('it') || depto.includes('tic') || depto.includes('sistemas')
+        case 'logistica':
+          return depto.includes('logísti') || depto.includes('logistica')
+        case 'rrhh':
+          return depto.includes('rrhh') || depto.includes('recursos')
+        case 'comercial':
+          return depto.includes('comercial')
+        case 'otros':
+          return (
+            !depto.includes('it') &&
+            !depto.includes('tic') &&
+            !depto.includes('sistemas') &&
+            !depto.includes('logísti') &&
+            !depto.includes('logistica') &&
+            !depto.includes('rrhh') &&
+            !depto.includes('comercial')
+          )
+        default:
+          return false
+      }
+    }).length
+  }
+
+  // Filtro por pestaña activa sin modificar el arreglo original de requisiciones
+  const requisicionesPorTab = requisiciones.filter((req) => {
+    if (activeTab === 'todas') return true
+    const depto = (req.departamento || '').toLowerCase().trim()
+    if (activeTab === 'tic')
+      return depto.includes('it') || depto.includes('tic') || depto.includes('sistemas')
+    if (activeTab === 'logistica') return depto.includes('logísti') || depto.includes('logistica')
+    if (activeTab === 'rrhh') return depto.includes('rrhh') || depto.includes('recursos')
+    if (activeTab === 'comercial') return depto.includes('comercial')
+    if (activeTab === 'otros') {
+      return (
+        !depto.includes('it') &&
+        !depto.includes('tic') &&
+        !depto.includes('sistemas') &&
+        !depto.includes('logísti') &&
+        !depto.includes('logistica') &&
+        !depto.includes('rrhh') &&
+        !depto.includes('comercial')
+      )
+    }
+    return true
+  })
+
+  // Aplicar restricciones de usuario y la barra de búsqueda sobre lo ya filtrado por pestaña
+  const filtrarRequisiciones = requisicionesPorTab.filter((req) => {
+    const deptoReq = (req.departamento || req.datos_completos?.departamento || '')
+      .toLowerCase()
+      .trim()
+    const passesRole = isGlobalUser || deptoReq === userDept
+
+    // Filtro de la barra de búsqueda
+    const matchesSearch =
+      searchTerm === '' ||
+      Object.values(req).some((val) => String(val).toLowerCase().includes(searchTerm.toLowerCase()))
+
+    return passesRole && matchesSearch
+  })
+
   return (
     <div className={styles.container}>
       <motion.div
@@ -176,15 +228,10 @@ export const RequisicionesView: React.FC = () => {
           {/* Las pestañas de departamentos SOLO para Logística y Admin */}
           {isGlobalUser && (
             <div className={styles.tabs}>
-              {(['todas', 'tic', 'logistica', 'rrhh', 'comercial', 'otros'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`${styles.tab} ${
-                    activeTab === tab ? styles.tabActive : styles.tabInactive
-                  }`}
-                >
-                  {tab === 'todas'
+              {(['todas', 'tic', 'logistica', 'rrhh', 'comercial', 'otros'] as const).map((tab) => {
+                const count = pendientesArea(tab)
+                const label =
+                  tab === 'todas'
                     ? 'Todas'
                     : tab === 'tic'
                       ? 'IT/Sistemas'
@@ -194,9 +241,21 @@ export const RequisicionesView: React.FC = () => {
                           ? 'RRHH'
                           : tab === 'comercial'
                             ? 'Comercial'
-                            : 'Otros'}
-                </button>
-              ))}
+                            : 'Otros'
+
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`${styles.tab} ${
+                      activeTab === tab ? styles.tabActive : styles.tabInactive
+                    }`}
+                  >
+                    {label}
+                    {count >= 0 && ` (${count})`}
+                  </button>
+                )
+              })}
             </div>
           )}
 
@@ -225,12 +284,12 @@ export const RequisicionesView: React.FC = () => {
             </div>
           ) : error ? (
             <div className={styles.errorMessage}>{error}</div>
-          ) : filteredRequisiciones.length === 0 ? (
+          ) : filtrarRequisiciones.length === 0 ? (
             <div className={styles.emptyMessage}>No se encontraron requisiciones</div>
           ) : (
             <ul>
               <AnimatePresence>
-                {filteredRequisiciones.map((req) => (
+                {filtrarRequisiciones.map((req) => (
                   <motion.li
                     key={req.id}
                     initial={{ opacity: 0 }}

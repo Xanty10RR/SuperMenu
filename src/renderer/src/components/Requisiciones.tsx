@@ -123,15 +123,40 @@ export const RequisicionesView: React.FC = () => {
       req.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const formatDate = (dateString: string): string => {
+  const formatDate = (dateInput: string | Date): string => {
+    if (!dateInput) return ''
+
+    let date: Date
+
+    if (typeof dateInput === 'string') {
+      // Normalizamos el string por si viene con espacio en lugar de 'T'
+      let cleanStr = dateInput.trim()
+      if (cleanStr.includes(' ') && !cleanStr.includes('T')) {
+        cleanStr = cleanStr.replace(' ', 'T')
+      }
+      // Si no trae zona horaria, le agregamos 'Z' para que JS sepa que es UTC
+      if (!cleanStr.endsWith('Z') && !cleanStr.includes('+') && !cleanStr.includes('-', 10)) {
+        cleanStr += 'Z'
+      }
+      date = new Date(cleanStr)
+    } else {
+      date = dateInput
+    }
+
+    // Verificamos que sea una fecha válida
+    if (isNaN(date.getTime())) return ''
+
     const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'America/Bogota',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true
     }
-    return new Date(dateString).toLocaleDateString('es-ES', options)
+
+    return date.toLocaleString('es-CO', options)
   }
 
   const getBadgeClass = (tipo?: string): string => {
@@ -189,7 +214,6 @@ export const RequisicionesView: React.FC = () => {
             </div>
           )}
 
-          {/* La barra de búsqueda y actualizar SÍ aparecen para TODOS */}
           <div className={styles.searchContainer}>
             <FiSearch className={styles.searchIcon} size={18} />
             <input

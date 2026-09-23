@@ -43,12 +43,8 @@ export const RequisicionesView: React.FC = () => {
     setLoading(true)
     setError(null)
     try {
-      let endpoint = '/api/requisiciones/todas'
-      if (activeTab !== 'todas') {
-        endpoint = `/api/requisiciones/${activeTab}`
-      }
-
-      const response = await axios.get(`http://localhost:3003${endpoint}`)
+      // Siempre traemos todas para que los contadores y pestañas tengan la información completa
+      const response = await axios.get('http://localhost:3003/api/requisiciones/todas')
       setRequisiciones(response.data)
     } catch (err) {
       console.error('Error fetching requisiciones:', err)
@@ -56,7 +52,7 @@ export const RequisicionesView: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [activeTab])
+  }, []) // Quitar activeTab de aquí para que no vuelva a recargar al cambiar de pestaña
 
   useEffect((): void => {
     void fetchRequisiciones()
@@ -112,7 +108,7 @@ export const RequisicionesView: React.FC = () => {
     const date = new Date(dateInput)
     if (isNaN(date.getTime())) return ''
 
-    // Restamos 5 horas exactas (5 horas * 60 minutos * 60 segundos * 1000 milisegundos)
+    // Se resta 5 horas exactas (5 horas * 60 minutos * 60 segundos * 1000 milisegundos)
     // para convertir de UTC a la hora de Colombia (UTC-5)
     const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
 
@@ -145,7 +141,7 @@ export const RequisicionesView: React.FC = () => {
     }
   }
 
-  // Contador basados en el total de requisiciones
+  // Contadores basados en el total maestro de requisiciones
   const pendientesArea = (tabKey: string): number => {
     if (tabKey === 'todas') return requisiciones.length
 
@@ -153,7 +149,13 @@ export const RequisicionesView: React.FC = () => {
       const depto = (req.departamento || '').toLowerCase().trim()
       switch (tabKey) {
         case 'tic':
-          return depto.includes('it') || depto.includes('tic') || depto.includes('sistemas')
+          // Buscamos 'it', 'sistemas' o que 'tic' sea una palabra independiente
+          return (
+            depto.includes('it') ||
+            depto.includes('sistemas') ||
+            depto === 'tic' ||
+            depto.split(/[\s/]+/).includes('tic')
+          )
         case 'logistica':
           return depto.includes('logísti') || depto.includes('logistica')
         case 'rrhh':
@@ -163,8 +165,8 @@ export const RequisicionesView: React.FC = () => {
         case 'otros':
           return (
             !depto.includes('it') &&
-            !depto.includes('tic') &&
             !depto.includes('sistemas') &&
+            depto !== 'tic' &&
             !depto.includes('logísti') &&
             !depto.includes('logistica') &&
             !depto.includes('rrhh') &&
@@ -176,19 +178,24 @@ export const RequisicionesView: React.FC = () => {
     }).length
   }
 
-  // Filtro por pestaña activa sin modificar el arreglo original de requisiciones
+  // Filtrado por la pestaña activa (aplicando la misma regla exacta)
   const requisicionesPorTab = requisiciones.filter((req) => {
     if (activeTab === 'todas') return true
     const depto = (req.departamento || '').toLowerCase().trim()
+
     if (activeTab === 'tic')
-      return depto.includes('it') || depto.includes('tic') || depto.includes('sistemas')
+      return (
+        depto.includes('it') ||
+        depto.includes('sistemas') ||
+        depto === 'tic' ||
+        depto.split(/[\s/]+/).includes('tic')
+      )
     if (activeTab === 'logistica') return depto.includes('logísti') || depto.includes('logistica')
     if (activeTab === 'rrhh') return depto.includes('rrhh') || depto.includes('recursos')
     if (activeTab === 'comercial') return depto.includes('comercial')
     if (activeTab === 'otros') {
       return (
         !depto.includes('it') &&
-        !depto.includes('tic') &&
         !depto.includes('sistemas') &&
         !depto.includes('logísti') &&
         !depto.includes('logistica') &&
@@ -199,14 +206,13 @@ export const RequisicionesView: React.FC = () => {
     return true
   })
 
-  // Aplicar restricciones de usuario y la barra de búsqueda sobre lo ya filtrado por pestaña
+  // Filtrado final por Roles y barra de búsqueda
   const filtrarRequisiciones = requisicionesPorTab.filter((req) => {
     const deptoReq = (req.departamento || req.datos_completos?.departamento || '')
       .toLowerCase()
       .trim()
     const passesRole = isGlobalUser || deptoReq === userDept
 
-    // Filtro de la barra de búsqueda
     const matchesSearch =
       searchTerm === '' ||
       Object.values(req).some((val) => String(val).toLowerCase().includes(searchTerm.toLowerCase()))

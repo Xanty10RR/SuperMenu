@@ -16,6 +16,7 @@ interface Requisicion {
   id: number
   nombre_solicitante: string
   departamento: string
+  estado?: string
   datos_completos?: {
     departamento?: string
   }
@@ -206,6 +207,13 @@ export const RequisicionesView: React.FC = () => {
     return true
   })
 
+  const obtenerEstadoBadge = (estado?: string): string => {
+    const est = (estado || 'pendiente').toLowerCase()
+    if (est.includes('aprobado')) return styles.badgeAprobado
+    if (est.includes('rechazado')) return styles.badgeRechazado
+    return styles.badgePendiente
+  }
+
   // Filtrado final por Roles y barra de búsqueda
   const filtrarRequisiciones = requisicionesPorTab.filter((req) => {
     const deptoReq = (req.departamento || req.datos_completos?.departamento || '')
@@ -306,7 +314,15 @@ export const RequisicionesView: React.FC = () => {
                   >
                     <div className={styles.requisicionHeader}>
                       <div className={styles.requisicionInfo}>
-                        <div className={styles.requisicionTitle}>
+                        <div
+                          className={styles.requisicionTitle}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            flexWrap: 'wrap'
+                          }}
+                        >
                           {req.tipo && (
                             <span
                               className={`${styles.requisicionBadge} ${getBadgeClass(req.tipo)}`}
@@ -315,7 +331,18 @@ export const RequisicionesView: React.FC = () => {
                             </span>
                           )}
                           <h3 className={styles.requisicionName}>{req.nombre_solicitante}</h3>
+
+                          {/* Nuevo: ID de la requisición */}
+                          <span className={styles.reqId}>#{req.id}</span>
+
+                          {/* Nuevo: Badge de Estado dinámico */}
+                          <span
+                            className={`${styles.requisicionBadge} ${obtenerEstadoBadge(req.estado)}`}
+                          >
+                            {req.estado || 'Pendiente'}
+                          </span>
                         </div>
+
                         <p className={styles.requisicionMeta}>
                           {req.departamento} • {formatDate(req.fecha_creacion)}
                         </p>

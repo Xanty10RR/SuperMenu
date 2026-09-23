@@ -30,6 +30,21 @@ const pool = new Pool({
 
 export default pool
 
+// Función para normalizar el estado con la primera letra en mayúscula
+const normalizarEstado = (rows: Array<Record<string, unknown>>): Array<Record<string, unknown>> => {
+  return rows.map((row): Record<string, unknown> => {
+    const estadoActual = typeof row.estado === 'string' && row.estado.trim()
+      ? row.estado.trim().toLowerCase()
+      : 'pendiente'
+    // Capitaliza la primera letra (ej. "pendiente" -> "Pendiente")
+    const estadoFormateado = estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1)
+    return {
+      ...row,
+      estado: estadoFormateado
+    }
+  })
+}
+
 // Función para registrar errores del servidor en la tabla (errores_api)
 const registrarErrorServidor = async (error: unknown, origen: string): Promise<void> => {
   try {
@@ -117,7 +132,7 @@ app.get('/api/registro-aprobaciones', async (req, res) => {
 
     query += ' ORDER BY id DESC'
     const result = await pool.query(query, values)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch {
     res.status(500).json({ error: 'Error al cargar los datos' })
   }
@@ -128,7 +143,7 @@ app.get('/api/aprobaciones', async (req, res) => {
   try {
     const query = 'SELECT * FROM registro_aprobaciones ORDER BY fecha_decision DESC;'
     const result = await pool.query(query)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener las aprobaciones:', error)
     res.status(500).send('Error al obtener las aprobaciones')
@@ -177,7 +192,7 @@ app.post('/api/aprobaciones', async (req, res) => {
 
     res.json({
       message: 'Acción registrada con éxito',
-      registro: result.rows[0]
+      registro: normalizarEstado(result.rows)
     })
   } catch (error) {
     console.error('Error al registrar la aprobación/rechazo:', error)
@@ -193,7 +208,7 @@ app.get('/api/requisiciones/filtro', async (req, res) => {
     // Si es admin, traemos todo de la tabla única 'requisiciones'
     if (esAdmin === 'true' || usuario === 'admin') {
       const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
-      return res.json(result.rows)
+      return res.json(normalizarEstado(result.rows))
     }
 
     // Si es un jefe de área, filtramos por su departamento correspondiente
@@ -207,7 +222,7 @@ app.get('/api/requisiciones/filtro', async (req, res) => {
       'SELECT * FROM requisiciones WHERE departamento = $1 OR area = $1 ORDER BY id DESC',
       [deptoFiltro]
     )
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener requisiciones filtradas:', error)
     res.status(500).json({ error: 'Error al cargar las requisiciones' })
@@ -223,7 +238,7 @@ app.get('/api/requisiciones/todas', async (_req, res) => {
       WHERE estado IS NULL OR estado = 'pendiente'
       ORDER BY id DESC
     `)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener todas las requisiciones:', error)
     res.status(500).send('Error al obtener todas las requisiciones')
@@ -239,7 +254,7 @@ app.get('/api/requisiciones/tic', async (_req, res) => {
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
     `)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener requisiciones IT/Sistemas:', error)
     res.status(500).send('Error al obtener requisiciones IT/Sistemas')
@@ -255,7 +270,7 @@ app.get('/api/requisiciones/logistica', async (_req, res) => {
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
     `)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener requisiciones de Logística:', error)
     res.status(500).send('Error al obtener requisiciones de Logística')
@@ -271,7 +286,7 @@ app.get('/api/requisiciones/rrhh', async (_req, res) => {
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
     `)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener requisiciones de RRHH:', error)
     res.status(500).send('Error al obtener requisiciones de RRHH')
@@ -287,7 +302,7 @@ app.get('/api/requisiciones/comercial', async (_req, res) => {
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
     `)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener requisiciones de Comercial:', error)
     res.status(500).send('Error al obtener requisiciones de Comercial')
@@ -303,7 +318,7 @@ app.get('/api/requisiciones/otros', async (_req, res) => {
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
     `)
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener requisiciones de otros departamentos:', error)
     res.status(500).send('Error al obtener requisiciones de otros departamentos')
@@ -344,13 +359,13 @@ app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
   }
 })
 
-// Nuevo
+// Endpoint para obtener todas las entregas registradas con estado Entregado
 app.get('/api/aprobaciones/entregadas', async (_req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM registro_aprobaciones WHERE fecha_entrega IS NOT NULL AND fecha_entrega != 'NULL' ORDER BY id DESC"
     )
-    res.json(result.rows)
+    res.json(normalizarEstado(result.rows))
   } catch (error) {
     console.error('Error al obtener entregas:', error)
     await registrarErrorServidor(error, '/api/chatbot/metrics')

@@ -33,9 +33,10 @@ export default pool
 // Función para normalizar el estado con la primera letra en mayúscula
 const normalizarEstado = (rows: Array<Record<string, unknown>>): Array<Record<string, unknown>> => {
   return rows.map((row): Record<string, unknown> => {
-    const estadoActual = typeof row.estado === 'string' && row.estado.trim()
-      ? row.estado.trim().toLowerCase()
-      : 'pendiente'
+    const estadoActual =
+      typeof row.estado === 'string' && row.estado.trim()
+        ? row.estado.trim().toLowerCase()
+        : 'pendiente'
     // Capitaliza la primera letra (ej. "pendiente" -> "Pendiente")
     const estadoFormateado = estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1)
     return {

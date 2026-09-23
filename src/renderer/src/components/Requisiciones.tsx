@@ -126,28 +126,14 @@ export const RequisicionesView: React.FC = () => {
   const formatDate = (dateInput: string | Date): string => {
     if (!dateInput) return ''
 
-    let date: Date
-
-    if (typeof dateInput === 'string') {
-      // Normalizamos el string por si viene con espacio en lugar de 'T'
-      let cleanStr = dateInput.trim()
-      if (cleanStr.includes(' ') && !cleanStr.includes('T')) {
-        cleanStr = cleanStr.replace(' ', 'T')
-      }
-      // Si no trae zona horaria, le agregamos 'Z' para que JS sepa que es UTC
-      if (!cleanStr.endsWith('Z') && !cleanStr.includes('+') && !cleanStr.includes('-', 10)) {
-        cleanStr += 'Z'
-      }
-      date = new Date(cleanStr)
-    } else {
-      date = dateInput
-    }
-
-    // Verificamos que sea una fecha válida
+    const date = new Date(dateInput)
     if (isNaN(date.getTime())) return ''
 
+    // Restamos 5 horas exactas (5 horas * 60 minutos * 60 segundos * 1000 milisegundos)
+    // para convertir de UTC a la hora de Colombia (UTC-5)
+    const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
+
     const options: Intl.DateTimeFormatOptions = {
-      timeZone: 'America/Bogota',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -156,7 +142,7 @@ export const RequisicionesView: React.FC = () => {
       hour12: true
     }
 
-    return date.toLocaleString('es-CO', options)
+    return colombiaTime.toLocaleString('es-CO', options)
   }
 
   const getBadgeClass = (tipo?: string): string => {

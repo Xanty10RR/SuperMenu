@@ -214,6 +214,28 @@ export const RequisicionesView: React.FC = () => {
     return styles.badgePendiente
   }
 
+  // Logística ve todas las requisiciones para tener visibilidad global, pero solo puede poder aprobar o rechazar aquellas que correspondan a su departamento
+  const puedeGestionarReq = (req: Requisicion): boolean => {
+    // Si es el admin puede gestionar todo (opcional)
+    if (username === 'admin') return true
+
+    const deptoReq = (req.departamento || req.datos_completos?.departamento || '')
+      .toLowerCase()
+      .trim()
+
+    // Si el usuario logueado es de logistica (jefelogistica), solo puede aprobar si la req es de su propio dpto
+    if (
+      userDept.includes('logísti') ||
+      userDept.includes('logistica') ||
+      username === 'jefelogistica'
+    ) {
+      return deptoReq.includes('logísti') || deptoReq.includes('logistica')
+    }
+
+    // Para cualquier otro departamento, solo si coincide exactamente con su depto
+    return deptoReq === userDept
+  }
+
   // Filtrado final por Roles y barra de búsqueda
   const filtrarRequisiciones = requisicionesPorTab.filter((req) => {
     const deptoReq = (req.departamento || req.datos_completos?.departamento || '')
@@ -364,39 +386,44 @@ export const RequisicionesView: React.FC = () => {
                           )}
                         </button>
 
-                        <button
-                          className={`${styles.button} ${styles.buttonApprove}`}
-                          onClick={() => handleAprobarRechazar(req, 'aprobado')}
-                          disabled={procesando?.id === req.id}
-                          style={{
-                            opacity: procesando?.id === req.id ? 0.6 : 1,
-                            cursor: procesando?.id === req.id ? 'not-allowed' : 'pointer'
-                          }}
-                        >
-                          <FiCheckCircle className={styles.buttonIcon} />
-                          <span>
-                            {procesando?.id === req.id && procesando?.estado === 'aprobado'
-                              ? 'Procesando...'
-                              : 'Aprobar'}
-                          </span>
-                        </button>
+                        {/* Solo mostramos Aprobar y Rechazar si la requisición pertenece a su departamento */}
+                        {puedeGestionarReq(req) && (
+                          <>
+                            <button
+                              className={`${styles.button} ${styles.buttonApprove}`}
+                              onClick={() => handleAprobarRechazar(req, 'aprobado')}
+                              disabled={procesando?.id === req.id}
+                              style={{
+                                opacity: procesando?.id === req.id ? 0.6 : 1,
+                                cursor: procesando?.id === req.id ? 'not-allowed' : 'pointer'
+                              }}
+                            >
+                              <FiCheckCircle className={styles.buttonIcon} />
+                              <span>
+                                {procesando?.id === req.id && procesando?.estado === 'aprobado'
+                                  ? 'Procesando...'
+                                  : 'Aprobar'}
+                              </span>
+                            </button>
 
-                        <button
-                          className={`${styles.button} ${styles.buttonReject}`}
-                          onClick={() => handleAprobarRechazar(req, 'rechazado')}
-                          disabled={procesando?.id === req.id}
-                          style={{
-                            opacity: procesando?.id === req.id ? 0.6 : 1,
-                            cursor: procesando?.id === req.id ? 'not-allowed' : 'pointer'
-                          }}
-                        >
-                          <FiXCircle className={styles.buttonIcon} />
-                          <span>
-                            {procesando?.id === req.id && procesando?.estado === 'rechazado'
-                              ? 'Procesando...'
-                              : 'Rechazar'}
-                          </span>
-                        </button>
+                            <button
+                              className={`${styles.button} ${styles.buttonReject}`}
+                              onClick={() => handleAprobarRechazar(req, 'rechazado')}
+                              disabled={procesando?.id === req.id}
+                              style={{
+                                opacity: procesando?.id === req.id ? 0.6 : 1,
+                                cursor: procesando?.id === req.id ? 'not-allowed' : 'pointer'
+                              }}
+                            >
+                              <FiXCircle className={styles.buttonIcon} />
+                              <span>
+                                {procesando?.id === req.id && procesando?.estado === 'rechazado'
+                                  ? 'Procesando...'
+                                  : 'Rechazar'}
+                              </span>
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
 

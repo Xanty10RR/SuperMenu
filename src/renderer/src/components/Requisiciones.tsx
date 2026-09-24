@@ -332,10 +332,10 @@ export const RequisicionesView: React.FC = () => {
                           )}
                           <h3 className={styles.requisicionName}>{req.nombre_solicitante}</h3>
 
-                          {/* Nuevo: ID de la requisición */}
+                          {/* ID de la requisición */}
                           <span className={styles.reqId}>#{req.id}</span>
 
-                          {/* Nuevo: Badge de Estado dinámico */}
+                          {/* Badge de Estado dinámico */}
                           <span
                             className={`${styles.requisicionBadge} ${obtenerEstadoBadge(req.estado)}`}
                           >
@@ -419,7 +419,8 @@ export const RequisicionesView: React.FC = () => {
                                     'departamento',
                                     'descripcion',
                                     'fecha_creacion',
-                                    'tipo'
+                                    'tipo',
+                                    'estado'
                                   ].includes(key)
                               )
                               .map(([key, value]) => (

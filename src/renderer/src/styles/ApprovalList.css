@@ -315,6 +315,15 @@
   word-break: break-word;
 }
 
+.reqId {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
 .approval-info {
   display: flex;
   gap: 30px;

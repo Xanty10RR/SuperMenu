@@ -386,7 +386,7 @@ export const RequisicionesView: React.FC = () => {
                           )}
                         </button>
 
-                        {/* Solo mostramos Aprobar y Rechazar si la requisición pertenece a su departamento */}
+                        {/* Solo mostramos aprobar y rechazar si la requisición pertenece a su departamento */}
                         {puedeGestionarReq(req) && (
                           <>
                             <button

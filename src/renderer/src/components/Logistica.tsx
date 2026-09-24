@@ -226,9 +226,9 @@ export const ApprovalList: React.FC = () => {
             <div className="item-header" onClick={() => toggleExpand(item.id)}>
               <div className="header-info">
                 <span className="reqId">#{item.id}</span>
-                <p className="reqId">{String(item.datos_completos.id ?? '')}</p>
                 <h3>{item.datos_completos.nombre_solicitante} </h3>
                 <p className="department">{item.datos_completos.departamento}</p>
+                <p className="description">{item.datos_completos.descripcion}</p>
               </div>
 
               <div className="header-dates">

@@ -14,6 +14,7 @@ import '../styles/ApprovalList.css'
 interface ApprovalItem {
   id: number
   datos_completos: {
+    id: number
     nombre_solicitante: string
     departamento: string
     descripcion: string
@@ -225,7 +226,7 @@ export const ApprovalList: React.FC = () => {
           >
             <div className="item-header" onClick={() => toggleExpand(item.id)}>
               <div className="header-info">
-                <span className="reqId">#{item.id}</span>
+                <span className="reqId">#{item.datos_completos.id}</span>
                 <h3>{item.datos_completos.nombre_solicitante} </h3>
                 <p className="department">{item.datos_completos.departamento}</p>
                 <p className="description">{item.datos_completos.descripcion}</p>

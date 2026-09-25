@@ -341,12 +341,12 @@
 
 .approval-field span:first-child {
   font-weight: 600;
-  color: #7f8c8d;
+  color: #3498db;
   font-size: 13px;
 }
 
 .approval-field span:last-child {
-  color: #2c3e50;
+  color: #25303b;
   font-size: 14px;
   margin-top: 3px;
 }

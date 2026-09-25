@@ -356,11 +356,11 @@
   text-transform: capitalize;
 }
 
-.status-text.aprobado {
-  color: #2ecc71;
+.approval-field span.status-text.aprobado {
+  color: #2ecc70dd;
 }
 
-.status-text.rechazado {
+.approval-field span.status-text.rechazado {
   color: #e74c3c;
 }
 

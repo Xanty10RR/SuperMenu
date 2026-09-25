@@ -299,7 +299,13 @@ export const ApprovalList: React.FC = () => {
                         key !== 'descripcion' &&
                         key !== 'fecha_solicitud' && (
                           <div key={key} className="detail-item">
-                            <span className="detail-label">{key.replace(/_/g, ' ')}:</span>
+                            <span className="detail-label">
+                              {key.toLowerCase() === 'fecha_creacion' ||
+                              key.toLowerCase() === 'fecha creacion'
+                                ? 'Fecha Solicitud'
+                                : key.replace(/_/g, ' ')}
+                              :
+                            </span>
                             <span className="detail-value">
                               {key.toLowerCase().includes('fecha')
                                 ? formatDate(String(value))

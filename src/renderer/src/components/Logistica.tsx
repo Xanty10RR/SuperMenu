@@ -243,6 +243,9 @@ export const ApprovalList: React.FC = () => {
     return colombiaTime.toLocaleDateString('es-CO')
   }
 
+  const mayusculaPrimeraletra = (value: string): string =>
+    value ? value.charAt(0).toUpperCase() + value.slice(1) : ''
+
   const renderApprovalList = (
     items: ApprovalItem[],
     showDeliveryButton: boolean,
@@ -332,22 +335,22 @@ export const ApprovalList: React.FC = () => {
                 <div className="approval-info">
                   <div className="approval-field">
                     <span>Aprobador:</span>
-                    <span>{item.aprobador}</span>
+                    <span>{mayusculaPrimeraletra(item.aprobador)}</span>
                   </div>
                   <div className="approval-field">
                     <span>Origen:</span>
-                    <span>{item.tabla_origen}</span>
+                    <span>{mayusculaPrimeraletra(item.tabla_origen)}</span>
                   </div>
                   <div className="approval-field">
                     <span>Estado:</span>
                     <span className={`status-text ${item.estado.toLowerCase()}`}>
-                      {item.estado}
+                      {mayusculaPrimeraletra(item.estado)}
                     </span>
                   </div>
                   {isDelivered && item.entregado_por && (
                     <div className="approval-field">
                       <span>Entregado por:</span>
-                      <span>{item.entregado_por}</span>
+                      <span>{mayusculaPrimeraletra(item.entregado_por)}</span>
                     </div>
                   )}
                 </div>
@@ -355,7 +358,7 @@ export const ApprovalList: React.FC = () => {
                 {isDelivered && item.observaciones && (
                   <div className="delivery-observations">
                     <h4>Observaciones de entrega:</h4>
-                    <p>{item.observaciones}</p>
+                    <p>{mayusculaPrimeraletra(item.observaciones)}</p>
                   </div>
                 )}
 

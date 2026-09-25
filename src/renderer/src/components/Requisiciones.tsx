@@ -352,10 +352,9 @@ export const RequisicionesView: React.FC = () => {
                               {req.tipo}
                             </span>
                           )}
-                          <h3 className={styles.requisicionName}>{req.nombre_solicitante}</h3>
-
                           {/* ID de la requisición */}
                           <span className={styles.reqId}>#{req.id}</span>
+                          <h3 className={styles.requisicionName}>{req.nombre_solicitante}</h3>
 
                           {/* Badge de Estado dinámico */}
                           <span

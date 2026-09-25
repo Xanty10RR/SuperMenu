@@ -208,14 +208,14 @@ export const ApprovalList: React.FC = () => {
     return <FontAwesomeIcon icon={faClock} className="status-icon pending" />
   }
 
+  // Función para fecha larga (detalles) usando la misma lógica exacta que Requisiciones
   const formatDate = (dateInput: string | Date): string => {
     if (!dateInput) return ''
 
     const date = new Date(dateInput)
     if (isNaN(date.getTime())) return ''
 
-    // Se resta 5 horas exactas (5 horas * 60 minutos * 60 segundos * 1000 milisegundos)
-    // para convertir de UTC a la hora de Colombia (UTC-5)
+    // Se resta 5 horas exactas para convertir de UTC a la hora de Colombia (UTC-5)
     const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
 
     const options: Intl.DateTimeFormatOptions = {
@@ -228,6 +228,19 @@ export const ApprovalList: React.FC = () => {
     }
 
     return colombiaTime.toLocaleString('es-CO', options)
+  }
+
+  // Función para fecha corta (Solicitud y Decisión de la tarjeta superior)
+  const formatShortDate = (dateInput: string | Date): string => {
+    if (!dateInput) return ''
+
+    const date = new Date(dateInput)
+    if (isNaN(date.getTime())) return ''
+
+    // Se resta 5 horas exactas para que coincida con el día correcto en Colombia
+    const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
+
+    return colombiaTime.toLocaleDateString('es-CO')
   }
 
   const renderApprovalList = (
@@ -256,17 +269,16 @@ export const ApprovalList: React.FC = () => {
 
               <div className="header-dates">
                 <p className="request-date">
-                  <span>Solicitud:</span>{' '}
-                  {new Date(item.datos_completos.fecha_creacion).toLocaleDateString()}
+                  <span>Solicitud:</span> {formatShortDate(item.datos_completos.fecha_creacion)}
                 </p>
                 {isDelivered ? (
                   <p className="delivery-date">
                     <span>Entregado:</span>{' '}
-                    {new Date(item.fecha_entrega || item.fecha_decision).toLocaleDateString()}
+                    {formatShortDate(item.fecha_entrega || item.fecha_decision)}
                   </p>
                 ) : (
                   <p className="approval-date">
-                    <span>Decisión:</span> {new Date(item.fecha_decision).toLocaleDateString()}
+                    <span>Decisión:</span> {formatShortDate(item.fecha_decision)}
                   </p>
                 )}
               </div>

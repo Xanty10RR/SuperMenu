@@ -208,6 +208,28 @@ export const ApprovalList: React.FC = () => {
     return <FontAwesomeIcon icon={faClock} className="status-icon pending" />
   }
 
+  const formatDate = (dateInput: string | Date): string => {
+    if (!dateInput) return ''
+
+    const date = new Date(dateInput)
+    if (isNaN(date.getTime())) return ''
+
+    // Se resta 5 horas exactas (5 horas * 60 minutos * 60 segundos * 1000 milisegundos)
+    // para convertir de UTC a la hora de Colombia (UTC-5)
+    const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }
+
+    return colombiaTime.toLocaleString('es-CO', options)
+  }
+
   const renderApprovalList = (
     items: ApprovalItem[],
     showDeliveryButton: boolean,
@@ -270,14 +292,19 @@ export const ApprovalList: React.FC = () => {
                   <div className="details-grid">
                     {Object.entries(item.datos_completos).map(
                       ([key, value]) =>
-                        key !== 'nombre_solicitante' &&
                         key !== 'id' &&
+                        key !== 'estado' &&
+                        key !== 'nombre_solicitante' &&
                         key !== 'departamento' &&
                         key !== 'descripcion' &&
                         key !== 'fecha_solicitud' && (
                           <div key={key} className="detail-item">
                             <span className="detail-label">{key.replace(/_/g, ' ')}:</span>
-                            <span className="detail-value">{String(value)}</span>
+                            <span className="detail-value">
+                              {key.toLowerCase().includes('fecha')
+                                ? formatDate(String(value))
+                                : String(value)}
+                            </span>
                           </div>
                         )
                     )}

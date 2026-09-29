@@ -374,6 +374,48 @@ app.get('/api/aprobaciones/entregadas', async (_req, res) => {
   }
 })
 
+// Endpoint para rechazar una solicitud aprobada desde logística (con PATCH)
+app.patch('/api/aprobaciones/:id/rechazar', async (req, res) => {
+  try {
+    const { id } = req.params
+    const { observaciones } = req.body
+
+    const fechaActual = new Date().toISOString()
+
+    const resultado = await pool.query(
+      `UPDATE registro_aprobaciones 
+       SET estado = 'rechazado',
+           fecha_decision = $1, 
+           observaciones = $2 
+       WHERE id = $3 AND LOWER(estado) = 'aprobado'`,
+      [fechaActual, observaciones, id]
+    )
+
+    if (resultado.rowCount === 0) {
+      return res.status(400).json({ error: 'La solicitud no existe o no está en estado aprobado.' })
+    }
+
+    res.json({ message: 'Solicitud rechazada con éxito' })
+  } catch (error) {
+    console.error('Error al rechazar solicitud:', error)
+    res.status(500).send('Error al rechazar la solicitud')
+  }
+})
+
+// Endpoint para obtener todas las solicitudes rechazadas
+app.get('/api/aprobaciones/rechazadas', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM registro_aprobaciones WHERE LOWER(estado) = 'rechazado' ORDER BY id DESC"
+    )
+    res.json(normalizarEstado(result.rows))
+  } catch (error) {
+    console.error('Error al obtener rechazadas:', error)
+    await registrarErrorServidor(error, '/api/chatbot/metrics')
+    res.status(500).send('Error al obtener rechazadas')
+  }
+})
+
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body
 

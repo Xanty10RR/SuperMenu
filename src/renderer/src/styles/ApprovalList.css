@@ -650,3 +650,14 @@
   color: #5a3a1e;
   font-weight: bold;
 }
+
+/* Estilo específico para las observaciones cuando Logistica marca como rechazado */
+.delivery-observations.rejected-observations {
+  background-color: #fdf2f2;
+  border-left: 4px solid #dc3545;
+  color: #721c24; /* Un texto rojo oscuro elegante */
+}
+
+.delivery-observations.rejected-observations h4 {
+  color: #dc3545;
+}

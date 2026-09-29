@@ -44,6 +44,38 @@ export const ApprovalList: React.FC = () => {
     entregado_por: '',
     observaciones: ''
   })
+
+  // Función para fecha larga (detalles) usando la misma lógica exacta que Requisiciones
+  const formatDate = (dateInput: string | Date): string => {
+    if (!dateInput) return ''
+
+    const date = new Date(dateInput)
+    if (isNaN(date.getTime())) return ''
+
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'America/Bogota', // ¡Aquí está la magia!
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }
+
+    return date.toLocaleString('es-CO', options)
+  }
+
+  // Función para fecha corta (Solicitud y Decisión de la tarjeta superior) corregida
+  const formatShortDate = (dateInput: string | Date): string => {
+    if (!dateInput) return ''
+
+    const date = new Date(dateInput)
+    if (isNaN(date.getTime())) return ''
+
+    // Convierte directamente al día exacto de Colombia sin restar nada a mano
+    return date.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
+  }
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   // Se valida usuario logueado desde LOCALSTORAGE para determinar si puede ver el botón de entrega o no. Los jefes no pueden ver el botón, solo logística y admin
   const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
@@ -185,7 +217,6 @@ export const ApprovalList: React.FC = () => {
   }
 
   // Función para rechazar la solicitud desde logística
-  // Función para rechazar la solicitud desde logística
   const handleReject = async (aprobacionId: number): Promise<void> => {
     if (!deliveryData.observaciones.trim()) {
       alert(
@@ -212,7 +243,7 @@ export const ApprovalList: React.FC = () => {
           estado: 'Rechazado',
           entregado_por: usuarioLogueado,
           observaciones: deliveryData.observaciones.trim(),
-          fecha_decision: new Date().toISOString()
+          fecha_decision: new Date().toISOString() // ¡Así de simple y limpio, mi amor!
         }
 
         setApprovals((prev) => prev.filter((item) => item.id !== aprobacionId))
@@ -251,41 +282,6 @@ export const ApprovalList: React.FC = () => {
       return <FontAwesomeIcon icon={faBoxOpen} className="status-icon delivered" />
     }
     return <FontAwesomeIcon icon={faClock} className="status-icon pending" />
-  }
-
-  // Función para fecha larga (detalles) usando la misma lógica exacta que Requisiciones
-  const formatDate = (dateInput: string | Date): string => {
-    if (!dateInput) return ''
-
-    const date = new Date(dateInput)
-    if (isNaN(date.getTime())) return ''
-
-    // Se resta 5 horas exactas para convertir de UTC a la hora de Colombia (UTC-5)
-    const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
-
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }
-
-    return colombiaTime.toLocaleString('es-CO', options)
-  }
-
-  // Función para fecha corta (Solicitud y Decisión de la tarjeta superior)
-  const formatShortDate = (dateInput: string | Date): string => {
-    if (!dateInput) return ''
-
-    const date = new Date(dateInput)
-    if (isNaN(date.getTime())) return ''
-
-    // Se resta 5 horas exactas para que coincida con el día correcto en Colombia
-    const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
-
-    return colombiaTime.toLocaleDateString('es-CO')
   }
 
   const mayusculaPrimeraletra = (value: string): string =>
@@ -427,6 +423,7 @@ export const ApprovalList: React.FC = () => {
                     <h4>Gestión de Logística</h4>
                     <div className="delivery-form">
                       <div className="form-group">
+                        rejectedItem
                         <label>Entregado por (Obligatorio para entrega):</label>
                         <input
                           type="text"

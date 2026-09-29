@@ -451,18 +451,7 @@ export const ApprovalList: React.FC = () => {
                           className="reject-button"
                           disabled={isSubmitting}
                           style={{
-                            flex: 1,
-                            backgroundColor: '#dc3545',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px 16px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px'
+                            flex: 1
                           }}
                         >
                           {isSubmitting ? (

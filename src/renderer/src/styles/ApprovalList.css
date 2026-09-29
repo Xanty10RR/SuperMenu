@@ -655,7 +655,7 @@
 .delivery-observations.rejected-observations {
   background-color: #fdf2f2;
   border-left: 4px solid #dc3545;
-  color: #721c24; /* Un texto rojo oscuro elegante */
+  color: #721c24;
 }
 
 .delivery-observations.rejected-observations h4 {

@@ -65,14 +65,14 @@ export const ApprovalList: React.FC = () => {
     return date.toLocaleString('es-CO', options)
   }
 
-  // Función para fecha corta (Solicitud y Decisión de la tarjeta superior) corregida
+  // Función para fecha corta (Solicitud y Decisión
   const formatShortDate = (dateInput: string | Date): string => {
     if (!dateInput) return ''
 
     const date = new Date(dateInput)
     if (isNaN(date.getTime())) return ''
 
-    // Convierte directamente al día exacto de Colombia sin restar nada a mano
+    // Convierte directamente al día exacto de Colombia sin restar el tiempo
     return date.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
   }
 

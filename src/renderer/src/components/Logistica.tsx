@@ -410,7 +410,9 @@ export const ApprovalList: React.FC = () => {
                   )}
 
                 {item.observaciones && (
-                  <div className="delivery-observations">
+                  <div
+                    className={`delivery-observations ${item.estado.toLowerCase() === 'rechazado' ? 'rejected-observations' : ''}`}
+                  >
                     <h4>
                       {item.estado.toLowerCase() === 'rechazado'
                         ? 'Observaciones de rechazo:'

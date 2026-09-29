@@ -400,9 +400,22 @@ export const ApprovalList: React.FC = () => {
                   )}
                 </div>
 
-                {isDelivered && item.observaciones && (
+                {!isDelivered &&
+                  item.estado.toLowerCase() === 'rechazado' &&
+                  item.entregado_por && (
+                    <div className="approval-field">
+                      <span>Rechazado por:</span>
+                      <span>{mayusculaPrimeraletra(item.entregado_por)}</span>
+                    </div>
+                  )}
+
+                {item.observaciones && (
                   <div className="delivery-observations">
-                    <h4>Observaciones de entrega:</h4>
+                    <h4>
+                      {item.estado.toLowerCase() === 'rechazado'
+                        ? 'Observaciones de rechazo:'
+                        : 'Observaciones de entrega:'}
+                    </h4>
                     <p>{mayusculaPrimeraletra(item.observaciones)}</p>
                   </div>
                 )}

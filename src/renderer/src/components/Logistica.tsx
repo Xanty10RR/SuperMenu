@@ -184,6 +184,46 @@ export const ApprovalList: React.FC = () => {
     }
   }
 
+  // Función para rechazar la solicitud desde logística
+  const handleReject = async (aprobacionId: number): Promise<void> => {
+    if (!deliveryData.observaciones.trim()) {
+      alert(
+        'Por favor ingrese una observación indicando el motivo del rechazo (ej. sin stock, muy costoso, etc.)'
+      )
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      setError(null)
+
+      await axios.patch(`http://localhost:3003/api/aprobaciones/${aprobacionId}/rechazar`, {
+        observaciones: deliveryData.observaciones.trim()
+      })
+
+      const updatedItem = approvals.find((item) => item.id === aprobacionId)
+      if (updatedItem) {
+        const rejectedItem = {
+          ...updatedItem,
+          estado: 'Rechazado',
+          observaciones: deliveryData.observaciones.trim(),
+          fecha_decision: new Date().toISOString()
+        }
+
+        setApprovals((prev) => prev.filter((item) => item.id !== aprobacionId))
+        setRejected((prev) => [rejectedItem, ...prev])
+      }
+
+      setDeliveryData({ entregado_por: '', observaciones: '' })
+      setExpandedId(null)
+    } catch (err) {
+      console.error('Error al rechazar solicitud:', err)
+      setError('Error al rechazar la solicitud. Por favor intente nuevamente.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const handleDeliveryInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
@@ -364,44 +404,76 @@ export const ApprovalList: React.FC = () => {
 
                 {showDeliveryButton && (
                   <div className="delivery-section">
-                    <h4>Registrar Entrega</h4>
+                    <h4>Gestión de Logística</h4>
                     <div className="delivery-form">
                       <div className="form-group">
-                        <label>Entregado por:</label>
+                        <label>Entregado por (Obligatorio para entrega):</label>
                         <input
                           type="text"
                           name="entregado_por"
                           value={deliveryData.entregado_por}
                           onChange={handleDeliveryInputChange}
                           placeholder="Nombre de quien entrega"
-                          required
                           disabled={isSubmitting}
                         />
                       </div>
                       <div className="form-group">
-                        <label>Observaciones:</label>
+                        <label>Observaciones / Motivo de rechazo:</label>
                         <textarea
                           name="observaciones"
                           value={deliveryData.observaciones}
                           onChange={handleDeliveryInputChange}
-                          placeholder="Notas adicionales"
+                          placeholder="Notas adicionales o razón en caso de rechazo"
                           rows={3}
                           disabled={isSubmitting}
                         />
                       </div>
-                      <button
-                        onClick={() => handleDelivery(item.id)}
-                        className="deliver-button"
-                        disabled={isSubmitting}
+                      <div
+                        className="delivery-buttons-container"
+                        style={{ display: 'flex', gap: '12px', marginTop: '10px' }}
                       >
-                        {isSubmitting ? (
-                          'Procesando...'
-                        ) : (
-                          <>
-                            <FontAwesomeIcon icon={faTruck} /> Marcar como Entregado
-                          </>
-                        )}
-                      </button>
+                        <button
+                          onClick={() => handleDelivery(item.id)}
+                          className="deliver-button"
+                          disabled={isSubmitting}
+                          style={{ flex: 1 }}
+                        >
+                          {isSubmitting ? (
+                            'Procesando...'
+                          ) : (
+                            <>
+                              <FontAwesomeIcon icon={faTruck} /> Marcar como Entregado
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleReject(item.id)}
+                          className="reject-button"
+                          disabled={isSubmitting}
+                          style={{
+                            flex: 1,
+                            backgroundColor: '#dc3545',
+                            color: 'white',
+                            border: 'none',
+                            padding: '10px 16px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          {isSubmitting ? (
+                            'Procesando...'
+                          ) : (
+                            <>
+                              <FontAwesomeIcon icon={faTimesCircle} /> Rechazar Solicitud
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

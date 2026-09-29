@@ -378,7 +378,7 @@ app.get('/api/aprobaciones/entregadas', async (_req, res) => {
 app.patch('/api/aprobaciones/:id/rechazar', async (req, res) => {
   try {
     const { id } = req.params
-    const { observaciones } = req.body
+    const { rechazado_por, observaciones } = req.body
 
     const fechaActual = new Date().toISOString()
 
@@ -386,9 +386,10 @@ app.patch('/api/aprobaciones/:id/rechazar', async (req, res) => {
       `UPDATE registro_aprobaciones 
        SET estado = 'rechazado',
            fecha_decision = $1, 
-           observaciones = $2 
-       WHERE id = $3 AND LOWER(estado) = 'aprobado'`,
-      [fechaActual, observaciones, id]
+           entregado_por = $2, 
+           observaciones = $3 
+       WHERE id = $4 AND LOWER(estado) = 'aprobado'`,
+      [fechaActual, rechazado_por || 'Dpto. logistica', observaciones, id]
     )
 
     if (resultado.rowCount === 0) {

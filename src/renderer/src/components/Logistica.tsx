@@ -420,17 +420,16 @@ export const ApprovalList: React.FC = () => {
 
                 {showDeliveryButton && (
                   <div className="delivery-section">
-                    <h4>Gestión de Logística</h4>
+                    <h4>Gestión de Logística (Inventario y Despacho)</h4>
                     <div className="delivery-form">
                       <div className="form-group">
-                        rejectedItem
-                        <label>Entregado por (Obligatorio para entrega):</label>
+                        <label>Responsable de Logística:</label>
                         <input
                           type="text"
                           name="entregado_por"
                           value={deliveryData.entregado_por}
                           onChange={handleDeliveryInputChange}
-                          placeholder="Nombre de quien entrega"
+                          placeholder="Nombre del responsable"
                           disabled={isSubmitting}
                         />
                       </div>
@@ -440,16 +439,17 @@ export const ApprovalList: React.FC = () => {
                           name="observaciones"
                           value={deliveryData.observaciones}
                           onChange={handleDeliveryInputChange}
-                          placeholder="Notas adicionales o razón en caso de rechazo"
+                          placeholder="Escribe notas de entrega o el motivo obligatorio en caso de rechazo..."
                           rows={3}
                           disabled={isSubmitting}
                         />
                       </div>
                       <div
                         className="delivery-buttons-container"
-                        style={{ display: 'flex', gap: '12px', marginTop: '10px' }}
+                        style={{ display: 'flex', gap: '12px', marginTop: '15px' }}
                       >
                         <button
+                          type="button"
                           onClick={() => handleDelivery(item.id)}
                           className="deliver-button"
                           disabled={isSubmitting}
@@ -464,6 +464,7 @@ export const ApprovalList: React.FC = () => {
                           )}
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleReject(item.id)}
                           className="reject-button"
                           disabled={isSubmitting}

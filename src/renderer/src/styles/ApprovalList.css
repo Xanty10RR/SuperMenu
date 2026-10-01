@@ -130,7 +130,6 @@
   background: #3498db;
 }
 
-/* Approval list styles */
 .approval-list {
   display: flex;
   flex-direction: column;
@@ -144,6 +143,20 @@
   overflow: hidden;
   transition: all 0.3s ease;
   border-left: 4px solid #3498db;
+  margin-bottom: 15px;
+}
+
+/* Bordes dinámicos según el estado */
+.approval-item.aprobado {
+  border-left-color: #3498db;
+}
+
+.approval-item.rechazado {
+  border-left-color: #ef4444;
+}
+
+.approval-item.entregado {
+  border-left-color: #10b981;
 }
 
 .approval-item:hover {

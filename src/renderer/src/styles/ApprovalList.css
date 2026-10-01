@@ -193,7 +193,7 @@
 
 .header-info .department {
   margin: 0 0 8px 0;
-  color: #3498db;
+  color: #000000;
   font-weight: 500;
   font-size: 14px;
 }
@@ -656,13 +656,19 @@
 .delivery-observations {
   margin-top: 15px;
   padding: 10px;
-  background-color: #f0e0d0;
+  background-color: #E6F7F2;
   border-radius: 4px;
+  color: #116418
 }
 
 .delivery-observations h4 {
   margin-top: 0;
-  color: #5a3a1e;
+  color: #10b981;
+}
+
+.delivery-observations.delivered-observations {
+  background-color: #fdf2f2;
+  color: #ee041b;
 }
 
 .delivered-item .delivery-date {
@@ -677,5 +683,5 @@
 }
 
 .delivery-observations.rejected-observations h4 {
-  color: #dc3545;
+  color: #e74c3c;
 }

@@ -243,7 +243,7 @@ export const ApprovalList: React.FC = () => {
           estado: 'Rechazado',
           entregado_por: usuarioLogueado,
           observaciones: deliveryData.observaciones.trim(),
-          fecha_decision: new Date().toISOString() // ¡Así de simple y limpio, mi amor!
+          fecha_decision: new Date().toISOString()
         }
 
         setApprovals((prev) => prev.filter((item) => item.id !== aprobacionId))
@@ -376,7 +376,7 @@ export const ApprovalList: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Información unificada y ordenada en la misma sección */}
+                  {/* Información unificada y ordenada */}
                   <div className="approval-info">
                     <div className="approval-field">
                       <span>Aprobador:</span>
@@ -393,7 +393,6 @@ export const ApprovalList: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* Integrados limpiamente para evitar textos flotantes */}
                     {isDelivered && item.entregado_por && (
                       <div className="approval-field">
                         <span>Entregado por:</span>
@@ -404,7 +403,7 @@ export const ApprovalList: React.FC = () => {
                     {!isDelivered && estadoClase === 'rechazado' && item.entregado_por && (
                       <div className="approval-field">
                         <span>Rechazado por:</span>
-                        <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                        <span className={`status-text ${estadoClase}`}>
                           {mayusculaPrimeraletra(item.entregado_por)}
                         </span>
                       </div>

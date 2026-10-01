@@ -46,23 +46,28 @@ export const ApprovalList: React.FC = () => {
   })
 
   // Función para fecha larga (detalles) usando la misma lógica exacta que Requisiciones
-  const formatDate = (dateInput: string | Date): string => {
-    if (!dateInput) return ''
-
+  const restarCincoHoras = (dateInput: string | Date): Date | null => {
+    if (!dateInput) return null
     const date = new Date(dateInput)
-    if (isNaN(date.getTime())) return ''
+    if (isNaN(date.getTime())) return null
+    date.setTime(date.getTime() - 5 * 60 * 60 * 1000)
+    return date
+  }
 
-    const options: Intl.DateTimeFormatOptions = {
-      timeZone: 'America/Bogota', // ¡Aquí está la magia!
+  // Función para fecha larga (detalles) con el ajuste de 5 horas
+  const formatDate = (dateInput: string | Date): string => {
+    const date = restarCincoHoras(dateInput)
+    if (!date) return ''
+
+    return date.toLocaleString('es-CO', {
+      timeZone: 'America/Bogota',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
-    }
-
-    return date.toLocaleString('es-CO', options)
+    })
   }
 
   // Función para fecha corta (Solicitud y Decisión
@@ -73,6 +78,12 @@ export const ApprovalList: React.FC = () => {
     if (isNaN(date.getTime())) return ''
 
     // Convierte directamente al día exacto de Colombia sin restar el tiempo
+    return date.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
+  }
+
+  const formatShortDateAdjusted = (dateInput: string | Date): string => {
+    const date = restarCincoHoras(dateInput)
+    if (!date) return ''
     return date.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
   }
 
@@ -317,16 +328,18 @@ export const ApprovalList: React.FC = () => {
 
                 <div className="header-dates">
                   <p className="request-date">
-                    <span>Solicitud:</span> {formatShortDate(item.datos_completos.fecha_creacion)}
+                    <span>Solicitud:</span>{' '}
+                    {formatShortDateAdjusted(item.datos_completos.fecha_creacion)}
                   </p>
                   {isDelivered ? (
                     <p className="delivery-date">
                       <span>Entregado:</span>{' '}
+                      {/* Esta usa la normal para que la fecha de entrega quede intacta */}
                       {formatShortDate(item.fecha_entrega || item.fecha_decision)}
                     </p>
                   ) : (
                     <p className="approval-date">
-                      <span>Decisión:</span> {formatShortDate(item.fecha_decision)}
+                      <span>Decisión:</span> {formatShortDateAdjusted(item.fecha_decision)}
                     </p>
                   )}
                 </div>

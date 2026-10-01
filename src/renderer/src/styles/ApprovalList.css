@@ -86,7 +86,6 @@
   margin: 20px 0;
 }
 
-/* Tab styles */
 .tabs {
   display: flex;
   margin-bottom: 20px;
@@ -263,18 +262,21 @@
 }
 
 .status-icon.approved {
-  color: #2ecc71;
+  color: #3498db;
 }
 
 .status-icon.rejected {
-  color: #e74c3c;
+  color: #e73c3c;
 }
 
 .status-icon.pending {
   color: #f39c12;
 }
 
-/* Expanded details */
+.status-icon.delivered {
+  color: #10b981;
+}
+
 .item-details {
   background: #f8fafc;
   padding: 20px;
@@ -372,18 +374,22 @@
 }
 
 .approval-field span.status-text.aprobado {
-  color: #2ecc70dd;
+  color: #3498db;
 }
 
 .approval-field span.status-text.rechazado {
   color: #e74c3c;
 }
 
+.approval-field span.status-text.entregado {
+  color: #10b981
+}
+
 .status-text.pendiente {
   color: #f39c12;
 }
 
-/* Delivery section styles */
+
 .delivery-section {
   margin-top: 20px;
   padding-top: 20px;
@@ -631,7 +637,7 @@
 /* Estilos para entregas */
 .delivered-list .approval-item {
   background-color: #f5e9dc;
-  border-left: 4px solid #8b4513;
+  border-left: 4px solid #10b981;
 }
 
 .delivered-list .approval-item:hover {
@@ -667,7 +673,6 @@
 /* Estilo específico para las observaciones cuando Logistica marca como rechazado */
 .delivery-observations.rejected-observations {
   background-color: #fdf2f2;
-  border-left: 4px solid #dc3545;
   color: #721c24;
 }
 

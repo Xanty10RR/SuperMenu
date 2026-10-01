@@ -298,196 +298,201 @@ export const ApprovalList: React.FC = () => {
 
     return (
       <div className={`approval-list ${isDelivered ? 'delivered-list' : ''}`}>
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className={`approval-item ${isDelivered ? 'delivered-item' : ''} ${expandedId === item.id ? 'expanded' : ''}`}
-          >
-            <div className="item-header" onClick={() => toggleExpand(item.id)}>
-              <div className="header-info">
-                <span className="reqId">#{item.datos_completos.id}</span>
-                <h3>{item.datos_completos.nombre_solicitante} </h3>
-                <p className="department">{item.datos_completos.departamento}</p>
-                <p className="description">{item.datos_completos.descripcion}</p>
-              </div>
+        {items.map((item) => {
+          // Obtenemos la clase de estado en minúsculas para el borde (aprobado, rechazado, entregado)
+          const estadoClase = item.estado.toLowerCase()
 
-              <div className="header-dates">
-                <p className="request-date">
-                  <span>Solicitud:</span> {formatShortDate(item.datos_completos.fecha_creacion)}
-                </p>
-                {isDelivered ? (
-                  <p className="delivery-date">
-                    <span>Entregado:</span>{' '}
-                    {formatShortDate(item.fecha_entrega || item.fecha_decision)}
+          return (
+            <div
+              key={item.id}
+              className={`approval-item ${estadoClase} ${expandedId === item.id ? 'expanded' : ''}`}
+            >
+              <div className="item-header" onClick={() => toggleExpand(item.id)}>
+                <div className="header-info">
+                  <span className="reqId">#{item.datos_completos.id}</span>
+                  <h3>{item.datos_completos.nombre_solicitante} </h3>
+                  <p className="department">{item.datos_completos.departamento}</p>
+                  <p className="description">{item.datos_completos.descripcion}</p>
+                </div>
+
+                <div className="header-dates">
+                  <p className="request-date">
+                    <span>Solicitud:</span> {formatShortDate(item.datos_completos.fecha_creacion)}
                   </p>
-                ) : (
-                  <p className="approval-date">
-                    <span>Decisión:</span> {formatShortDate(item.fecha_decision)}
-                  </p>
-                )}
+                  {isDelivered ? (
+                    <p className="delivery-date">
+                      <span>Entregado:</span>{' '}
+                      {formatShortDate(item.fecha_entrega || item.fecha_decision)}
+                    </p>
+                  ) : (
+                    <p className="approval-date">
+                      <span>Decisión:</span> {formatShortDate(item.fecha_decision)}
+                    </p>
+                  )}
+                </div>
+
+                <div className="header-actions">
+                  {renderStatusIcon(item.estado)}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggleExpand(item.id)
+                    }}
+                    className="view-button"
+                  >
+                    <FontAwesomeIcon icon={faEye} /> {expandedId === item.id ? 'Ocultar' : 'Ver'}
+                  </button>
+                </div>
               </div>
 
-              <div className="header-actions">
-                {renderStatusIcon(item.estado)}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    toggleExpand(item.id)
-                  }}
-                  className="view-button"
-                >
-                  <FontAwesomeIcon icon={faEye} /> {expandedId === item.id ? 'Ocultar' : 'Ver'}
-                </button>
-              </div>
-            </div>
+              {expandedId === item.id && (
+                <div className="item-details">
+                  <div className="details-section">
+                    <h4>Detalles de la Solicitud</h4>
+                    <div className="details-grid">
+                      {Object.entries(item.datos_completos).map(
+                        ([key, value]) =>
+                          key !== 'id' &&
+                          key !== 'estado' &&
+                          key !== 'nombre_solicitante' &&
+                          key !== 'departamento' &&
+                          key !== 'descripcion' &&
+                          key !== 'fecha_solicitud' && (
+                            <div key={key} className="detail-item">
+                              <span className="detail-label">
+                                {key.toLowerCase() === 'fecha_creacion' ||
+                                key.toLowerCase() === 'fecha creacion'
+                                  ? 'Fecha Solicitud'
+                                  : key.replace(/_/g, ' ')}
+                              </span>
+                              <span className="detail-value">
+                                {key.toLowerCase().includes('fecha')
+                                  ? formatDate(String(value))
+                                  : String(value)}
+                              </span>
+                            </div>
+                          )
+                      )}
+                    </div>
+                  </div>
 
-            {expandedId === item.id && (
-              <div className="item-details">
-                <div className="details-section">
-                  <h4>Detalles de la Solicitud</h4>
-                  <div className="details-grid">
-                    {Object.entries(item.datos_completos).map(
-                      ([key, value]) =>
-                        key !== 'id' &&
-                        key !== 'estado' &&
-                        key !== 'nombre_solicitante' &&
-                        key !== 'departamento' &&
-                        key !== 'descripcion' &&
-                        key !== 'fecha_solicitud' && (
-                          <div key={key} className="detail-item">
-                            <span className="detail-label">
-                              {key.toLowerCase() === 'fecha_creacion' ||
-                              key.toLowerCase() === 'fecha creacion'
-                                ? 'Fecha Solicitud'
-                                : key.replace(/_/g, ' ')}
-                              :
-                            </span>
-                            <span className="detail-value">
-                              {key.toLowerCase().includes('fecha')
-                                ? formatDate(String(value))
-                                : String(value)}
-                            </span>
-                          </div>
-                        )
+                  {/* Información unificada y ordenada en la misma sección */}
+                  <div className="approval-info">
+                    <div className="approval-field">
+                      <span>Aprobador:</span>
+                      <span>{mayusculaPrimeraletra(item.aprobador)}</span>
+                    </div>
+                    <div className="approval-field">
+                      <span>Origen:</span>
+                      <span>{mayusculaPrimeraletra(item.tabla_origen)}</span>
+                    </div>
+                    <div className="approval-field">
+                      <span>Estado:</span>
+                      <span className={`status-text ${estadoClase}`}>
+                        {mayusculaPrimeraletra(item.estado)}
+                      </span>
+                    </div>
+
+                    {/* Integrados limpiamente para evitar textos flotantes */}
+                    {isDelivered && item.entregado_por && (
+                      <div className="approval-field">
+                        <span>Entregado por:</span>
+                        <span>{mayusculaPrimeraletra(item.entregado_por)}</span>
+                      </div>
+                    )}
+
+                    {!isDelivered && estadoClase === 'rechazado' && item.entregado_por && (
+                      <div className="approval-field">
+                        <span>Rechazado por:</span>
+                        <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                          {mayusculaPrimeraletra(item.entregado_por)}
+                        </span>
+                      </div>
                     )}
                   </div>
-                </div>
 
-                <div className="approval-info">
-                  <div className="approval-field">
-                    <span>Aprobador:</span>
-                    <span>{mayusculaPrimeraletra(item.aprobador)}</span>
-                  </div>
-                  <div className="approval-field">
-                    <span>Origen:</span>
-                    <span>{mayusculaPrimeraletra(item.tabla_origen)}</span>
-                  </div>
-                  <div className="approval-field">
-                    <span>Estado:</span>
-                    <span className={`status-text ${item.estado.toLowerCase()}`}>
-                      {mayusculaPrimeraletra(item.estado)}
-                    </span>
-                  </div>
-                  {isDelivered && item.entregado_por && (
-                    <div className="approval-field">
-                      <span>Entregado por:</span>
-                      <span>{mayusculaPrimeraletra(item.entregado_por)}</span>
-                    </div>
-                  )}
-                </div>
-
-                {!isDelivered &&
-                  item.estado.toLowerCase() === 'rechazado' &&
-                  item.entregado_por && (
-                    <div className="approval-field">
-                      <span>Rechazado por:</span>
-                      <span>{mayusculaPrimeraletra(item.entregado_por)}</span>
+                  {item.observaciones && (
+                    <div
+                      className={`delivery-observations ${estadoClase === 'rechazado' ? 'rejected-observations' : ''}`}
+                    >
+                      <h4>
+                        {estadoClase === 'rechazado'
+                          ? 'Observaciones de rechazo:'
+                          : 'Observaciones de entrega:'}
+                      </h4>
+                      <p>{mayusculaPrimeraletra(item.observaciones)}</p>
                     </div>
                   )}
 
-                {item.observaciones && (
-                  <div
-                    className={`delivery-observations ${item.estado.toLowerCase() === 'rechazado' ? 'rejected-observations' : ''}`}
-                  >
-                    <h4>
-                      {item.estado.toLowerCase() === 'rechazado'
-                        ? 'Observaciones de rechazo:'
-                        : 'Observaciones de entrega:'}
-                    </h4>
-                    <p>{mayusculaPrimeraletra(item.observaciones)}</p>
-                  </div>
-                )}
-
-                {showDeliveryButton && (
-                  <div className="delivery-section">
-                    <h4>Gestión de Logística (Inventario y Despacho)</h4>
-                    <div className="delivery-form">
-                      <div className="form-group">
-                        <label>Responsable de Logística:</label>
-                        <input
-                          type="text"
-                          name="entregado_por"
-                          value={deliveryData.entregado_por}
-                          onChange={handleDeliveryInputChange}
-                          placeholder="Nombre del responsable"
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Observaciones / Motivo de rechazo:</label>
-                        <textarea
-                          name="observaciones"
-                          value={deliveryData.observaciones}
-                          onChange={handleDeliveryInputChange}
-                          placeholder="Escribe notas de entrega o el motivo obligatorio en caso de rechazo..."
-                          rows={3}
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                      <div
-                        className="delivery-buttons-container"
-                        style={{ display: 'flex', gap: '12px', marginTop: '15px' }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => handleDelivery(item.id)}
-                          className="deliver-button"
-                          disabled={isSubmitting}
-                          style={{ flex: 1 }}
+                  {showDeliveryButton && (
+                    <div className="delivery-section">
+                      <h4>Gestión de Logística (Inventario y Despacho)</h4>
+                      <div className="delivery-form">
+                        <div className="form-group">
+                          <label>Responsable de Logística:</label>
+                          <input
+                            type="text"
+                            name="entregado_por"
+                            value={deliveryData.entregado_por}
+                            onChange={handleDeliveryInputChange}
+                            placeholder="Nombre del responsable"
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Observaciones / Motivo de rechazo:</label>
+                          <textarea
+                            name="observaciones"
+                            value={deliveryData.observaciones}
+                            onChange={handleDeliveryInputChange}
+                            placeholder="Escribe notas de entrega o el motivo obligatorio en caso de rechazo..."
+                            rows={3}
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                        <div
+                          className="delivery-buttons-container"
+                          style={{ display: 'flex', gap: '12px', marginTop: '15px' }}
                         >
-                          {isSubmitting ? (
-                            'Procesando...'
-                          ) : (
-                            <>
-                              <FontAwesomeIcon icon={faTruck} /> Marcar como Entregado
-                            </>
-                          )}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleReject(item.id)}
-                          className="reject-button"
-                          disabled={isSubmitting}
-                          style={{
-                            flex: 1
-                          }}
-                        >
-                          {isSubmitting ? (
-                            'Procesando...'
-                          ) : (
-                            <>
-                              <FontAwesomeIcon icon={faTimesCircle} /> Rechazar Solicitud
-                            </>
-                          )}
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelivery(item.id)}
+                            className="deliver-button"
+                            disabled={isSubmitting}
+                            style={{ flex: 1 }}
+                          >
+                            {isSubmitting ? (
+                              'Procesando...'
+                            ) : (
+                              <>
+                                <FontAwesomeIcon icon={faTruck} /> Marcar como Entregado
+                              </>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleReject(item.id)}
+                            className="reject-button"
+                            disabled={isSubmitting}
+                            style={{ flex: 1 }}
+                          >
+                            {isSubmitting ? (
+                              'Procesando...'
+                            ) : (
+                              <>
+                                <FontAwesomeIcon icon={faTimesCircle} /> Rechazar Solicitud
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     )
   }

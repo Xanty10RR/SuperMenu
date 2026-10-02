@@ -99,6 +99,9 @@ export const RequisicionesView: React.FC = () => {
     }
   }
 
+  const mayusculaPrimeraLetra = (value: string): string =>
+    value ? value.charAt(0).toUpperCase() + value.slice(1) : ''
+
   const toggleExpand = (id: number): void => {
     setExpandedId(expandedId === id ? null : id)
   }
@@ -354,7 +357,9 @@ export const RequisicionesView: React.FC = () => {
                           )}
                           {/* ID de la requisición */}
                           <span className={styles.reqId}>#{req.id}</span>
-                          <h3 className={styles.requisicionName}>{req.nombre_solicitante}</h3>
+                          <h3 className={styles.requisicionName}>
+                            {mayusculaPrimeraLetra(req.nombre_solicitante)}
+                          </h3>
 
                           {/* Badge de Estado dinámico */}
                           <span
@@ -367,7 +372,9 @@ export const RequisicionesView: React.FC = () => {
                         <p className={styles.requisicionMeta}>
                           {req.departamento} • {formatDate(req.fecha_creacion)}
                         </p>
-                        <p className={styles.requisicionDesc}>{req.descripcion}</p>
+                        <p className={styles.requisicionDesc}>
+                          {mayusculaPrimeraLetra(req.descripcion)}
+                        </p>
                       </div>
 
                       <div className={styles.requisicionButtons}>
@@ -453,7 +460,11 @@ export const RequisicionesView: React.FC = () => {
                                 <div key={key} className={styles.detailItem}>
                                   <div className={styles.detailLabel}>{key.replace(/_/g, ' ')}</div>
                                   <div className={styles.detailValue}>
-                                    {typeof value === 'string' ? value : JSON.stringify(value)}
+                                    {typeof value === 'string'
+                                      ? key === 'observaciones'
+                                        ? mayusculaPrimeraLetra(value)
+                                        : value
+                                      : JSON.stringify(value)}
                                   </div>
                                 </div>
                               ))}

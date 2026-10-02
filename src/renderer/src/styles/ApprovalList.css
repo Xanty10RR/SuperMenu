@@ -36,7 +36,7 @@
   border-radius: 2px;
 }
 
-/* Loading and error states */
+/* Carga y estados de error */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -86,6 +86,7 @@
   margin: 20px 0;
 }
 
+/* Secciones Aprobadas, Rechazadas y Entregadas */
 .tabs {
   display: flex;
   margin-bottom: 20px;
@@ -109,17 +110,17 @@
   text-align: center;
 }
 
-.tab-button:hover {
+.tab-button.approved:hover {
   color: #3498db;
   background-color: #f8fafc;
 }
 
-.tab-button.active {
+.tab-button.approved.active {
   color: #3498db;
   background-color: #f0f7fd;
 }
 
-.tab-button.active::after {
+.tab-button.approved.active::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -127,6 +128,46 @@
   width: 100%;
   height: 3px;
   background: #3498db;
+}
+
+.tab-button.rejected:hover {
+  color: #e74c3c;
+  background-color: #fdf2f2;
+}
+
+.tab-button.rejected.active {
+  color: #e74c3c;
+  background-color: #fdf8f8;
+}
+
+.tab-button.rejected.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #e74c3c;
+}
+
+.tab-button.delivered:hover {
+  color: #2ecc71;
+  background-color: #f0fdf4;
+}
+
+.tab-button.delivered.active {
+  color: #2ecc71;
+  background-color: #f4fbf7;
+}
+
+.tab-button.delivered.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #2ecc71;
 }
 
 .approval-list {
@@ -155,7 +196,7 @@
 }
 
 .approval-item.entregado {
-  border-left-color: #10b981;
+  border-left-color: #10b981; /* PROBAR 2ecc71 */
 }
 
 .approval-item:hover {
@@ -163,6 +204,7 @@
   transform: translateY(-2px);
 }
 
+/* Encabezado de las cards */
 .item-header {
   display: flex;
   justify-content: space-between;
@@ -257,6 +299,7 @@
   cursor: not-allowed;
 }
 
+/* Iconos de las cards */
 .status-icon {
   font-size: 24px;
 }
@@ -332,6 +375,7 @@
   word-break: break-word;
 }
 
+
 .reqId {
   font-size: 13px;
   color: #64748b;
@@ -368,6 +412,7 @@
   margin-top: 3px;
 }
 
+/* Estados */
 .status-text {
   font-weight: 600;
   text-transform: capitalize;
@@ -389,7 +434,7 @@
   color: #f39c12;
 }
 
-
+/* Seccion de Entrega */
 .delivery-section {
   margin-top: 20px;
   padding-top: 20px;
@@ -488,6 +533,7 @@
   width: 100%;
 }
 
+/* Seccion Rechazadas*/
 .reject-button:hover {
   background: #c82333;
   transform: scale(1.02);
@@ -499,7 +545,7 @@
   transform: none;
 }
 
-/* Delivery list styles */
+/* Estilos lista de Entrega */
 .delivery-list {
   display: flex;
   flex-direction: column;
@@ -591,7 +637,7 @@
   line-height: 1.5;
 }
 
-/* Responsive adjustments */
+/* Responsividad */
 @media (max-width: 768px) {
   .item-header {
     flex-direction: column;
@@ -612,15 +658,6 @@
   .approval-info {
     flex-direction: column;
     gap: 15px;
-  }
-
-  .tabs {
-    flex-direction: column;
-  }
-
-  .tab-button {
-    padding: 12px;
-    text-align: left;
   }
 
   .delivery-header {
@@ -656,7 +693,7 @@
 .delivery-observations {
   margin-top: 15px;
   padding: 10px;
-  background-color: #E6F7F2;
+  background-color: #E6F7F2; /* PROBAR 2ecc71 */
   border-radius: 4px;
   color: #156d1c
 }

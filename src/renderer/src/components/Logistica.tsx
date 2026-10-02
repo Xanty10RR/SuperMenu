@@ -323,7 +323,9 @@ export const ApprovalList: React.FC = () => {
                   <span className="reqId">#{item.datos_completos.id}</span>
                   <h3>{item.datos_completos.nombre_solicitante} </h3>
                   <p className="department">{item.datos_completos.departamento}</p>
-                  <p className="description">{item.datos_completos.descripcion}</p>
+                  <p className="description">
+                    {mayusculaPrimeraletra(item.datos_completos.descripcion)}
+                  </p>
                 </div>
 
                 <div className="header-dates">

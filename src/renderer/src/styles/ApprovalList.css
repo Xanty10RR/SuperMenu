@@ -196,7 +196,7 @@
 }
 
 .approval-item.entregado {
-  border-left-color: #10b981; /* PROBAR 2ecc71 */
+  border-left-color: #2ecc71;
 }
 
 .approval-item:hover {
@@ -317,7 +317,7 @@
 }
 
 .status-icon.delivered {
-  color: #10b981;
+  color: #2ecc71;
 }
 
 .item-details {
@@ -427,7 +427,7 @@
 }
 
 .approval-field span.status-text.entregado {
-  color: #10b981
+  color: #2ecc71;
 }
 
 .status-text.pendiente {
@@ -674,7 +674,7 @@
 /* Estilos para entregas */
 .delivered-list .approval-item {
   background-color: #f5e9dc;
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #2ecc71;
 }
 
 .delivered-list .approval-item:hover {
@@ -700,7 +700,7 @@
 
 .delivery-observations h4 {
   margin-top: 0;
-  color: #10b981;
+  color: #2ecc71;
 }
 
 .delivery-observations.delivered-observations {

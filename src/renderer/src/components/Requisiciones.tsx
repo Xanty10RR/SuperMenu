@@ -102,6 +102,12 @@ export const RequisicionesView: React.FC = () => {
   const mayusculaPrimeraLetra = (value: string): string =>
     value ? value.charAt(0).toUpperCase() + value.slice(1) : ''
 
+  const mayusculaCadaPalabra = (value: string): string =>
+    value
+      .split(/(\s+)/)
+      .map((part) => (part.trim() ? part.charAt(0).toUpperCase() + part.slice(1) : part))
+      .join('')
+
   const toggleExpand = (id: number): void => {
     setExpandedId(expandedId === id ? null : id)
   }
@@ -358,7 +364,7 @@ export const RequisicionesView: React.FC = () => {
                           {/* ID de la requisición */}
                           <span className={styles.reqId}>#{req.id}</span>
                           <h3 className={styles.requisicionName}>
-                            {mayusculaPrimeraLetra(req.nombre_solicitante)}
+                            {mayusculaCadaPalabra(req.nombre_solicitante)}
                           </h3>
 
                           {/* Badge de Estado dinámico */}

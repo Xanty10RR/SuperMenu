@@ -87,8 +87,8 @@ export const ApprovalList: React.FC = () => {
     return date.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
   }
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
+  // Cambio el booleano por un string opcional o null para indicar si se está enviando entrega o rechazo, y así deshabilitar ambos botones mientras se procesa
+  const [isSubmitting, setIsSubmitting] = useState<'delivery' | 'reject' | null>(null)
   // Se valida usuario logueado desde LOCALSTORAGE para determinar si puede ver el botón de entrega o no. Los jefes no pueden ver el botón, solo logística y admin
   const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
 
@@ -193,7 +193,7 @@ export const ApprovalList: React.FC = () => {
     }
 
     try {
-      setIsSubmitting(true)
+      setIsSubmitting('delivery')
       setError(null)
 
       // Actualizar el estado en el backend
@@ -224,7 +224,7 @@ export const ApprovalList: React.FC = () => {
       console.error('Error al registrar entrega:', err)
       setError('Error al registrar entrega. Por favor intente nuevamente.')
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(null)
     }
   }
 
@@ -238,7 +238,7 @@ export const ApprovalList: React.FC = () => {
     }
 
     try {
-      setIsSubmitting(true)
+      setIsSubmitting('reject')
       setError(null)
 
       const usuarioLogueado = storedUser.usuario || storedUser.username || 'Dpto. logistica'
@@ -268,7 +268,7 @@ export const ApprovalList: React.FC = () => {
       console.error('Error al rechazar solicitud:', err)
       setError('Error al rechazar la solicitud. Por favor intente nuevamente.')
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(null)
     }
   }
 
@@ -453,7 +453,7 @@ export const ApprovalList: React.FC = () => {
                             value={deliveryData.entregado_por}
                             onChange={handleDeliveryInputChange}
                             placeholder="Nombre del responsable"
-                            disabled={isSubmitting}
+                            disabled={isSubmitting !== null}
                           />
                         </div>
                         <div className="form-group">
@@ -464,21 +464,22 @@ export const ApprovalList: React.FC = () => {
                             onChange={handleDeliveryInputChange}
                             placeholder="Escribe notas de entrega o el motivo obligatorio en caso de rechazo..."
                             rows={3}
-                            disabled={isSubmitting}
+                            disabled={isSubmitting !== null}
                           />
                         </div>
                         <div
                           className="delivery-buttons-container"
                           style={{ display: 'flex', gap: '12px', marginTop: '15px' }}
                         >
+                          {/* Botón de Entregar */}
                           <button
                             type="button"
                             onClick={() => handleDelivery(item.id)}
                             className="deliver-button"
-                            disabled={isSubmitting}
+                            disabled={isSubmitting !== null}
                             style={{ flex: 1 }}
                           >
-                            {isSubmitting ? (
+                            {isSubmitting === 'delivery' ? (
                               'Procesando...'
                             ) : (
                               <>
@@ -486,14 +487,16 @@ export const ApprovalList: React.FC = () => {
                               </>
                             )}
                           </button>
+
+                          {/* Botón de Rechazar */}
                           <button
                             type="button"
                             onClick={() => handleReject(item.id)}
                             className="reject-button"
-                            disabled={isSubmitting}
+                            disabled={isSubmitting !== null}
                             style={{ flex: 1 }}
                           >
-                            {isSubmitting ? (
+                            {isSubmitting === 'reject' ? (
                               'Procesando...'
                             ) : (
                               <>

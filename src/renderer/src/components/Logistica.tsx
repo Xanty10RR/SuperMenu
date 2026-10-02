@@ -409,7 +409,9 @@ export const ApprovalList: React.FC = () => {
                     {isDelivered && item.entregado_por && (
                       <div className="approval-field">
                         <span>Entregado por:</span>
-                        <span>{mayusculaPrimeraletra(item.entregado_por)}</span>
+                        <span className={`status-text ${estadoClase}`}>
+                          {mayusculaPrimeraletra(item.entregado_por)}
+                        </span>
                       </div>
                     )}
 

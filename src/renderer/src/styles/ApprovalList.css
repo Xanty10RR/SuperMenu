@@ -235,14 +235,14 @@
 
 .header-info .department {
   margin: 0 0 8px 0;
-  color: #000000;
-  font-weight: 500;
-  font-size: 14px;
+  color: #406890;
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .header-info .description {
   margin: 0;
-  color: #7f8c8d;
+  color: #4D5555;
   font-size: 14px;
   line-height: 1.4;
   display: -webkit-box;
@@ -378,9 +378,9 @@
 
 .reqId {
   font-size: 13px;
-  color: #64748b;
+  color: #5A6464;
   font-weight: 600;
-  background-color: #f1f5f9;
+  background-color: #F1F2F3;
   padding: 2px 8px;
   border-radius: 6px;
 }
@@ -693,7 +693,7 @@
 .delivery-observations {
   margin-top: 15px;
   padding: 10px;
-  background-color: #E6F7F2; /* PROBAR 2ecc71 */
+  background-color: #E6F7F2;
   border-radius: 4px;
   color: #156d1c
 }

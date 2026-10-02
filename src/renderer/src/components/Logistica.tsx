@@ -88,6 +88,7 @@ export const ApprovalList: React.FC = () => {
   }
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+
   // Se valida usuario logueado desde LOCALSTORAGE para determinar si puede ver el botón de entrega o no. Los jefes no pueden ver el botón, solo logística y admin
   const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
 

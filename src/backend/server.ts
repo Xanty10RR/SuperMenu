@@ -326,16 +326,19 @@ app.get('/api/requisiciones/otros', async (_req, res) => {
   }
 })
 
-// Endpoint para registrar la entrega completa (con PATCH)
+// Endpoint para registrar la entrega completa (con PATCH) y evitar que se pueda procesar 2 veces la misma requisición
 app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
   try {
     const { id } = req.params
-    const { entregado_por, observaciones } = req.body // O puedes enviarlo por headers
+    const { entregado_por, observaciones, rol } = req.body
+    const rolUsuario = String(
+      req.headers['x-user-role'] ?? req.headers['x-role'] ?? rol ?? ''
+    ).toLowerCase()
 
     // Validación de seguridad en backend (opcional pero recomendada)
-    // if (rol_usuario !== 'logistica' && rol_usuario !== 'admin') {
-    //   return res.status(403).json({ error: 'No tienes permisos para registrar entregas.' })
-    // }
+    if (rolUsuario !== 'logistica' && rolUsuario !== 'admin') {
+      return res.status(403).json({ error: 'No tienes permisos para registrar entregas.' })
+    }
 
     const fechaActual = new Date().toISOString()
 

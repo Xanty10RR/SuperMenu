@@ -514,24 +514,24 @@ export const ApprovalList: React.FC = () => {
       <h2 className="list-title">
         {activeTab === 'approved' && 'Solicitudes Aprobadas'}
         {activeTab === 'rejected' && 'Solicitudes Rechazadas'}
-        {activeTab === 'delivered' && 'Entregas Realizadas'}
+        {activeTab === 'delivered' && 'Solicitudes Entregadas'}
       </h2>
 
       <div className="tabs">
         <button
-          className={`tab-button ${activeTab === 'approved' ? 'active' : ''}`}
+          className={`tab-button approved ${activeTab === 'approved' ? 'active' : ''}`}
           onClick={() => setActiveTab('approved')}
         >
           Aprobadas
         </button>
         <button
-          className={`tab-button ${activeTab === 'rejected' ? 'active' : ''}`}
+          className={`tab-button rejected ${activeTab === 'rejected' ? 'active' : ''}`}
           onClick={() => setActiveTab('rejected')}
         >
           Rechazadas
         </button>
         <button
-          className={`tab-button ${activeTab === 'delivered' ? 'active' : ''}`}
+          className={`tab-button delivered ${activeTab === 'delivered' ? 'active' : ''}`}
           onClick={() => setActiveTab('delivered')}
         >
           Entregadas

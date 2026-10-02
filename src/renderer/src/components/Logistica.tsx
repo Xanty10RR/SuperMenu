@@ -296,6 +296,12 @@ export const ApprovalList: React.FC = () => {
     return <FontAwesomeIcon icon={faClock} className="status-icon pending" />
   }
 
+  const mayusculaCadaPalabra = (value: string): string =>
+    value
+      .split(/(\s+)/)
+      .map((part) => (part.trim() ? part.charAt(0).toUpperCase() + part.slice(1) : part))
+      .join('')
+
   const mayusculaPrimeraletra = (value: string): string =>
     value ? value.charAt(0).toUpperCase() + value.slice(1) : ''
 
@@ -322,7 +328,7 @@ export const ApprovalList: React.FC = () => {
               <div className="item-header" onClick={() => toggleExpand(item.id)}>
                 <div className="header-info">
                   <span className="reqId">#{item.datos_completos.id}</span>
-                  <h3>{item.datos_completos.nombre_solicitante} </h3>
+                  <h3>{mayusculaCadaPalabra(item.datos_completos.nombre_solicitante)}</h3>
                   <p className="department">{item.datos_completos.departamento}</p>
                   <p className="description">
                     {mayusculaPrimeraletra(item.datos_completos.descripcion)}
@@ -384,7 +390,9 @@ export const ApprovalList: React.FC = () => {
                               <span className="detail-value">
                                 {key.toLowerCase().includes('fecha')
                                   ? formatDate(String(value))
-                                  : String(value)}
+                                  : key.toLowerCase() === 'observaciones'
+                                    ? mayusculaPrimeraletra(String(value))
+                                    : String(value)}
                               </span>
                             </div>
                           )

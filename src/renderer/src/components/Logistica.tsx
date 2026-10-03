@@ -8,6 +8,7 @@ import {
   faBoxOpen
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FiSearch } from 'react-icons/fi'
 import axios from 'axios'
 import '../styles/ApprovalList.css'
 
@@ -40,6 +41,7 @@ export const ApprovalList: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState<TabType>('approved')
+  const [searchTerm, setSearchTerm] = useState('')
   const [deliveryData, setDeliveryData] = useState({
     entregado_por: '',
     observaciones: ''
@@ -147,13 +149,28 @@ export const ApprovalList: React.FC = () => {
 
   // Render de las pestañas
   const renderTabContent = (): React.ReactNode | null => {
+    const filterItems = (items: ApprovalItem[]): ApprovalItem[] => {
+      const term = searchTerm.trim().toLocaleLowerCase()
+      if (!term) return items
+
+      return items.filter((item) => {
+        const requestId = String(item.datos_completos?.id ?? item.id).toLocaleLowerCase()
+        const approvalId = String(item.id).toLocaleLowerCase()
+        const requesterName = String(
+          item.datos_completos?.nombre_solicitante ?? ''
+        ).toLocaleLowerCase()
+
+        return requestId.includes(term) || approvalId.includes(term) || requesterName.includes(term)
+      })
+    }
+
     switch (activeTab) {
       case 'approved':
-        return renderApprovalList(approvals, canManageDeliveries)
+        return renderApprovalList(filterItems(approvals), canManageDeliveries)
       case 'rejected':
-        return renderApprovalList(rejected, false)
+        return renderApprovalList(filterItems(rejected), false)
       case 'delivered':
-        return renderApprovalList(delivered, false, true)
+        return renderApprovalList(filterItems(delivered), false, true)
       default:
         return null
     }
@@ -299,7 +316,13 @@ export const ApprovalList: React.FC = () => {
     isDelivered: boolean = false
   ): React.ReactNode => {
     if (items.length === 0) {
-      return <div className="no-results">No hay elementos para mostrar</div>
+      return (
+        <div className="no-results">
+          {searchTerm.trim()
+            ? 'No se encontraron solicitudes para esa búsqueda'
+            : 'No hay elementos para mostrar'}
+        </div>
+      )
     }
 
     return (
@@ -539,6 +562,17 @@ export const ApprovalList: React.FC = () => {
         >
           Entregadas
         </button>
+      </div>
+
+      <div className="barraBusqueda">
+        <FiSearch className="barraBusqueda-icon" aria-hidden="true" />
+        <input
+          type="search"
+          aria-label="Buscar solicitudes por ID o nombre"
+          placeholder="Buscar por ID o nombre..."
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+        />
       </div>
 
       {error && <div className="error-message">{error}</div>}

@@ -97,6 +97,9 @@
 }
 
 .barraBusqueda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background: white;
   border-radius: 15px;
   padding: 20px;
@@ -104,7 +107,14 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
+.barraBusqueda-icon {
+  flex: 0 0 auto;
+  color: #7f8c8d;
+  font-size: 18px;
+}
+
 .barraBusqueda input {
+  flex: 1;
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;

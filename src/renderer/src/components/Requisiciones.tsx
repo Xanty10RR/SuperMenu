@@ -118,9 +118,8 @@ export const RequisicionesView: React.FC = () => {
     const date = new Date(dateInput)
     if (isNaN(date.getTime())) return ''
 
-    // Se resta 5 horas exactas (5 horas * 60 minutos * 60 segundos * 1000 milisegundos)
-    // para convertir de UTC a la hora de Colombia (UTC-5)
-    const colombiaTime = new Date(date.getTime() - 5 * 60 * 60 * 1000)
+    // ¡Adiós a la resta manual! Como ya es timestamptz,
+    // JavaScript maneja el cambio a la hora de Colombia de forma nativa.
 
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
@@ -128,10 +127,11 @@ export const RequisicionesView: React.FC = () => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: 'America/Bogota' // Esto es todo lo que necesitas
     }
 
-    return colombiaTime.toLocaleString('es-CO', options)
+    return date.toLocaleString('es-CO', options)
   }
 
   const getBadgeClass = (tipo?: string): string => {
@@ -151,7 +151,7 @@ export const RequisicionesView: React.FC = () => {
     }
   }
 
-  // Contadores basados en el total maestro de requisiciones
+  // Contadores basados en el total de requisiciones
   const pendientesArea = (tabKey: string): number => {
     if (tabKey === 'todas') return requisiciones.length
 

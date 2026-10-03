@@ -73,32 +73,20 @@ export const ApprovalList: React.FC = () => {
   //})
   //}
 
-  // Cambio el booleano por un string opcional o null para indicar si se está enviando entrega o rechazo, y así deshabilitar ambos botones mientras se procesa
+  // Estados y lectura inicial del usuario logueado
   const [isSubmitting, setIsSubmitting] = useState<'delivery' | 'reject' | null>(null)
-  // Se valida usuario logueado desde LOCALSTORAGE para determinar si puede ver el botón de entrega o no. Los jefes no pueden ver el botón, solo logística y admin
-  const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
 
-  // Verificamos su departamento o nombre de usuario de tu tabla usuarios_aprobadores
-  const departamento = (storedUser.departamento || '').toLowerCase()
-  const username = (storedUser.usuario || storedUser.username || '').toLowerCase()
+  const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
+  const userDept = (storedUser.departamento || '').toLowerCase().trim()
+  const username = (storedUser.usuario || storedUser.username || '').toLowerCase().trim()
 
   const canManageDeliveries =
-    departamento === 'logística' || username === 'jefelogistica' || username === 'admin'
+    userDept.includes('logísti') ||
+    userDept.includes('logistica') ||
+    username === 'jefelogistica' ||
+    username === 'admin'
 
-  // Se define Render de las pestañas
-  const renderTabContent = (): React.ReactNode | null => {
-    switch (activeTab) {
-      case 'approved':
-        return renderApprovalList(approvals, canManageDeliveries)
-      case 'rejected':
-        return renderApprovalList(rejected, false)
-      case 'delivered':
-        return renderApprovalList(delivered, false, true)
-      default:
-        return null
-    }
-  }
-
+  // El useEffect solo para cargar los datos al iniciar la vista
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
@@ -108,24 +96,14 @@ export const ApprovalList: React.FC = () => {
         const response = await axios.get('http://localhost:3003/api/aprobaciones')
         const allItems = response.data
 
-        // Lee el usuario logueado del localStorage
-        const storedUser = JSON.parse(localStorage.getItem('userData') || '{}')
-        const userDept = (storedUser.departamento || '').toLowerCase().trim()
-        const username = (storedUser.usuario || storedUser.username || '').toLowerCase().trim()
-
-        // Definir si el usuario tiene permiso global (Logistica o Admin pueden ver toda la sección de Requisiciones y Logistica)
-        const isGlobalUser =
-          userDept.includes('logísti') ||
-          userDept.includes('logistica') ||
-          username === 'admin' ||
-          username === 'jefelogistica'
+        // Definir si el usuario tiene permiso global (jefelogistica y admin)
+        const isGlobalUser = canManageDeliveries
 
         // Si NO es usuario global, filtramos estrictamente por su departamento
         const filteredItems = isGlobalUser
           ? allItems
           : allItems.filter((req: ApprovalItem) => {
               let detalles = req.datos_completos
-              // Si viene como texto plano de la base de datos, lo convertimos a objeto
               if (typeof detalles === 'string') {
                 try {
                   detalles = JSON.parse(detalles)
@@ -137,7 +115,6 @@ export const ApprovalList: React.FC = () => {
               return itemDept === userDept
             })
 
-        // Con los datos ya filtrados, se arman las pestañas con protección contra nulos
         const approvedItems = filteredItems
           .filter((item: ApprovalItem) => (item.estado || '').toLowerCase() === 'aprobado')
           .sort(
@@ -166,7 +143,21 @@ export const ApprovalList: React.FC = () => {
     }
 
     fetchData()
-  }, [])
+  }, [canManageDeliveries, userDept])
+
+  // Render de las pestañas
+  const renderTabContent = (): React.ReactNode | null => {
+    switch (activeTab) {
+      case 'approved':
+        return renderApprovalList(approvals, canManageDeliveries)
+      case 'rejected':
+        return renderApprovalList(rejected, false)
+      case 'delivered':
+        return renderApprovalList(delivered, false, true)
+      default:
+        return null
+    }
+  }
 
   const toggleExpand = (id: number): void => {
     setExpandedId(expandedId === id ? null : id)
@@ -183,10 +174,21 @@ export const ApprovalList: React.FC = () => {
       setError(null)
 
       // Actualizar el estado en el backend
-      await axios.patch(`http://localhost:3003/api/aprobaciones/${aprobacionId}/entregar`, {
-        entregado_por: deliveryData.entregado_por.trim(),
-        observaciones: deliveryData.observaciones.trim()
-      })
+      const rolParaHeader =
+        username === 'admin' || username === 'jefelogistica' ? username : userDept
+
+      await axios.patch(
+        `http://localhost:3003/api/aprobaciones/${aprobacionId}/entregar`,
+        {
+          entregado_por: deliveryData.entregado_por.trim(),
+          observaciones: deliveryData.observaciones.trim()
+        },
+        {
+          headers: {
+            'x-user-role': rolParaHeader
+          }
+        }
+      )
 
       // Actualizar el estado local
       const updatedItem = approvals.find((item) => item.id === aprobacionId)

@@ -51,11 +51,11 @@ export const ApprovalList: React.FC = () => {
     const date = new Date(dateInput)
     if (isNaN(date.getTime())) return ''
 
-    return date.toLocaleString('es-CO', {
+    return date.toLocaleString('en-GB', {
       timeZone: 'America/Bogota',
-      year: 'numeric',
-      month: 'long',
       day: 'numeric',
+      month: 'short',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
@@ -63,15 +63,15 @@ export const ApprovalList: React.FC = () => {
   }
 
   // Fecha corta para las tarjetas principales (Solicitud, Decisión y Entrega)
-  //const formatShortDate = (dateInput: string | Date): string => {
-  //if (!dateInput) return ''
-  //const date = new Date(dateInput)
-  //if (isNaN(date.getTime())) return ''
+  const formatShortDate = (dateInput: string | Date | null | undefined): string => {
+    if (!dateInput) return ''
+    const date = new Date(dateInput)
+    if (isNaN(date.getTime())) return ''
 
-  //return date.toLocaleDateString('es-CO', {
-  //timeZone: 'America/Bogota'
-  //})
-  //}
+    return date.toLocaleDateString('es-CO', {
+      timeZone: 'America/Bogota'
+    })
+  }
 
   // Estados y lectura inicial del usuario logueado
   const [isSubmitting, setIsSubmitting] = useState<'delivery' | 'reject' | null>(null)
@@ -374,7 +374,7 @@ export const ApprovalList: React.FC = () => {
                               </span>
                               <span className="detail-value">
                                 {key.toLowerCase().includes('fecha')
-                                  ? formatDate(String(value))
+                                  ? formatShortDate(String(value))
                                   : key.toLowerCase() === 'observaciones'
                                     ? mayusculaPrimeraletra(String(value))
                                     : String(value)}

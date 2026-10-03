@@ -96,6 +96,29 @@
   overflow: hidden;
 }
 
+.barraBusqueda {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.barraBusqueda input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d5dce3;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.barraBusqueda input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
 .tab-button {
   padding: 12px 25px;
   background: none;

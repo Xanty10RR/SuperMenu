@@ -112,12 +112,12 @@
 
 .tab-button.approved:hover {
   color: #3498db;
-  background-color: #f8fafc;
+  background-color: #E8F2FC;
 }
 
 .tab-button.approved.active {
   color: #3498db;
-  background-color: #f0f7fd;
+  background-color: #F4F9FD;
 }
 
 .tab-button.approved.active::after {
@@ -152,7 +152,7 @@
 
 .tab-button.delivered:hover {
   color: #2ecc71;
-  background-color: #f0fdf4;
+  background-color: #E6FFE6;
 }
 
 .tab-button.delivered.active {

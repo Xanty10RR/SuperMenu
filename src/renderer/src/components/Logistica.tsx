@@ -24,9 +24,9 @@ interface ApprovalItem {
   estado: string
   aprobador: string
   tabla_origen: string
-  fecha_decision: string
+  fecha_decision: string | null
   entregado_por?: string
-  fecha_entrega?: string
+  fecha_entrega?: string | null
   observaciones?: string
 }
 
@@ -45,19 +45,11 @@ export const ApprovalList: React.FC = () => {
     observaciones: ''
   })
 
-  // Función para fecha larga (detalles) usando la misma lógica exacta que Requisiciones
-  const restarCincoHoras = (dateInput: string | Date): Date | null => {
-    if (!dateInput) return null
+  // Fecha larga para los detalles (con hora y minutos exactos en Colombia)
+  const formatDate = (dateInput: string | Date | null | undefined): string => {
+    if (!dateInput) return ''
     const date = new Date(dateInput)
-    if (isNaN(date.getTime())) return null
-    date.setTime(date.getTime() - 5 * 60 * 60 * 1000)
-    return date
-  }
-
-  // Función para fecha larga (detalles) con el ajuste de 5 horas
-  const formatDate = (dateInput: string | Date): string => {
-    const date = restarCincoHoras(dateInput)
-    if (!date) return ''
+    if (isNaN(date.getTime())) return ''
 
     return date.toLocaleString('es-CO', {
       timeZone: 'America/Bogota',
@@ -70,22 +62,16 @@ export const ApprovalList: React.FC = () => {
     })
   }
 
-  // Función para fecha corta (Solicitud y Decisión
-  const formatShortDate = (dateInput: string | Date): string => {
-    if (!dateInput) return ''
+  // Fecha corta para las tarjetas principales (Solicitud, Decisión y Entrega)
+  //const formatShortDate = (dateInput: string | Date): string => {
+  //if (!dateInput) return ''
+  //const date = new Date(dateInput)
+  //if (isNaN(date.getTime())) return ''
 
-    const date = new Date(dateInput)
-    if (isNaN(date.getTime())) return ''
-
-    // Convierte directamente al día exacto de Colombia sin restar el tiempo
-    return date.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
-  }
-
-  const formatShortDateAdjusted = (dateInput: string | Date): string => {
-    const date = restarCincoHoras(dateInput)
-    if (!date) return ''
-    return date.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
-  }
+  //return date.toLocaleDateString('es-CO', {
+  //timeZone: 'America/Bogota'
+  //})
+  //}
 
   // Cambio el booleano por un string opcional o null para indicar si se está enviando entrega o rechazo, y así deshabilitar ambos botones mientras se procesa
   const [isSubmitting, setIsSubmitting] = useState<'delivery' | 'reject' | null>(null)
@@ -337,18 +323,15 @@ export const ApprovalList: React.FC = () => {
 
                 <div className="header-dates">
                   <p className="request-date">
-                    <span>Solicitud:</span>{' '}
-                    {formatShortDateAdjusted(item.datos_completos.fecha_creacion)}
+                    <span>Solicitud:</span> {formatDate(item.datos_completos.fecha_creacion)}
                   </p>
                   {isDelivered ? (
                     <p className="delivery-date">
-                      <span>Entregado:</span>{' '}
-                      {/* Esta usa la normal para que la fecha de entrega quede intacta */}
-                      {formatShortDate(item.fecha_entrega || item.fecha_decision)}
+                      <span>Entregado:</span> {formatDate(item.fecha_entrega)}
                     </p>
                   ) : (
                     <p className="approval-date">
-                      <span>Decisión:</span> {formatShortDateAdjusted(item.fecha_decision)}
+                      <span>Decisión:</span> {formatDate(item.fecha_decision)}
                     </p>
                   )}
                 </div>

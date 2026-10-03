@@ -364,7 +364,9 @@ export const ApprovalList: React.FC = () => {
                           key !== 'nombre_solicitante' &&
                           key !== 'departamento' &&
                           key !== 'descripcion' &&
-                          key !== 'fecha_solicitud' && (
+                          key.toLowerCase() !== 'fecha_solicitud' &&
+                          key.toLowerCase() !== 'fecha_creacion' &&
+                          key.toLowerCase() !== 'fecha creacion' && (
                             <div key={key} className="detail-item">
                               <span className="detail-label">
                                 {key.toLowerCase() === 'fecha_creacion' ||

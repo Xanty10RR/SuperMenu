@@ -336,7 +336,12 @@ app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
     ).toLowerCase()
 
     // Validación de seguridad en backend (opcional pero recomendada)
-    if (rolUsuario !== 'logistica' && rolUsuario !== 'admin') {
+    if (
+      !rolUsuario.includes('logísti') &&
+      !rolUsuario.includes('logistica') &&
+      rolUsuario !== 'admin' &&
+      rolUsuario !== 'jefelogistica'
+    ) {
       return res.status(403).json({ error: 'No tienes permisos para registrar entregas.' })
     }
 

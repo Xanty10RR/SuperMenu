@@ -102,20 +102,32 @@
 }
 
 .requisicionList {
-  background: white;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background: transparent;
+  box-shadow: none;
+}
+
+.requisicionList ul {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .requisicionItem {
-  padding: 20px;
-  border-bottom: 1px solid #edf2f7;
-  transition: background 0.3s;
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #edf2f7;
+  transition: all 0.3s ease;
 }
 
 .requisicionItem:hover {
-  background: #f7fafc;
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
 }
 
 .requisicionHeader {

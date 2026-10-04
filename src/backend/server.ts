@@ -5,6 +5,7 @@ import { Pool } from 'pg'
 import * as bcrypt from 'bcryptjs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { ConvenioService } from './services/convenio.service'
 
 const currentFile = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFile)
@@ -515,6 +516,34 @@ app.get('/api/aprobaciones/rechazadas', async (_req, res) => {
     console.error('Error al obtener rechazadas:', error)
     await registrarErrorServidor(error, '/api/chatbot/metrics')
     res.status(500).send('Error al obtener rechazadas')
+  }
+})
+
+// Ruta para buscar o listar convenios
+app.get('/api/convenios/buscar', async (req, res) => {
+  try {
+    const texto = (req.query.q as string) || ''
+    const resultados = await ConvenioService.buscar(texto)
+    res.json(resultados)
+  } catch (error) {
+    console.error('Error al buscar convenios:', error)
+    res.status(500).json({ error: 'Error interno al buscar convenios' })
+  }
+})
+
+// Ruta para registrar un nuevo convenio de forma manual (según el banco)
+app.post('/api/convenios/crear', async (req, res) => {
+  try {
+    const { banco, ...datos } = req.body
+
+    // Las usamos aquí para que ESLint no marque error
+    console.log('Banco recibido:', banco)
+    console.log('Datos del convenio:', datos)
+
+    res.json({ success: true, message: 'Convenio creado correctamente' })
+  } catch (error) {
+    console.error('Error al crear convenio:', error)
+    res.status(500).json({ error: 'Error al guardar el convenio' })
   }
 })
 

@@ -235,6 +235,12 @@ export const ApprovalList: React.FC = () => {
 
   // Función para rechazar la solicitud desde logística
   const handleReject = async (aprobacionId: number): Promise<void> => {
+    const responsableLogistica = deliveryData.entregado_por.trim()
+    if (!responsableLogistica) {
+      alert('Por favor ingrese el nombre del responsable de logística')
+      return
+    }
+
     if (!deliveryData.observaciones.trim()) {
       alert(
         'Por favor ingrese una observación indicando el motivo del rechazo (ej. sin stock, muy costoso, etc.)'
@@ -246,10 +252,8 @@ export const ApprovalList: React.FC = () => {
       setIsSubmitting('reject')
       setError(null)
 
-      const usuarioLogueado = storedUser.usuario || storedUser.username || 'Dpto. logistica'
-
       await axios.patch(`http://localhost:3003/api/aprobaciones/${aprobacionId}/rechazar`, {
-        rechazado_por: usuarioLogueado,
+        rechazado_por: responsableLogistica,
         observaciones: deliveryData.observaciones.trim()
       })
 
@@ -258,7 +262,7 @@ export const ApprovalList: React.FC = () => {
         const rejectedItem = {
           ...updatedItem,
           estado: 'Rechazado',
-          entregado_por: usuarioLogueado,
+          entregado_por: responsableLogistica,
           observaciones: deliveryData.observaciones.trim(),
           fecha_decision: new Date().toISOString()
         }

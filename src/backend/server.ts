@@ -361,7 +361,7 @@ app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
       return res.status(400).json({ error: 'La solicitud no existe o no está en estado aprobado.' })
     }
 
-    // Actualizar la tabla principal 'requisiciones' con el estado final de logística (estado_final_logistica)
+    // Actualiza la tabla principal 'requisiciones' con el estado final de logística (entregado) en (estado_final_logistica)
     const regRes = await pool.query(
       'SELECT datos_completos FROM registro_aprobaciones WHERE id = $1',
       [id]
@@ -418,6 +418,22 @@ app.patch('/api/aprobaciones/:id/rechazar', async (req, res) => {
 
     if (resultado.rowCount === 0) {
       return res.status(400).json({ error: 'La solicitud no existe o no está en estado aprobado.' })
+    }
+
+    // Actualiza la tabla principal 'requisiciones' con el estado final de logística (rechazado) en (estado_final_logistica)
+    const regRes = await pool.query(
+      'SELECT datos_completos FROM registro_aprobaciones WHERE id = $1',
+      [id]
+    )
+    if (regRes.rows.length > 0) {
+      const datosCompletos = regRes.rows[0].datos_completos
+      const idRequisicion = datosCompletos?.id
+      if (idRequisicion) {
+        await pool.query('UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2', [
+          'rechazado',
+          idRequisicion
+        ])
+      }
     }
 
     res.json({ message: 'Solicitud rechazada con éxito' })

@@ -433,8 +433,8 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
-    // 1. Consultamos a tu tabla real: usuarios_aprobadores
-    // 2. Mapeamos los campos 'usuario' y 'clave' de tu Supabase
+    // Consulta a la tabla real usuarios_aprobadores
+    // Mapea los campos 'usuario' y 'clave' de Supabase
     const userQuery = await pool.query(
       'SELECT id, usuario, clave, departamento FROM usuarios_aprobadores WHERE usuario = $1',
       [username]

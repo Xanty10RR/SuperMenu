@@ -47,7 +47,7 @@ export const ApprovalList: React.FC = () => {
     observaciones: ''
   })
 
-  // Fecha larga para los detalles (con hora y minutos exactos en Colombia)
+  // Fecha larga (con hora y minutos exactos en Colombia)
   const formatDate = (dateInput: string | Date | null | undefined): string => {
     if (!dateInput) return ''
     const date = new Date(dateInput)

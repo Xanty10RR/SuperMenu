@@ -1,11 +1,11 @@
-import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
-import { Pool } from 'pg'
 import * as bcrypt from 'bcryptjs'
+import { ConvenioService } from './services/convenio.service.js'
+import { pool } from './provider/database.js'
+import dotenv from 'dotenv'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ConvenioService } from './services/convenio.service'
 
 const currentFile = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFile)
@@ -16,18 +16,6 @@ dotenv.config({ path: envPath })
 const app = express()
 app.use(cors())
 app.use(express.json())
-
-// Configuración de la conexión a la base de datos del Chatbot (Supabase / Postgres remoto)
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT) || 5432,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  ssl: {
-    rejectUnauthorized: false
-  }
-})
 
 export default pool
 

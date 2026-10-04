@@ -77,6 +77,67 @@ setInterval(
   1000 * 60 * 60 * 24 * 2
 )
 
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Usuario y contraseña son requeridos' })
+  }
+
+  try {
+    // Consulta a la tabla real usuarios_aprobadores Mapea los campos 'usuario' y 'clave' de Supabase
+    const userQuery = await pool.query(
+      'SELECT id, usuario, clave, departamento FROM usuarios_aprobadores WHERE usuario = $1',
+      [username]
+    )
+
+    if (userQuery.rows.length === 0) {
+      return res.status(401).json({ error: 'Credenciales inválidas' })
+    }
+
+    const user = userQuery.rows[0]
+
+    // Comparamos la contraseña con la columna 'clave' de tu base de datos
+    const isMatch = await bcrypt.compare(password, user.clave)
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Credenciales inválidas' })
+    }
+
+    // Preparamos los datos del usuario para enviarlos al frontend
+    const userData = {
+      id: user.id,
+      username: user.usuario,
+      departamento: user.departamento,
+      // Le asignamos el rol basándonos en su departamento o usuario para que el frontend lo lea perfecto
+      rol: user.departamento.toLowerCase().includes('logística') ? 'logistica' : 'jefe'
+    }
+
+    res.json({
+      success: true,
+      user: userData,
+      token: 'token_valido'
+    })
+  } catch (error) {
+    console.error('Error en el login:', error)
+    await registrarErrorServidor(error, '/api/login')
+    res.status(500).json({ error: 'Error en el servidor' })
+  }
+})
+
+app.post('/api/logout', async (req, res) => {
+  try {
+    // Aquí puedes limpiar la sesión en PostgreSQL si es necesario
+    // Por ejemplo, si usas tokens JWT, podrías invalidarlos
+
+    res.status(200).json({ message: 'Logout successful' })
+  } catch (error) {
+    console.error('Logout error:', error)
+    await registrarErrorServidor(error, '/api/logout')
+    res.status(500).json({ error: 'Error during logout' })
+  }
+})
+
 // Endpoint de Usuarios para obtener todos los usuarios
 app.get('/api/usuarios', async (req, res) => {
   try {
@@ -454,68 +515,6 @@ app.get('/api/aprobaciones/rechazadas', async (_req, res) => {
     console.error('Error al obtener rechazadas:', error)
     await registrarErrorServidor(error, '/api/chatbot/metrics')
     res.status(500).send('Error al obtener rechazadas')
-  }
-})
-
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body
-
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Usuario y contraseña son requeridos' })
-  }
-
-  try {
-    // Consulta a la tabla real usuarios_aprobadores
-    // Mapea los campos 'usuario' y 'clave' de Supabase
-    const userQuery = await pool.query(
-      'SELECT id, usuario, clave, departamento FROM usuarios_aprobadores WHERE usuario = $1',
-      [username]
-    )
-
-    if (userQuery.rows.length === 0) {
-      return res.status(401).json({ error: 'Credenciales inválidas' })
-    }
-
-    const user = userQuery.rows[0]
-
-    // Comparamos la contraseña con la columna 'clave' de tu base de datos
-    const isMatch = await bcrypt.compare(password, user.clave)
-
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Credenciales inválidas' })
-    }
-
-    // Preparamos los datos del usuario para enviarlos al frontend
-    const userData = {
-      id: user.id,
-      username: user.usuario,
-      departamento: user.departamento,
-      // Le asignamos el rol basándonos en su departamento o usuario para que el frontend lo lea perfecto
-      rol: user.departamento.toLowerCase().includes('logística') ? 'logistica' : 'jefe'
-    }
-
-    res.json({
-      success: true,
-      user: userData,
-      token: 'token_valido'
-    })
-  } catch (error) {
-    console.error('Error en el login:', error)
-    await registrarErrorServidor(error, '/api/login')
-    res.status(500).json({ error: 'Error en el servidor' })
-  }
-})
-
-app.post('/api/logout', async (req, res) => {
-  try {
-    // Aquí puedes limpiar la sesión en PostgreSQL si es necesario
-    // Por ejemplo, si usas tokens JWT, podrías invalidarlos
-
-    res.status(200).json({ message: 'Logout successful' })
-  } catch (error) {
-    console.error('Logout error:', error)
-    await registrarErrorServidor(error, '/api/logout')
-    res.status(500).json({ error: 'Error during logout' })
   }
 })
 

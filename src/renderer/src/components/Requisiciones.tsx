@@ -79,7 +79,8 @@ export const RequisicionesView: React.FC = () => {
     setProcesando({ id: requisicion.id, estado: nuevoEstado })
 
     try {
-      const nombreAprobador = 'jefesistemas'
+      // Aprobador en tabla requisiciones_aprobadas (Usa dinámicamente el usuario que inició sesión)
+      const nombreAprobador = username || 'sistema'
 
       const response = await axios.post('http://localhost:3003/api/aprobaciones', {
         id_requisicion: requisicion.id,
@@ -118,9 +119,7 @@ export const RequisicionesView: React.FC = () => {
     const date = new Date(dateInput)
     if (isNaN(date.getTime())) return ''
 
-    // ¡Adiós a la resta manual! Como ya es timestamptz,
-    // JavaScript maneja el cambio a la hora de Colombia de forma nativa.
-
+    // Timestamptz desde la bd
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'long',
@@ -128,7 +127,7 @@ export const RequisicionesView: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
-      timeZone: 'America/Bogota' // Esto es todo lo que necesitas
+      timeZone: 'America/Bogota'
     }
 
     return date.toLocaleString('es-CO', options)

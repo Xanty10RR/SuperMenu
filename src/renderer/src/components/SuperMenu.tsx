@@ -18,6 +18,7 @@ import { MindMap } from './Soporte'
 import { InicioView } from './InicioView'
 import { RequisicionesView } from './Requisiciones'
 import { ApprovalList } from './Logistica'
+import { Convenios } from './Convenios'
 import { PokeApiComponent } from './Mejoras'
 import ErrorBoundary from './ErrorBoundary'
 import Usuarios from './Usuarios'
@@ -145,10 +146,7 @@ const SuperMenu: React.FC<Props> = () => {
               </div>
             </ErrorBoundary>
           ) : activeView === 'convenios' ? (
-            <div className="convenios-view">
-              <h2>Gestión de Convenios</h2>
-              <button className="btn-subir-excel">📁 Subir Archivos Excel</button>
-            </div>
+            <Convenios />
           ) : activeView === 'logistica' ? (
             <ApprovalList />
           ) : (

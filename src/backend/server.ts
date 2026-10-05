@@ -1,96 +1,104 @@
-import express from 'express'
-import cors from 'cors'
-import * as bcrypt from 'bcryptjs'
-import { ConvenioService } from './services/convenio.service.js'
-import { pool } from './provider/database.js'
-import dotenv from 'dotenv'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import express from "express";
+import cors from "cors";
+import * as bcrypt from "bcryptjs";
+import { ConvenioService } from "./services/convenio.service.js";
+import { pool } from "./provider/database.js";
+import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const currentFile = fileURLToPath(import.meta.url)
-const currentDirectory = path.dirname(currentFile)
-const envPath = path.resolve(currentDirectory, '../../.env')
+const currentFile = fileURLToPath(import.meta.url);
+const currentDirectory = path.dirname(currentFile);
+const envPath = path.resolve(currentDirectory, "../../.env");
 
-dotenv.config({ path: envPath })
+dotenv.config({ path: envPath });
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-export default pool
+export default pool;
 
 // Función para normalizar el estado con la primera letra en mayúscula
-const normalizarEstado = (rows: Array<Record<string, unknown>>): Array<Record<string, unknown>> => {
+const normalizarEstado = (
+  rows: Array<Record<string, unknown>>,
+): Array<Record<string, unknown>> => {
   return rows.map((row): Record<string, unknown> => {
     const estadoActual =
-      typeof row.estado === 'string' && row.estado.trim()
+      typeof row.estado === "string" && row.estado.trim()
         ? row.estado.trim().toLowerCase()
-        : 'pendiente'
+        : "pendiente";
     // Capitaliza la primera letra (ej. "pendiente" -> "Pendiente")
-    const estadoFormateado = estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1)
+    const estadoFormateado =
+      estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1);
     return {
       ...row,
-      estado: estadoFormateado
-    }
-  })
-}
+      estado: estadoFormateado,
+    };
+  });
+};
 
 // Función para registrar errores del servidor en la tabla (errores_api)
-const registrarErrorServidor = async (error: unknown, origen: string): Promise<void> => {
+const registrarErrorServidor = async (
+  error: unknown,
+  origen: string,
+): Promise<void> => {
   try {
     await pool.query(
       `INSERT INTO errores_api (mensaje, origen, telefono, resuelto, fecha) 
        VALUES ($1, $2, $3, false, NOW())`,
-      [(error as Error)?.message || 'Error desconocido', origen, null]
-    )
+      [(error as Error)?.message || "Error desconocido", origen, null],
+    );
   } catch (dbErr) {
-    console.error('No se pudo guardar el error en Supabase:', dbErr)
+    console.error("No se pudo guardar el error en Supabase:", dbErr);
   }
-}
+};
 
-console.log('✅ Keep-alive para Supabase activado')
+console.log("✅ Keep-alive para Supabase activado");
 
 // Ping cada 2 días para que Supabase no pause la bd
 setInterval(
   async () => {
     try {
-      await pool.query('SELECT 1')
+      await pool.query("SELECT 1");
       console.log(
-        'Ping a Supabase OK -',
-        new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' })
-      )
+        "Ping a Supabase OK -",
+        new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" }),
+      );
     } catch (e) {
-      console.error('Ping falló', e)
+      console.error("Ping falló", e);
     }
   },
-  1000 * 60 * 60 * 24 * 2
-)
+  1000 * 60 * 60 * 24 * 2,
+);
 
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ error: 'Usuario y contraseña son requeridos' })
+    return res
+      .status(400)
+      .json({ error: "Usuario y contraseña son requeridos" });
   }
 
   try {
     // Consulta a la tabla real usuarios_aprobadores Mapea los campos 'usuario' y 'clave' de Supabase
     const userQuery = await pool.query(
-      'SELECT id, usuario, clave, departamento FROM usuarios_aprobadores WHERE usuario = $1',
-      [username]
-    )
+      "SELECT id, usuario, clave, departamento FROM usuarios_aprobadores WHERE usuario = $1",
+      [username],
+    );
 
     if (userQuery.rows.length === 0) {
-      return res.status(401).json({ error: 'Credenciales inválidas' })
+      return res.status(401).json({ error: "Credenciales inválidas" });
     }
 
-    const user = userQuery.rows[0]
+    const user = userQuery.rows[0];
 
     // Comparamos la contraseña con la columna 'clave' de tu base de datos
-    const isMatch = await bcrypt.compare(password, user.clave)
+    const isMatch = await bcrypt.compare(password, user.clave);
 
     if (!isMatch) {
-      return res.status(401).json({ error: 'Credenciales inválidas' })
+      return res.status(401).json({ error: "Credenciales inválidas" });
     }
 
     // Preparamos los datos del usuario para enviarlos al frontend
@@ -99,126 +107,129 @@ app.post('/api/login', async (req, res) => {
       username: user.usuario,
       departamento: user.departamento,
       // Le asignamos el rol basándonos en su departamento o usuario para que el frontend lo lea perfecto
-      rol: user.departamento.toLowerCase().includes('logística') ? 'logistica' : 'jefe'
-    }
+      rol: user.departamento.toLowerCase().includes("logística")
+        ? "logistica"
+        : "jefe",
+    };
 
     res.json({
       success: true,
       user: userData,
-      token: 'token_valido'
-    })
+      token: "token_valido",
+    });
   } catch (error) {
-    console.error('Error en el login:', error)
-    await registrarErrorServidor(error, '/api/login')
-    res.status(500).json({ error: 'Error en el servidor' })
+    console.error("Error en el login:", error);
+    await registrarErrorServidor(error, "/api/login");
+    res.status(500).json({ error: "Error en el servidor" });
   }
-})
+});
 
-app.post('/api/logout', async (req, res) => {
+app.post("/api/logout", async (req, res) => {
   try {
     // Aquí puedes limpiar la sesión en PostgreSQL si es necesario
     // Por ejemplo, si usas tokens JWT, podrías invalidarlos
 
-    res.status(200).json({ message: 'Logout successful' })
+    res.status(200).json({ message: "Logout successful" });
   } catch (error) {
-    console.error('Logout error:', error)
-    await registrarErrorServidor(error, '/api/logout')
-    res.status(500).json({ error: 'Error during logout' })
+    console.error("Logout error:", error);
+    await registrarErrorServidor(error, "/api/logout");
+    res.status(500).json({ error: "Error during logout" });
   }
-})
+});
 
 // Endpoint de Usuarios para obtener todos los usuarios
-app.get('/api/usuarios', async (req, res) => {
+app.get("/api/usuarios", async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, usuario, departamento, tabla_asignada FROM usuarios_aprobadores ORDER BY id ASC'
-    )
-    res.json(result.rows)
+      "SELECT id, usuario, departamento, tabla_asignada FROM usuarios_aprobadores ORDER BY id ASC",
+    );
+    res.json(result.rows);
   } catch {
-    res.status(500).send('Error al obtener usuarios')
+    res.status(500).send("Error al obtener usuarios");
   }
-})
+});
 
 // Crear un nuevo usuario aprobador
-app.post('/api/usuarios', async (req, res) => {
+app.post("/api/usuarios", async (req, res) => {
   try {
-    const { usuario, clave, departamento, tabla_asignada } = req.body
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(clave, salt)
+    const { usuario, clave, departamento, tabla_asignada } = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(clave, salt);
 
     await pool.query(
-      'INSERT INTO usuarios_aprobadores (usuario, clave, departamento, tabla_asignada) VALUES ($1, $2, $3, $4)',
-      [usuario, hash, departamento, tabla_asignada || 'requisiciones']
-    )
-    res.status(201).send('Usuario creado con éxito')
+      "INSERT INTO usuarios_aprobadores (usuario, clave, departamento, tabla_asignada) VALUES ($1, $2, $3, $4)",
+      [usuario, hash, departamento, tabla_asignada || "requisiciones"],
+    );
+    res.status(201).send("Usuario creado con éxito");
   } catch {
-    res.status(500).send('Error al crear usuario')
+    res.status(500).send("Error al crear usuario");
   }
-})
+});
 
 // Eliminar usuario
-app.delete('/api/usuarios/:id', async (req, res) => {
+app.delete("/api/usuarios/:id", async (req, res) => {
   try {
-    const { id } = req.params
-    await pool.query('DELETE FROM usuarios_aprobadores WHERE id = $1', [id])
-    res.send('Usuario eliminado')
+    const { id } = req.params;
+    await pool.query("DELETE FROM usuarios_aprobadores WHERE id = $1", [id]);
+    res.send("Usuario eliminado");
   } catch {
-    res.status(500).send('Error al eliminar usuario')
+    res.status(500).send("Error al eliminar usuario");
   }
-})
+});
 
 // Endpoint Logística para el Historial de Solicitudes Aprobadas/Rechazadas/Entregadas (registro_aprobaciones)
-app.get('/api/registro-aprobaciones', async (req, res) => {
+app.get("/api/registro-aprobaciones", async (req, res) => {
   try {
-    const { usuario, esAdmin } = req.query
+    const { usuario, esAdmin } = req.query;
 
-    let query = 'SELECT * FROM registro_aprobaciones'
-    const values: string[] = []
+    let query = "SELECT * FROM registro_aprobaciones";
+    const values: string[] = [];
 
     // Si NO es admin, filtramos estrictamente por el aprobador que tomó la decisión
-    if (esAdmin !== 'true' && usuario !== 'admin') {
-      query += ' WHERE aprobador = $1'
-      values.push(String(usuario ?? ''))
+    if (esAdmin !== "true" && usuario !== "admin") {
+      query += " WHERE aprobador = $1";
+      values.push(String(usuario ?? ""));
     }
 
-    query += ' ORDER BY id DESC'
-    const result = await pool.query(query, values)
-    res.json(normalizarEstado(result.rows))
+    query += " ORDER BY id DESC";
+    const result = await pool.query(query, values);
+    res.json(normalizarEstado(result.rows));
   } catch {
-    res.status(500).json({ error: 'Error al cargar los datos' })
+    res.status(500).json({ error: "Error al cargar los datos" });
   }
-})
+});
 
 // Endpoint para obtener todas las aprobaciones, rechazos y entregas
-app.get('/api/aprobaciones', async (req, res) => {
+app.get("/api/aprobaciones", async (req, res) => {
   try {
-    const query = 'SELECT * FROM registro_aprobaciones ORDER BY fecha_decision DESC;'
-    const result = await pool.query(query)
-    res.json(normalizarEstado(result.rows))
+    const query =
+      "SELECT * FROM registro_aprobaciones ORDER BY fecha_decision DESC;";
+    const result = await pool.query(query);
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener las aprobaciones:', error)
-    res.status(500).send('Error al obtener las aprobaciones')
+    console.error("Error al obtener las aprobaciones:", error);
+    res.status(500).send("Error al obtener las aprobaciones");
   }
-})
+});
 
 // Endpoint para registrar una aprobación o rechazo de una Requisición en Gestión de Requisiciones
-app.post('/api/aprobaciones', async (req, res) => {
+app.post("/api/aprobaciones", async (req, res) => {
   try {
-    const { id_requisicion, estado, aprobador, datos_completos } = req.body
+    const { id_requisicion, estado, aprobador, datos_completos } = req.body;
 
-    const fechaDecision = new Date().toISOString()
+    const fechaDecision = new Date().toISOString();
 
     // Aseguramos que el estado dentro del JSON de datos_completos refleje el nuevo estado
-    let datosActualizados = datos_completos
+    let datosActualizados = datos_completos;
     if (datosActualizados) {
-      if (typeof datosActualizados === 'string') {
+      if (typeof datosActualizados === "string") {
         try {
-          datosActualizados = JSON.parse(datosActualizados)
+          datosActualizados = JSON.parse(datosActualizados);
         } catch {
           // Si no es un JSON válido, lo dejamos como viene
         }
       }
-      datosActualizados.estado = estado
+      datosActualizados.estado = estado;
     }
 
     const query = `
@@ -226,176 +237,188 @@ app.post('/api/aprobaciones', async (req, res) => {
       (estado, aprobador, tabla_origen, fecha_decision, datos_completos) 
       VALUES ($1, $2, $3, $4, $5) 
       RETURNING *;
-    `
+    `;
 
     const values = [
       estado,
-      aprobador || 'jefesistemas',
-      'requisiciones',
+      aprobador || "jefesistemas",
+      "requisiciones",
       fechaDecision,
-      JSON.stringify(datosActualizados)
-    ]
+      JSON.stringify(datosActualizados),
+    ];
 
-    const result = await pool.query(query, values)
+    const result = await pool.query(query, values);
 
     // Actualizar el estado de la requisición original
-    await pool.query('UPDATE requisiciones SET estado = $1 WHERE id = $2', [estado, id_requisicion])
+    await pool.query("UPDATE requisiciones SET estado = $1 WHERE id = $2", [
+      estado,
+      id_requisicion,
+    ]);
 
     res.json({
-      message: 'Acción registrada con éxito',
-      registro: normalizarEstado(result.rows)
-    })
+      message: "Acción registrada con éxito",
+      registro: normalizarEstado(result.rows),
+    });
   } catch (error) {
-    console.error('Error al registrar la aprobación/rechazo:', error)
-    res.status(500).send('Error al procesar la aprobación')
+    console.error("Error al registrar la aprobación/rechazo:", error);
+    res.status(500).send("Error al procesar la aprobación");
   }
-})
+});
 
 // Endpoint para obtener requisiciones filtradas por usuario y rol
-app.get('/api/requisiciones/filtro', async (req, res) => {
+app.get("/api/requisiciones/filtro", async (req, res) => {
   try {
-    const { usuario, esAdmin } = req.query
+    const { usuario, esAdmin } = req.query;
 
     // Si es admin, traemos todo de la tabla única 'requisiciones'
-    if (esAdmin === 'true' || usuario === 'admin') {
-      const result = await pool.query('SELECT * FROM requisiciones ORDER BY id DESC')
-      return res.json(normalizarEstado(result.rows))
+    if (esAdmin === "true" || usuario === "admin") {
+      const result = await pool.query(
+        "SELECT * FROM requisiciones ORDER BY id DESC",
+      );
+      return res.json(normalizarEstado(result.rows));
     }
 
     // Si es un jefe de área, filtramos por su departamento correspondiente
-    let deptoFiltro = 'IT/Sistemas'
-    if (usuario === 'jefelogistica') deptoFiltro = 'Logística'
-    else if (usuario === 'jefecomercial') deptoFiltro = 'Comercial'
-    else if (usuario === 'jeferrhh') deptoFiltro = 'RRHH'
+    let deptoFiltro = "IT/Sistemas";
+    if (usuario === "jefelogistica") deptoFiltro = "Logística";
+    else if (usuario === "jefecomercial") deptoFiltro = "Comercial";
+    else if (usuario === "jeferrhh") deptoFiltro = "RRHH";
 
     // Asumiendo que tu tabla 'requisiciones' tiene una columna llamada 'departamento' o 'area'
     const result = await pool.query(
-      'SELECT * FROM requisiciones WHERE departamento = $1 OR area = $1 ORDER BY id DESC',
-      [deptoFiltro]
-    )
-    res.json(normalizarEstado(result.rows))
+      "SELECT * FROM requisiciones WHERE departamento = $1 OR area = $1 ORDER BY id DESC",
+      [deptoFiltro],
+    );
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener requisiciones filtradas:', error)
-    res.status(500).json({ error: 'Error al cargar las requisiciones' })
+    console.error("Error al obtener requisiciones filtradas:", error);
+    res.status(500).json({ error: "Error al cargar las requisiciones" });
   }
-})
+});
 
 // Endpoint para obtener todas las requisiciones pendientes
-app.get('/api/requisiciones/todas', async (_req, res) => {
-  console.log('Recibida solicitud GET /api/requisiciones/todas')
+app.get("/api/requisiciones/todas", async (_req, res) => {
+  console.log("Recibida solicitud GET /api/requisiciones/todas");
   try {
     const result = await pool.query(`
       SELECT * FROM requisiciones 
       WHERE estado IS NULL OR estado = 'pendiente'
       ORDER BY id DESC
-    `)
-    res.json(normalizarEstado(result.rows))
+    `);
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener todas las requisiciones:', error)
-    res.status(500).send('Error al obtener todas las requisiciones')
+    console.error("Error al obtener todas las requisiciones:", error);
+    res.status(500).send("Error al obtener todas las requisiciones");
   }
-})
+});
 
 // Endpoint para requisiciones IT/Sistemas pendientes
-app.get('/api/requisiciones/tic', async (_req, res) => {
+app.get("/api/requisiciones/tic", async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT * FROM requisiciones 
       WHERE departamento ILIKE '%IT/Sistemas%' 
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
-    `)
-    res.json(normalizarEstado(result.rows))
+    `);
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener requisiciones IT/Sistemas:', error)
-    res.status(500).send('Error al obtener requisiciones IT/Sistemas')
+    console.error("Error al obtener requisiciones IT/Sistemas:", error);
+    res.status(500).send("Error al obtener requisiciones IT/Sistemas");
   }
-})
+});
 
 // Endpoint para requisiciones de Logística pendientes
-app.get('/api/requisiciones/logistica', async (_req, res) => {
+app.get("/api/requisiciones/logistica", async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT * FROM requisiciones 
       WHERE departamento ILIKE '%Logística%' 
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
-    `)
-    res.json(normalizarEstado(result.rows))
+    `);
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener requisiciones de Logística:', error)
-    res.status(500).send('Error al obtener requisiciones de Logística')
+    console.error("Error al obtener requisiciones de Logística:", error);
+    res.status(500).send("Error al obtener requisiciones de Logística");
   }
-})
+});
 
 // Endpoint para requisiciones de RRHH pendientes
-app.get('/api/requisiciones/rrhh', async (_req, res) => {
+app.get("/api/requisiciones/rrhh", async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT * FROM requisiciones 
       WHERE departamento ILIKE '%RRHH%' 
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
-    `)
-    res.json(normalizarEstado(result.rows))
+    `);
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener requisiciones de RRHH:', error)
-    res.status(500).send('Error al obtener requisiciones de RRHH')
+    console.error("Error al obtener requisiciones de RRHH:", error);
+    res.status(500).send("Error al obtener requisiciones de RRHH");
   }
-})
+});
 
 // Endpoint para requisiciones de Comercial pendientes
-app.get('/api/requisiciones/comercial', async (_req, res) => {
+app.get("/api/requisiciones/comercial", async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT * FROM requisiciones 
       WHERE departamento ILIKE '%Comercial%' 
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
-    `)
-    res.json(normalizarEstado(result.rows))
+    `);
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener requisiciones de Comercial:', error)
-    res.status(500).send('Error al obtener requisiciones de Comercial')
+    console.error("Error al obtener requisiciones de Comercial:", error);
+    res.status(500).send("Error al obtener requisiciones de Comercial");
   }
-})
+});
 
 // Endpoint para requisiciones de Otros departamentos pendientes
-app.get('/api/requisiciones/otros', async (_req, res) => {
+app.get("/api/requisiciones/otros", async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT * FROM requisiciones 
       WHERE departamento ILIKE '%Otros%' 
       AND (estado IS NULL OR estado = 'pendiente') 
       ORDER BY id DESC
-    `)
-    res.json(normalizarEstado(result.rows))
+    `);
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener requisiciones de otros departamentos:', error)
-    res.status(500).send('Error al obtener requisiciones de otros departamentos')
+    console.error(
+      "Error al obtener requisiciones de otros departamentos:",
+      error,
+    );
+    res
+      .status(500)
+      .send("Error al obtener requisiciones de otros departamentos");
   }
-})
+});
 
 // Endpoint para registrar la entrega completa (con PATCH) y evitar que se pueda procesar 2 veces la misma requisición
-app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
+app.patch("/api/aprobaciones/:id/entregar", async (req, res) => {
   try {
-    const { id } = req.params
-    const { entregado_por, observaciones, rol } = req.body
+    const { id } = req.params;
+    const { entregado_por, observaciones, rol } = req.body;
     const rolUsuario = String(
-      req.headers['x-user-role'] ?? req.headers['x-role'] ?? rol ?? ''
-    ).toLowerCase()
+      req.headers["x-user-role"] ?? req.headers["x-role"] ?? rol ?? "",
+    ).toLowerCase();
 
     // Validación de seguridad en backend
     if (
-      !rolUsuario.includes('logísti') &&
-      !rolUsuario.includes('logistica') &&
-      rolUsuario !== 'admin' &&
-      rolUsuario !== 'jefelogistica'
+      !rolUsuario.includes("logísti") &&
+      !rolUsuario.includes("logistica") &&
+      rolUsuario !== "admin" &&
+      rolUsuario !== "jefelogistica"
     ) {
-      return res.status(403).json({ error: 'No tienes permisos para registrar entregas.' })
+      return res
+        .status(403)
+        .json({ error: "No tienes permisos para registrar entregas." });
     }
 
-    const fechaActual = new Date().toISOString()
+    const fechaActual = new Date().toISOString();
 
     const resultado = await pool.query(
       `UPDATE registro_aprobaciones 
@@ -404,57 +427,59 @@ app.patch('/api/aprobaciones/:id/entregar', async (req, res) => {
            entregado_por = $2, 
            observaciones = $3 
        WHERE id = $4 AND LOWER(estado) = 'aprobado'`,
-      [fechaActual, entregado_por, observaciones, id]
-    )
+      [fechaActual, entregado_por, observaciones, id],
+    );
 
     if (resultado.rowCount === 0) {
-      return res.status(400).json({ error: 'La solicitud no existe o no está en estado aprobado.' })
+      return res.status(400).json({
+        error: "La solicitud no existe o no está en estado aprobado.",
+      });
     }
 
     // Actualiza la tabla principal 'requisiciones' con el estado final de logística (entregado) en (estado_final_logistica)
     const regRes = await pool.query(
-      'SELECT datos_completos FROM registro_aprobaciones WHERE id = $1',
-      [id]
-    )
+      "SELECT datos_completos FROM registro_aprobaciones WHERE id = $1",
+      [id],
+    );
     if (regRes.rows.length > 0) {
-      const datosCompletos = regRes.rows[0].datos_completos
-      const idRequisicion = datosCompletos?.id
+      const datosCompletos = regRes.rows[0].datos_completos;
+      const idRequisicion = datosCompletos?.id;
       if (idRequisicion) {
-        await pool.query('UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2', [
-          'Entregado',
-          idRequisicion
-        ])
+        await pool.query(
+          "UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2",
+          ["Entregado", idRequisicion],
+        );
       }
     }
 
-    res.json({ message: 'Entrega registrada con éxito' })
+    res.json({ message: "Entrega registrada con éxito" });
   } catch (error) {
-    console.error('Error al registrar entrega:', error)
-    res.status(500).send('Error al registrar la entrega')
+    console.error("Error al registrar entrega:", error);
+    res.status(500).send("Error al registrar la entrega");
   }
-})
+});
 
 // Endpoint para obtener todas las entregas registradas con estado Entregado
-app.get('/api/aprobaciones/entregadas', async (_req, res) => {
+app.get("/api/aprobaciones/entregadas", async (_req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM registro_aprobaciones WHERE fecha_entrega IS NOT NULL AND fecha_entrega != 'NULL' ORDER BY id DESC"
-    )
-    res.json(normalizarEstado(result.rows))
+      "SELECT * FROM registro_aprobaciones WHERE fecha_entrega IS NOT NULL AND fecha_entrega != 'NULL' ORDER BY id DESC",
+    );
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener entregas:', error)
-    await registrarErrorServidor(error, '/api/chatbot/metrics')
-    res.status(500).send('Error al obtener entregas')
+    console.error("Error al obtener entregas:", error);
+    await registrarErrorServidor(error, "/api/chatbot/metrics");
+    res.status(500).send("Error al obtener entregas");
   }
-})
+});
 
 // Endpoint para rechazar una solicitud aprobada desde logística (con PATCH)
-app.patch('/api/aprobaciones/:id/rechazar', async (req, res) => {
+app.patch("/api/aprobaciones/:id/rechazar", async (req, res) => {
   try {
-    const { id } = req.params
-    const { rechazado_por, observaciones } = req.body
+    const { id } = req.params;
+    const { rechazado_por, observaciones } = req.body;
 
-    const fechaActual = new Date().toISOString()
+    const fechaActual = new Date().toISOString();
 
     const resultado = await pool.query(
       `UPDATE registro_aprobaciones 
@@ -463,105 +488,117 @@ app.patch('/api/aprobaciones/:id/rechazar', async (req, res) => {
            entregado_por = $2, 
            observaciones = $3 
        WHERE id = $4 AND LOWER(estado) = 'aprobado'`,
-      [fechaActual, rechazado_por || 'Dpto. logistica', observaciones, id]
-    )
+      [fechaActual, rechazado_por || "Dpto. logistica", observaciones, id],
+    );
 
     if (resultado.rowCount === 0) {
-      return res.status(400).json({ error: 'La solicitud no existe o no está en estado aprobado.' })
+      return res.status(400).json({
+        error: "La solicitud no existe o no está en estado aprobado.",
+      });
     }
 
     // Actualiza la tabla principal 'requisiciones' con el estado final de logística (rechazado) en (estado_final_logistica)
     const regRes = await pool.query(
-      'SELECT datos_completos FROM registro_aprobaciones WHERE id = $1',
-      [id]
-    )
+      "SELECT datos_completos FROM registro_aprobaciones WHERE id = $1",
+      [id],
+    );
     if (regRes.rows.length > 0) {
-      const datosCompletos = regRes.rows[0].datos_completos
-      const idRequisicion = datosCompletos?.id
+      const datosCompletos = regRes.rows[0].datos_completos;
+      const idRequisicion = datosCompletos?.id;
       if (idRequisicion) {
-        await pool.query('UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2', [
-          'rechazado',
-          idRequisicion
-        ])
+        await pool.query(
+          "UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2",
+          ["rechazado", idRequisicion],
+        );
       }
     }
 
-    res.json({ message: 'Solicitud rechazada con éxito' })
+    res.json({ message: "Solicitud rechazada con éxito" });
   } catch (error) {
-    console.error('Error al rechazar solicitud:', error)
-    res.status(500).send('Error al rechazar la solicitud')
+    console.error("Error al rechazar solicitud:", error);
+    res.status(500).send("Error al rechazar la solicitud");
   }
-})
+});
 
 // Endpoint para obtener todas las solicitudes rechazadas
-app.get('/api/aprobaciones/rechazadas', async (_req, res) => {
+app.get("/api/aprobaciones/rechazadas", async (_req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM registro_aprobaciones WHERE LOWER(estado) = 'rechazado' ORDER BY id DESC"
-    )
-    res.json(normalizarEstado(result.rows))
+      "SELECT * FROM registro_aprobaciones WHERE LOWER(estado) = 'rechazado' ORDER BY id DESC",
+    );
+    res.json(normalizarEstado(result.rows));
   } catch (error) {
-    console.error('Error al obtener rechazadas:', error)
-    await registrarErrorServidor(error, '/api/chatbot/metrics')
-    res.status(500).send('Error al obtener rechazadas')
+    console.error("Error al obtener rechazadas:", error);
+    await registrarErrorServidor(error, "/api/chatbot/metrics");
+    res.status(500).send("Error al obtener rechazadas");
   }
-})
+});
 
 // Ruta para buscar o listar convenios
-app.get('/api/convenios/buscar', async (req, res) => {
+app.get("/api/convenios/buscar", async (req, res) => {
   try {
-    const texto = (req.query.q as string) || ''
-    const resultados = await ConvenioService.buscar(texto)
-    res.json(resultados)
+    const texto = (req.query.q as string) || "";
+    const resultados = await ConvenioService.buscar(texto);
+    res.json(resultados);
   } catch (error) {
-    console.error('Error al buscar convenios:', error)
-    res.status(500).json({ error: 'Error interno al buscar convenios' })
+    console.error("Error al buscar convenios:", error);
+    res.status(500).json({ error: "Error interno al buscar convenios" });
   }
-})
+});
 
 // Ruta para registrar un nuevo convenio de forma manual (según el banco)
-app.post('/api/convenios/crear', async (req, res) => {
+app.post("/api/convenios/crear", async (req, res) => {
   try {
-    const { banco, ...datos } = req.body
+    const { banco, ...datos } = req.body;
 
     // Las usamos aquí para que ESLint no marque error
-    console.log('Banco recibido:', banco)
-    console.log('Datos del convenio:', datos)
+    console.log("Banco recibido:", banco);
+    console.log("Datos del convenio:", datos);
 
-    res.json({ success: true, message: 'Convenio creado correctamente' })
+    res.json({ success: true, message: "Convenio creado correctamente" });
   } catch (error) {
-    console.error('Error al crear convenio:', error)
-    res.status(500).json({ error: 'Error al guardar el convenio' })
+    console.error("Error al crear convenio:", error);
+    res.status(500).json({ error: "Error al guardar el convenio" });
   }
-})
+});
 
-app.get('/api/mindmap/nodes', async (req, res) => {
+app.get("/api/mindmap/nodes", async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM mindmap_nodes ORDER BY created_at DESC')
-    res.json(result.rows)
+    const result = await pool.query(
+      "SELECT * FROM mindmap_nodes ORDER BY created_at DESC",
+    );
+    res.json(result.rows);
   } catch (error) {
-    console.error('Error al obtener nodos:', error)
-    await registrarErrorServidor(error, '/api/mindmap/nodes')
-    res.status(500).send('Error al obtener nodos')
+    console.error("Error al obtener nodos:", error);
+    await registrarErrorServidor(error, "/api/mindmap/nodes");
+    res.status(500).send("Error al obtener nodos");
   }
-})
+});
 
-app.get('/api/mindmap/connections', async (req, res) => {
+app.get("/api/mindmap/connections", async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM mindmap_connections')
+    const result = await pool.query("SELECT * FROM mindmap_connections");
     // Asegura que siempre devuelvas un array
-    res.json(result.rows || [])
+    res.json(result.rows || []);
   } catch (error) {
-    console.error('Error al obtener conexiones:', error)
-    await registrarErrorServidor(error, '/api/mindmap/connections')
+    console.error("Error al obtener conexiones:", error);
+    await registrarErrorServidor(error, "/api/mindmap/connections");
     // Devuelve un array vacío en caso de error
-    res.status(500).json([])
+    res.status(500).json([]);
   }
-})
+});
 
-app.post('/api/mindmap/nodes', async (req, res) => {
-  const { parent_id, title, description, problem, solution, position_x, position_y, color } =
-    req.body
+app.post("/api/mindmap/nodes", async (req, res) => {
+  const {
+    parent_id,
+    title,
+    description,
+    problem,
+    solution,
+    position_x,
+    position_y,
+    color,
+  } = req.body;
 
   try {
     const result = await pool.query(
@@ -569,19 +606,28 @@ app.post('/api/mindmap/nodes', async (req, res) => {
       (parent_id, title, description, problem, solution, position_x, position_y, color) 
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
        RETURNING *`,
-      [parent_id, title, description, problem, solution, position_x, position_y, color || '#1E3A8A']
-    )
+      [
+        parent_id,
+        title,
+        description,
+        problem,
+        solution,
+        position_x,
+        position_y,
+        color || "#1E3A8A",
+      ],
+    );
 
-    res.status(201).json(result.rows[0])
+    res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Error al crear nodo:', error)
-    await registrarErrorServidor(error, '/api/mindmap/nodes')
-    res.status(500).send('Error al crear nodo')
+    console.error("Error al crear nodo:", error);
+    await registrarErrorServidor(error, "/api/mindmap/nodes");
+    res.status(500).send("Error al crear nodo");
   }
-})
+});
 
-app.post('/api/mindmap/connections', async (req, res) => {
-  const { source_node_id, target_node_id, connection_type } = req.body
+app.post("/api/mindmap/connections", async (req, res) => {
+  const { source_node_id, target_node_id, connection_type } = req.body;
 
   try {
     const result = await pool.query(
@@ -589,20 +635,28 @@ app.post('/api/mindmap/connections', async (req, res) => {
       (source_node_id, target_node_id, connection_type) 
       VALUES ($1, $2, $3) 
        RETURNING *`,
-      [source_node_id, target_node_id, connection_type || 'related']
-    )
+      [source_node_id, target_node_id, connection_type || "related"],
+    );
 
-    res.status(201).json(result.rows[0])
+    res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Error al crear conexión:', error)
-    await registrarErrorServidor(error, '/api/mindmap/connections')
-    res.status(500).send('Error al crear conexión')
+    console.error("Error al crear conexión:", error);
+    await registrarErrorServidor(error, "/api/mindmap/connections");
+    res.status(500).send("Error al crear conexión");
   }
-})
+});
 
-app.put('/api/mindmap/nodes/:id', async (req, res) => {
-  const { id } = req.params
-  const { title, description, problem, solution, position_x, position_y, color } = req.body
+app.put("/api/mindmap/nodes/:id", async (req, res) => {
+  const { id } = req.params;
+  const {
+    title,
+    description,
+    problem,
+    solution,
+    position_x,
+    position_y,
+    color,
+  } = req.body;
 
   try {
     const result = await pool.query(
@@ -618,179 +672,195 @@ app.put('/api/mindmap/nodes/:id', async (req, res) => {
         updated_at = CURRENT_TIMESTAMP
       WHERE id = $8
        RETURNING *`,
-      [title, description, problem, solution, position_x, position_y, color || '#1E3A8A', id]
-    )
+      [
+        title,
+        description,
+        problem,
+        solution,
+        position_x,
+        position_y,
+        color || "#1E3A8A",
+        id,
+      ],
+    );
 
     if (result.rows.length === 0) {
-      return res.status(404).send('Nodo no encontrado')
+      return res.status(404).send("Nodo no encontrado");
     }
 
-    res.json(result.rows[0])
+    res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error al actualizar nodo:', error)
-    await registrarErrorServidor(error, `/api/mindmap/nodes/${id}`)
-    res.status(500).send('Error al actualizar nodo')
+    console.error("Error al actualizar nodo:", error);
+    await registrarErrorServidor(error, `/api/mindmap/nodes/${id}`);
+    res.status(500).send("Error al actualizar nodo");
   }
-})
+});
 
-app.delete('/api/mindmap/nodes/:id', async (req, res) => {
-  const { id } = req.params
+app.delete("/api/mindmap/nodes/:id", async (req, res) => {
+  const { id } = req.params;
 
   try {
     // Las conexiones se eliminarán automáticamente por ON DELETE CASCADE
-    await pool.query('DELETE FROM mindmap_nodes WHERE id = $1', [id])
-    res.status(204).send()
+    await pool.query("DELETE FROM mindmap_nodes WHERE id = $1", [id]);
+    res.status(204).send();
   } catch (error) {
-    console.error('Error al eliminar nodo:', error)
-    await registrarErrorServidor(error, `/api/mindmap/nodes/${id}`)
-    res.status(500).send('Error al eliminar nodo')
+    console.error("Error al eliminar nodo:", error);
+    await registrarErrorServidor(error, `/api/mindmap/nodes/${id}`);
+    res.status(500).send("Error al eliminar nodo");
   }
-})
+});
 
-app.delete('/api/mindmap/connections/:id', async (req, res) => {
-  const { id } = req.params
+app.delete("/api/mindmap/connections/:id", async (req, res) => {
+  const { id } = req.params;
 
   try {
-    await pool.query('DELETE FROM mindmap_connections WHERE id = $1', [id])
-    res.status(204).send()
+    await pool.query("DELETE FROM mindmap_connections WHERE id = $1", [id]);
+    res.status(204).send();
   } catch (error) {
-    console.error('Error al eliminar conexión:', error)
-    await registrarErrorServidor(error, `/api/mindmap/connections/${id}`)
-    res.status(500).send('Error al eliminar conexión')
+    console.error("Error al eliminar conexión:", error);
+    await registrarErrorServidor(error, `/api/mindmap/connections/${id}`);
+    res.status(500).send("Error al eliminar conexión");
   }
-})
+});
 
 // Iniciar el servidor
 app.listen(3003, () => {
-  console.log('Servidor backend corriendo en http://localhost:3003')
-})
+  console.log("Servidor backend corriendo en http://localhost:3003");
+});
 
 // Endpoint unificado para las métricas (KPIs) de Requisiciones, Bancos, Sesiones e Interacciones en vivo
-app.get('/api/chatbot/metrics', async (_req, res) => {
+app.get("/api/chatbot/metrics", async (_req, res) => {
   try {
     // Total de convenios de los bancos (29.230 registros)
-    const conteoAgrario = await pool.query('SELECT COUNT(*) FROM agrario')
-    const conteoAval = await pool.query('SELECT COUNT(*) FROM aval')
-    const conteoBbva = await pool.query('SELECT COUNT(*) FROM bbva')
+    const conteoAgrario = await pool.query("SELECT COUNT(*) FROM agrario");
+    const conteoAval = await pool.query("SELECT COUNT(*) FROM aval");
+    const conteoBbva = await pool.query("SELECT COUNT(*) FROM bbva");
     const totalConveniosBancos =
       parseInt(conteoAgrario.rows[0].count || 0) +
       parseInt(conteoAval.rows[0].count || 0) +
-      parseInt(conteoBbva.rows[0].count || 0)
+      parseInt(conteoBbva.rows[0].count || 0);
 
     // Total Histórico de Usuarios (únicos y repetidos tabla total_historico_usuarios)
-    const historicoQuery = await pool.query('SELECT COUNT(*) FROM total_historico_usuarios')
-    const totalHistoricoUsuarios = parseInt(historicoQuery.rows[0].count || 0)
+    const historicoQuery = await pool.query(
+      "SELECT COUNT(*) FROM total_historico_usuarios",
+    );
+    const totalHistoricoUsuarios = parseInt(historicoQuery.rows[0].count || 0);
 
     // Flujos Conversacionales Ejecutados Hoy
     const consultaMensajesHoy = await pool.query(
-      "SELECT SUM(total_mensajes) as total FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
-    )
-    const totalMensajesHoy = parseInt(consultaMensajesHoy.rows[0].total || 0)
+      "SELECT SUM(total_mensajes) as total FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'",
+    );
+    const totalMensajesHoy = parseInt(consultaMensajesHoy.rows[0].total || 0);
 
     // Chats Únicos Últimas 24h tabla (sesiones_chat)
     const consultaChats24h = await pool.query(
-      "SELECT COUNT(*) FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'"
-    )
-    const totalChatsActivos = parseInt(consultaChats24h.rows[0].count || 0)
+      "SELECT COUNT(*) FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'",
+    );
+    const totalChatsActivos = parseInt(consultaChats24h.rows[0].count || 0);
 
     // Errores pendientes por resolver en la tabla errores_api
     const conteoErroresApi = await pool.query(
-      'SELECT COUNT(*) FROM errores_api WHERE resuelto = false'
-    )
-    const pendingErrors = parseInt(conteoErroresApi.rows[0].count || 0)
+      "SELECT COUNT(*) FROM errores_api WHERE resuelto = false",
+    );
+    const pendingErrors = parseInt(conteoErroresApi.rows[0].count || 0);
 
     // Errores en las últimas 24h para referencia
     const errors24hRes = await pool.query(
-      "SELECT COUNT(*) FROM errores_api WHERE fecha >= NOW() - INTERVAL '24 hours'"
-    )
-    const errors24h = parseInt(errors24hRes.rows[0].count || 0)
+      "SELECT COUNT(*) FROM errores_api WHERE fecha >= NOW() - INTERVAL '24 hours'",
+    );
+    const errors24h = parseInt(errors24hRes.rows[0].count || 0);
 
     // Cálculo % dinámico de la tasa de automatización del bot
-    let automationRate = 100
+    let automationRate = 100;
     if (totalMensajesHoy > 0) {
       // Usamos el máximo entre los errores de 24h y los errores pendientes totales (resuelto = false) para que se refleje el estado real del bot
-      const erroresTotales = Math.max(errors24h, pendingErrors)
+      const erroresTotales = Math.max(errors24h, pendingErrors);
 
-      const rate = ((totalMensajesHoy - erroresTotales) / totalMensajesHoy) * 100
-      automationRate = Math.max(0, Number(rate.toFixed(1)))
+      const rate =
+        ((totalMensajesHoy - erroresTotales) / totalMensajesHoy) * 100;
+      automationRate = Math.max(0, Number(rate.toFixed(1)));
     }
 
     // Estado del Servidor y API
     // Función para formatear el tiempo activo (uptime) del servidor en Render
     function formatUptime(seconds: number): string {
-      const days = Math.floor(seconds / (3600 * 24))
-      const hours = Math.floor((seconds % (3600 * 24)) / 3600)
-      const minutes = Math.floor((seconds % 3600) / 60)
+      const days = Math.floor(seconds / (3600 * 24));
+      const hours = Math.floor((seconds % (3600 * 24)) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
 
       if (days > 0) {
-        return `Online • ${days}d ${hours}h activo`
+        return `Online • ${days}d ${hours}h activo`;
       }
       if (hours > 0) {
-        return `Online • ${hours}h ${minutes}m activo`
+        return `Online • ${hours}h ${minutes}m activo`;
       }
-      return `Online • ${minutes}m activo`
+      return `Online • ${minutes}m activo`;
     }
 
     // Servidor Web (Render) con Uptime
-    const uptimeSegundos = process.uptime()
-    const serverStatus = formatUptime(uptimeSegundos)
+    const uptimeSegundos = process.uptime();
+    const serverStatus = formatUptime(uptimeSegundos);
 
     // Meta Cloud API (Webhook): Última interacción
     const ultimaActividadRes = await pool.query(
-      'SELECT ultimo_mensaje FROM sesiones_chat ORDER BY ultimo_mensaje DESC LIMIT 1'
-    )
+      "SELECT ultimo_mensaje FROM sesiones_chat ORDER BY ultimo_mensaje DESC LIMIT 1",
+    );
 
     const ultimoMsjDate = ultimaActividadRes.rows[0]?.ultimo_mensaje
       ? new Date(ultimaActividadRes.rows[0].ultimo_mensaje)
-      : null
+      : null;
 
-    const ahora = new Date()
-    let metaTexto = 'Sin actividad reciente'
-    let metaConectado = false
+    const ahora = new Date();
+    let metaTexto = "Sin actividad reciente";
+    let metaConectado = false;
 
     if (ultimoMsjDate) {
-      const diffSegundos = Math.floor((ahora.getTime() - ultimoMsjDate.getTime()) / 1000)
-      const diffMinutos = Math.floor(diffSegundos / 60)
-      const diffHoras = Math.floor(diffMinutos / 60)
+      const diffSegundos = Math.floor(
+        (ahora.getTime() - ultimoMsjDate.getTime()) / 1000,
+      );
+      const diffMinutos = Math.floor(diffSegundos / 60);
+      const diffHoras = Math.floor(diffMinutos / 60);
 
-      let tiempoRelativo = ''
+      let tiempoRelativo = "";
       if (diffSegundos < 60) {
-        tiempoRelativo = `hace ${diffSegundos} seg`
+        tiempoRelativo = `hace ${diffSegundos} seg`;
       } else if (diffMinutos < 60) {
-        tiempoRelativo = `hace ${diffMinutos} min`
+        tiempoRelativo = `hace ${diffMinutos} min`;
       } else if (diffHoras < 24) {
-        tiempoRelativo = `hace ${diffHoras} h`
+        tiempoRelativo = `hace ${diffHoras} h`;
       } else {
-        tiempoRelativo = `hace más de 1 día`
+        tiempoRelativo = `hace más de 1 día`;
       }
 
-      metaConectado = diffSegundos < 86400 // Activo si hubo movimiento en 24h
+      metaConectado = diffSegundos < 86400; // Activo si hubo movimiento en 24h
       metaTexto = metaConectado
         ? `Conectado • Últ. vez: ${tiempoRelativo}`
-        : `Inactivo • Últ. vez: ${tiempoRelativo}`
+        : `Inactivo • Últ. vez: ${tiempoRelativo}`;
     }
 
     // Supabase (Base de Datos - Servidor) + Almacenamiento MB
-    let supabaseStatusText = 'Conectado'
+    let supabaseStatusText = "Conectado";
     try {
-      const sizeRes = await pool.query('SELECT pg_database_size(current_database()) AS size')
-      const bytes = parseInt(sizeRes.rows[0]?.size || 0, 10)
-      const usedMB = (bytes / (1024 * 1024)).toFixed(1)
+      const sizeRes = await pool.query(
+        "SELECT pg_database_size(current_database()) AS size",
+      );
+      const bytes = parseInt(sizeRes.rows[0]?.size || 0, 10);
+      const usedMB = (bytes / (1024 * 1024)).toFixed(1);
       // Plan gratuito de Supabase de 500 MB
-      supabaseStatusText = `Conectado • Storage: ${usedMB} / 500 MB`
+      supabaseStatusText = `Conectado • Storage: ${usedMB} / 500 MB`;
     } catch {
-      supabaseStatusText = 'Desconectado'
+      supabaseStatusText = "Desconectado";
     }
 
     // Latencia Base de Datos PostgreSQL (Ping real)
-    const hacerPing = Date.now()
-    let latenciaMs = 0
+    const hacerPing = Date.now();
+    let latenciaMs = 0;
 
     try {
-      await pool.query('SELECT 1')
-      latenciaMs = Date.now() - hacerPing
+      await pool.query("SELECT 1");
+      latenciaMs = Date.now() - hacerPing;
     } catch {
-      latenciaMs = 999
+      latenciaMs = 999;
     }
 
     // Respuesta estructurada al Dashboard
@@ -802,7 +872,7 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
       desgloseBancos: {
         bbva: parseInt(conteoBbva.rows[0].count || 0),
         agrario: parseInt(conteoAgrario.rows[0].count || 0),
-        aval: parseInt(conteoAval.rows[0].count || 0)
+        aval: parseInt(conteoAval.rows[0].count || 0),
       },
       automationRate: automationRate,
       pendingErrors: pendingErrors,
@@ -810,63 +880,68 @@ app.get('/api/chatbot/metrics', async (_req, res) => {
         serverStatus: serverStatus, // Servidor Web (Render)
         metaApiStatus: metaTexto, // Meta Cloud API (Webhook)
         supabaseStatus: supabaseStatusText, // Supabase (Base de Datos)
-        builderBotStatus: metaConectado ? 'Estable' : 'Revisar', // Motor BuilderBot
-        latencyMs: `${latenciaMs} ms` // Latencia Base de Datos PostgreSQL
-      }
-    })
+        builderBotStatus: metaConectado ? "Estable" : "Revisar", // Motor BuilderBot
+        latencyMs: `${latenciaMs} ms`, // Latencia Base de Datos PostgreSQL
+      },
+    });
   } catch (error) {
-    console.error('Error al obtener métricas del chatbot:', error)
-    await registrarErrorServidor(error, '/api/chatbot/metrics')
-    res.status(500).json({ error: 'No se pudieron obtener las métricas' })
+    console.error("Error al obtener métricas del chatbot:", error);
+    await registrarErrorServidor(error, "/api/chatbot/metrics");
+    res.status(500).json({ error: "No se pudieron obtener las métricas" });
   }
-})
+});
 
 // Endpoint para que el bot registre errores de API o de ejecución
-app.post('/api/chatbot/log-error', async (req, res) => {
+app.post("/api/chatbot/log-error", async (req, res) => {
   try {
-    const { mensaje, origen, telefono } = req.body
+    const { mensaje, origen, telefono } = req.body;
 
     await pool.query(
       `INSERT INTO errores_api (mensaje, origen, telefono, resuelto, fecha) 
        VALUES ($1, $2, $3, false, NOW())`,
-      [mensaje || 'Error desconocido', origen || 'Bot', telefono || null]
-    )
+      [mensaje || "Error desconocido", origen || "Bot", telefono || null],
+    );
 
-    res.status(201).json({ status: 'ok', message: 'Error registrado correctamente' })
+    res
+      .status(201)
+      .json({ status: "ok", message: "Error registrado correctamente" });
   } catch (error) {
-    console.error('Error al guardar log de error en /api/chatbot/log-error:', error)
-    res.status(500).json({ error: 'No se pudo registrar el error' })
+    console.error(
+      "Error al guardar log de error en /api/chatbot/log-error:",
+      error,
+    );
+    res.status(500).json({ error: "No se pudo registrar el error" });
   }
-})
+});
 
 // Endpoint de Actividad Reciente en Vivo
-app.get('/api/chatbot/activity', async (_req, res) => {
+app.get("/api/chatbot/activity", async (_req, res) => {
   try {
     // Trae las últimas interacciones convirtiendo el timestamp a la zona horaria de Bogotá
     const resultadoActividad = await pool.query(
       `SELECT id, telefono, nombre, ultima_accion, 
               (ultimo_mensaje AT TIME ZONE 'America/Bogota') as ultimo_mensaje 
        FROM sesiones_chat 
-       ORDER BY ultimo_mensaje DESC LIMIT 10`
-    )
+       ORDER BY ultimo_mensaje DESC LIMIT 10`,
+    );
 
     const listaActividad = resultadoActividad.rows.map((fila, indice) => ({
       id: fila.id || indice + 1,
-      user: fila.nombre || fila.telefono || 'Usuario WhatsApp',
-      intent: fila.ultima_accion || 'Interacción con el Bot',
+      user: fila.nombre || fila.telefono || "Usuario WhatsApp",
+      intent: fila.ultima_accion || "Interacción con el Bot",
       time: fila.ultimo_mensaje
         ? new Date(fila.ultimo_mensaje).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
+            hour: "2-digit",
+            minute: "2-digit",
           })
-        : 'Reciente',
-      status: 'success'
-    }))
+        : "Reciente",
+      status: "success",
+    }));
 
-    res.json(listaActividad)
+    res.json(listaActividad);
   } catch (error) {
-    console.error('Error al obtener actividad en vivo:', error)
-    await registrarErrorServidor(error, '/api/chatbot/activity')
-    res.json([])
+    console.error("Error al obtener actividad en vivo:", error);
+    await registrarErrorServidor(error, "/api/chatbot/activity");
+    res.json([]);
   }
-})
+});

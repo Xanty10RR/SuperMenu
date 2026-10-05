@@ -213,11 +213,12 @@ export class ConvenioService {
         const tipoCaptura = datos.tipo_captura || "BARRAS";
         const ubicacion = datos.ubicacion || "NACIONAL";
         const refs = datos.referencias || "";
-        const formaConsulta = datos.forma_consulta_datos || "N";
+        const formaConsulta =
+          datos.forma_consulta || datos.forma_consulta_datos || "N";
 
         const { rows } = await pool.query(
-          `INSERT INTO bbva (codigo_convenio, nombre_convenio, nit, que_se_recauda, categoria, tipo_captura, ubicacion, referencias, forma_consulta_datos) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+          `INSERT INTO bbva (codigo_convenio, nombre_convenio, nit, que_se_recauda, categoria, tipo_captura, ubicacion, referencias, forma_consulta) 
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
           [
             codigo,
             nombreConv,
@@ -300,16 +301,16 @@ export class ConvenioService {
       case "BBVA": {
         const { rows } = await pool.query(
           `UPDATE bbva 
-           SET nombre_convenio = COALESCE($1, nombre_convenio), 
-               nit = COALESCE($2, nit), 
-               que_se_recauda = COALESCE($3, que_se_recauda), 
-               categoria = COALESCE($4, categoria), 
-               tipo_captura = COALESCE($5, tipo_captura), 
-               ubicacion = COALESCE($6, ubicacion), 
-               referencias = COALESCE($7, referencias),
-               forma_consulta_datos = COALESCE($8, forma_consulta_datos) 
-           WHERE codigo_convenio = $9 
-           RETURNING *`,
+   SET nombre_convenio = COALESCE($1, nombre_convenio), 
+       nit = COALESCE($2, nit), 
+       que_se_recauda = COALESCE($3, que_se_recauda), 
+       categoria = COALESCE($4, categoria), 
+       tipo_captura = COALESCE($5, tipo_captura), 
+       ubicacion = COALESCE($6, ubicacion), 
+       referencias = COALESCE($7, referencias),
+       forma_consulta = COALESCE($8, forma_consulta) 
+   WHERE codigo_convenio = $9 
+   RETURNING *`,
           [
             datos.nombre_convenio || datos.nombre,
             datos.nit,
@@ -318,7 +319,7 @@ export class ConvenioService {
             datos.tipo_captura,
             datos.ubicacion,
             datos.referencias,
-            datos.forma_consulta_datos,
+            datos.forma_consulta || datos.forma_consulta_datos,
             id,
           ],
         );

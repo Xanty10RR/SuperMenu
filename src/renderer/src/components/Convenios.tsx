@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaPlus, FaSearch, FaEdit, FaTrash } from 'react-icons/fa'
+import { FaPlus, FaSearch, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
 interface Convenio {
   id?: number | string
@@ -30,7 +30,12 @@ export const Convenios: React.FC = () => {
     aval: []
   })
   const [busqueda, setBusqueda] = useState('')
+  const [cargando, setCargando] = useState(false)
   const [modalAbierto, setModalAbierto] = useState(false)
+
+  // Estados para la Paginación
+  const [paginaActual, setPaginaActual] = useState(1)
+  const elementosPorPagina = 15
 
   // Estados para el formulario de nuevo convenio
   const [nuevoConvenio, setNuevoConvenio] = useState({
@@ -40,35 +45,48 @@ export const Convenios: React.FC = () => {
     descripcion: ''
   })
 
-  // Cargar datos reales desde el backend cuando cambie la búsqueda o al iniciar
+  // Cargar datos reales desde el backend en el puerto 3003
   useEffect(() => {
     const cargarDatos = async (): Promise<void> => {
+      setCargando(true)
       try {
-        const response = await fetch(`/api/convenios/buscar?q=${encodeURIComponent(busqueda)}`)
-        const data = await response.json()
-        setDatosConvenios(data)
+        const response = await fetch(
+          `http://localhost:3003/api/convenios/buscar?q=${encodeURIComponent(busqueda)}`
+        )
+        const contentType = response.headers.get('content-type')
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json()
+          setDatosConvenios(data)
+          setPaginaActual(1) // Reiniciar a la página 1 cuando cambia la búsqueda
+        }
       } catch (error) {
         console.error('Error al cargar convenios:', error)
+      } finally {
+        setCargando(false)
       }
     }
 
     const timer = setTimeout(() => {
       cargarDatos()
-    }, 300) // Pequeño retraso (debounce) para optimizar la búsqueda al escribir
+    }, 400) // Retraso prudente (debounce) para no saturar al escribir
 
     return () => clearTimeout(timer)
   }, [busqueda])
 
-  // Obtener la lista correspondiente al banco seleccionado actualmente
-  const listaActual = datosConvenios[bancoSeleccionado] || []
-
-  const handleCrearConvenio = (e: React.FormEvent): void => {
-    e.preventDefault()
-    // Lógica para enviar el nuevo convenio al backend/Supabase
-    console.log('Guardando en tabla:', bancoSeleccionado, nuevoConvenio)
-    setModalAbierto(false)
-    setNuevoConvenio({ nombre: '', nit: '', categoria: '', descripcion: '' })
+  // Cambiar de banco también reinicia la paginación a la 1
+  const handleCambiarBanco = (banco: 'bbva' | 'aval' | 'agrario'): void => {
+    setBancoSeleccionado(banco)
+    setPaginaActual(1)
   }
+
+  // Obtener la lista completa del banco actual
+  const listaCompleta = datosConvenios[bancoSeleccionado] || []
+
+  // Calcular los elementos que se van a mostrar en la página actual (Paginación local rápida)
+  const indiceUltimoElemento = paginaActual * elementosPorPagina
+  const indicePrimerElemento = indiceUltimoElemento - elementosPorPagina
+  const listaActual = listaCompleta.slice(indicePrimerElemento, indiceUltimoElemento)
+  const totalPaginas = Math.ceil(listaCompleta.length / elementosPorPagina) || 1
 
   return (
     <div className="convenios-container" style={{ padding: '20px' }}>
@@ -100,12 +118,12 @@ export const Convenios: React.FC = () => {
         </button>
       </div>
 
-      {/* Pestañas para cambiar de banco (muestra la cantidad de registros por banco) */}
+      {/* Pestañas para cambiar de banco */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         {(['bbva', 'aval', 'agrario'] as const).map((banco) => (
           <button
             key={banco}
-            onClick={() => setBancoSeleccionado(banco)}
+            onClick={() => handleCambiarBanco(banco)}
             style={{
               padding: '8px 20px',
               fontWeight: 'bold',
@@ -138,6 +156,13 @@ export const Convenios: React.FC = () => {
           }}
         />
       </div>
+
+      {/* Indicador de carga */}
+      {cargando && (
+        <div style={{ marginBottom: '10px', color: '#007bff', fontWeight: '500' }}>
+          Buscando registros... ⏳
+        </div>
+      )}
 
       {/* Tabla Interactiva */}
       <div
@@ -218,6 +243,64 @@ export const Convenios: React.FC = () => {
         </table>
       </div>
 
+      {/* Controles de Paginación */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '15px',
+          background: '#fff',
+          padding: '10px 15px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}
+      >
+        <span style={{ fontSize: '14px', color: '#555' }}>
+          Mostrando {listaCompleta.length > 0 ? indicePrimerElemento + 1 : 0} al{' '}
+          {Math.min(indiceUltimoElemento, listaCompleta.length)} de {listaCompleta.length} registros
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            onClick={() => setPaginaActual((p) => Math.max(p - 1, 1))}
+            disabled={paginaActual === 1}
+            style={{
+              padding: '6px 12px',
+              background: paginaActual === 1 ? '#e0e0e0' : '#007bff',
+              color: paginaActual === 1 ? '#888' : '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: paginaActual === 1 ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+          >
+            <FaChevronLeft /> Anterior
+          </button>
+          <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
+            Página {paginaActual} de {totalPaginas}
+          </span>
+          <button
+            onClick={() => setPaginaActual((p) => Math.min(p + 1, totalPaginas))}
+            disabled={paginaActual === totalPaginas}
+            style={{
+              padding: '6px 12px',
+              background: paginaActual === totalPaginas ? '#e0e0e0' : '#007bff',
+              color: paginaActual === totalPaginas ? '#888' : '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: paginaActual === totalPaginas ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+          >
+            Siguiente <FaChevronRight />
+          </button>
+        </div>
+      </div>
+
       {/* Modal para Crear Convenio Manual */}
       {modalAbierto && (
         <div
@@ -244,7 +327,12 @@ export const Convenios: React.FC = () => {
           >
             <h3>Registrar Nuevo Convenio ({bancoSeleccionado.toUpperCase()})</h3>
             <form
-              onSubmit={handleCrearConvenio}
+              onSubmit={(e) => {
+                e.preventDefault()
+                console.log('Guardando en tabla:', bancoSeleccionado, nuevoConvenio)
+                setModalAbierto(false)
+                setNuevoConvenio({ nombre: '', nit: '', categoria: '', descripcion: '' })
+              }}
               style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}
             >
               <input

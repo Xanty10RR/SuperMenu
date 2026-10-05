@@ -160,7 +160,7 @@ export const Convenios: React.FC = () => {
       ubicacion: String(itemAny.ubicacion || ''),
       descripcion: String(itemAny.referencia || itemAny.descripcion || ''),
       referencias: String(itemAny.referencias || ''),
-      forma_consulta_datos: String(itemAny.forma_consulta_datos || '')
+      forma_consulta_datos: String(itemAny.forma_consulta || itemAny.forma_consulta_datos || '')
     })
     setModalEditarAbierto(true)
   }

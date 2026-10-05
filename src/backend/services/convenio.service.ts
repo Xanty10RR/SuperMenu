@@ -197,4 +197,86 @@ export class ConvenioService {
 
     return candidatos.length ? candidatos[0] : null;
   }
+  // Métodos para el CRUD
+
+  static async crear(banco: string, datos: any) {
+    const { nombre, nit, categoria, descripcion } = datos;
+
+    switch (banco) {
+      case "BBVA": {
+        const { rows } = await pool.query(
+          `INSERT INTO bbva (nombre_convenio, nit, categoria, referencias) VALUES ($1, $2, $3, $4) RETURNING *`,
+          [nombre, nit, categoria, descripcion],
+        );
+        return rows[0];
+      }
+      case "AGRARIO": {
+        const { rows } = await pool.query(
+          `INSERT INTO agrario (nombre_convenio, nit_convenio, referencia) VALUES ($1, $2, $3) RETURNING *`,
+          [nombre, nit, descripcion],
+        );
+        return rows[0];
+      }
+      case "AVAL": {
+        const { rows } = await pool.query(
+          `INSERT INTO aval (convenio, nit, modalidad, descripcion_recaudo) VALUES ($1, $2, $3, $4) RETURNING *`,
+          [nombre, nit, categoria, descripcion],
+        );
+        return rows[0];
+      }
+      default:
+        throw new Error("Banco no válido para creación");
+    }
+  }
+
+  static async actualizar(banco: string, id: string, datos: any) {
+    const { nombre, nit, categoria, descripcion } = datos;
+
+    switch (banco) {
+      case "BBVA": {
+        const { rows } = await pool.query(
+          `UPDATE bbva SET nombre_convenio = $1, nit = $2, categoria = $3, referencias = $4 WHERE codigo_convenio = $5 RETURNING *`,
+          [nombre, nit, categoria, descripcion, id],
+        );
+        return rows[0];
+      }
+      case "AGRARIO": {
+        const { rows } = await pool.query(
+          `UPDATE agrario SET nombre_convenio = $1, nit_convenio = $2, referencia = $3 WHERE codigo_convenio = $4 RETURNING *`,
+          [nombre, nit, descripcion, id],
+        );
+        return rows[0];
+      }
+      case "AVAL": {
+        const { rows } = await pool.query(
+          `UPDATE aval SET convenio = $1, nit = $2, modalidad = $3, descripcion_recaudo = $4 WHERE nit = $5 RETURNING *`,
+          [nombre, nit, categoria, descripcion, id],
+        );
+        return rows[0];
+      }
+      default:
+        throw new Error("Banco no válido para actualización");
+    }
+  }
+
+  static async eliminar(banco: string, id: string) {
+    switch (banco) {
+      case "BBVA": {
+        await pool.query(`DELETE FROM bbva WHERE codigo_convenio = $1`, [id]);
+        return true;
+      }
+      case "AGRARIO": {
+        await pool.query(`DELETE FROM agrario WHERE codigo_convenio = $1`, [
+          id,
+        ]);
+        return true;
+      }
+      case "AVAL": {
+        await pool.query(`DELETE FROM aval WHERE nit = $1`, [id]);
+        return true;
+      }
+      default:
+        throw new Error("Banco no válido para eliminación");
+    }
+  }
 }

@@ -18,7 +18,8 @@ export class ConvenioService {
           categoria,
           tipo_captura,
           ubicacion,
-          referencias
+          referencias,
+          forma_consulta
         FROM bbva
         WHERE
           LOWER(nombre_convenio) LIKE $1
@@ -92,7 +93,8 @@ export class ConvenioService {
             categoria,
             tipo_captura,
             ubicacion,
-            referencias
+            referencias,
+            forma_consulta
           FROM bbva
           WHERE codigo_convenio = $1
           LIMIT 1
@@ -213,10 +215,11 @@ export class ConvenioService {
           ubicacion,
           referencias,
           descripcion,
+          forma_consulta,
         } = datos;
         const { rows } = await pool.query(
-          `INSERT INTO bbva (codigo_convenio, nombre_convenio, nit, que_se_recauda, categoria, tipo_captura, ubicacion, referencias) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+          `INSERT INTO bbva (codigo_convenio, nombre_convenio, nit, que_se_recauda, categoria, tipo_captura, ubicacion, referencias, forma_consulta) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
           [
             codigo_convenio,
             nombre_convenio || nombre,
@@ -226,6 +229,7 @@ export class ConvenioService {
             tipo_captura,
             ubicacion,
             referencias || descripcion,
+            forma_consulta || null,
           ],
         );
         return rows[0];
@@ -303,6 +307,7 @@ export class ConvenioService {
         const tipoCaptura = datos.tipo_captura;
         const ubicacion = datos.ubicacion;
         const referencias = datos.referencias || datos.descripcion;
+        const formaConsulta = datos.forma_consulta;
 
         const { rows } = await pool.query(
           `UPDATE bbva 
@@ -312,8 +317,9 @@ export class ConvenioService {
                categoria = COALESCE($4, categoria), 
                tipo_captura = COALESCE($5, tipo_captura), 
                ubicacion = COALESCE($6, ubicacion), 
-               referencias = COALESCE($7, referencias) 
-           WHERE codigo_convenio = $8 
+               referencias = COALESCE($7, referencias),
+                forma_consulta = COALESCE($8, forma_consulta) 
+           WHERE codigo_convenio = $9 
            RETURNING *`,
           [
             nombreConvenio,
@@ -323,6 +329,7 @@ export class ConvenioService {
             tipoCaptura,
             ubicacion,
             referencias,
+            formaConsulta,
             id,
           ],
         );

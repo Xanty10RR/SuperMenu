@@ -534,7 +534,7 @@ app.get("/api/aprobaciones/rechazadas", async (_req, res) => {
   }
 });
 
-// Ruta para buscar o listar convenios
+// Ruta para buscar o listar convenios de los bancos (BBVA, Agrario y Aval) con filtro de texto
 app.get("/api/convenios/buscar", async (req, res) => {
   try {
     const texto = (req.query.q as string) || "";
@@ -543,6 +543,36 @@ app.get("/api/convenios/buscar", async (req, res) => {
   } catch (error) {
     console.error("Error al buscar convenios:", error);
     res.status(500).json({ error: "Error interno al buscar convenios" });
+  }
+});
+
+// 2. Ruta para obtener un convenio específico por su banco e ID/Código
+app.get("/api/convenios/:banco/:id", async (req, res) => {
+  try {
+    const { banco, id } = req.params;
+    const resultado = await ConvenioService.obtenerPorId(
+      banco.toUpperCase(),
+      id,
+    );
+    if (!resultado) {
+      return res.status(404).json({ error: "Convenio no encontrado" });
+    }
+    res.json(resultado);
+  } catch (error) {
+    console.error("Error al obtener el convenio:", error);
+    res.status(500).json({ error: "Error interno al obtener el convenio" });
+  }
+});
+
+// 3. Ruta para sugerencias inteligentes
+app.get("/api/convenios/sugerir", async (req, res) => {
+  try {
+    const texto = (req.query.q as string) || "";
+    const sugerencia = await ConvenioService.sugerir(texto);
+    res.json(sugerencia);
+  } catch (error) {
+    console.error("Error al buscar sugerencia:", error);
+    res.status(500).json({ error: "Error interno al sugerir convenio" });
   }
 });
 

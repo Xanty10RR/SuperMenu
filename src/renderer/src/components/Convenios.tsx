@@ -10,11 +10,25 @@ interface Convenio {
   nit?: number | string
   nit_convenio?: number | string
   categoria?: string
+  modalidad?: string
+  referencia?: string
+}
+
+interface DatosBancos {
+  total: number
+  bbva: Convenio[]
+  agrario: Convenio[]
+  aval: Convenio[]
 }
 
 export const Convenios: React.FC = () => {
   const [bancoSeleccionado, setBancoSeleccionado] = useState<'bbva' | 'aval' | 'agrario'>('bbva')
-  const [convenios, setConvenios] = useState<Convenio[]>([])
+  const [datosConvenios, setDatosConvenios] = useState<DatosBancos>({
+    total: 0,
+    bbva: [],
+    agrario: [],
+    aval: []
+  })
   const [busqueda, setBusqueda] = useState('')
   const [modalAbierto, setModalAbierto] = useState(false)
 
@@ -26,41 +40,35 @@ export const Convenios: React.FC = () => {
     descripcion: ''
   })
 
-  // Simular la carga de datos según el banco seleccionado
+  // Cargar datos reales desde el backend cuando cambie la búsqueda o al iniciar
   useEffect(() => {
-    cargarConvenios()
-  }, [bancoSeleccionado])
-
-  const cargarConvenios = async (): Promise<void> => {
-    try {
-      // Aquí se van hacer las peticiones al backend o directo a Supabase según la tabla activa:
-      // Ej: const res = await fetch(`/api/convenios/${bancoSeleccionado}`);
-      // const data = await res.json();
-      // setConvenios(data);
-      setConvenios([]) // Temporal mientras conectas tu endpoint
-    } catch (error) {
-      console.error('Error al cargar convenios:', error)
+    const cargarDatos = async (): Promise<void> => {
+      try {
+        const response = await fetch(`/api/convenios/buscar?q=${encodeURIComponent(busqueda)}`)
+        const data = await response.json()
+        setDatosConvenios(data)
+      } catch (error) {
+        console.error('Error al cargar convenios:', error)
+      }
     }
-  }
+
+    const timer = setTimeout(() => {
+      cargarDatos()
+    }, 300) // Pequeño retraso (debounce) para optimizar la búsqueda al escribir
+
+    return () => clearTimeout(timer)
+  }, [busqueda])
+
+  // Obtener la lista correspondiente al banco seleccionado actualmente
+  const listaActual = datosConvenios[bancoSeleccionado] || []
 
   const handleCrearConvenio = (e: React.FormEvent): void => {
     e.preventDefault()
-    // Lógica para enviar el nuevo convenio a la tabla correspondiente de Supabase
+    // Lógica para enviar el nuevo convenio al backend/Supabase
     console.log('Guardando en tabla:', bancoSeleccionado, nuevoConvenio)
     setModalAbierto(false)
     setNuevoConvenio({ nombre: '', nit: '', categoria: '', descripcion: '' })
   }
-
-  const conveniosFiltrados = convenios.filter((item) => {
-    const termino = busqueda.trim().toLocaleLowerCase()
-    const nombre = item.nombre_convenio || item.convenio || item.empresa || ''
-    const nit = item.nit ?? item.nit_convenio ?? ''
-    const categoria = item.categoria || ''
-
-    return [nombre, nit, categoria].some((valor) =>
-      String(valor).toLocaleLowerCase().includes(termino)
-    )
-  })
 
   return (
     <div className="convenios-container" style={{ padding: '20px' }}>
@@ -92,7 +100,7 @@ export const Convenios: React.FC = () => {
         </button>
       </div>
 
-      {/* Pestañas para cambiar de banco (según tus tablas en Supabase) */}
+      {/* Pestañas para cambiar de banco (muestra la cantidad de registros por banco) */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         {(['bbva', 'aval', 'agrario'] as const).map((banco) => (
           <button
@@ -109,7 +117,7 @@ export const Convenios: React.FC = () => {
               cursor: 'pointer'
             }}
           >
-            {banco}
+            {banco} ({datosConvenios[banco]?.length || 0})
           </button>
         ))}
       </div>
@@ -119,7 +127,7 @@ export const Convenios: React.FC = () => {
         <FaSearch style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
         <input
           type="text"
-          placeholder="Buscar por nombre, empresa o categoría..."
+          placeholder="Buscar por nombre, empresa, NIT o sigla..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
           style={{
@@ -143,34 +151,31 @@ export const Convenios: React.FC = () => {
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
             <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-              <th style={{ padding: '12px' }}>ID / Código</th>
-              <th style={{ padding: '12px' }}>Nombre / Empresa</th>
-              <th style={{ padding: '12px' }}>NIT</th>
-              <th style={{ padding: '12px' }}>Categoría</th>
+              <th style={{ padding: '12px' }}>ID / Código / NIT</th>
+              <th style={{ padding: '12px' }}>Nombre / Convenio / Empresa</th>
+              <th style={{ padding: '12px' }}>NIT / Referencia</th>
+              <th style={{ padding: '12px' }}>Categoría / Modalidad</th>
               <th style={{ padding: '12px', textAlign: 'center' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {conveniosFiltrados.length === 0 ? (
+            {listaActual.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
                   {busqueda.trim()
-                    ? 'No se encontraron convenios para esa búsqueda'
-                    : `No hay convenios registrados en ${bancoSeleccionado.toUpperCase()} o cargando datos...`}
+                    ? 'No se encontraron convenios para esa búsqueda.'
+                    : `No hay convenios registrados en ${bancoSeleccionado.toUpperCase()}.`}
                 </td>
               </tr>
             ) : (
-              conveniosFiltrados.map((item, index) => (
-                <tr
-                  key={item.id ?? item.codigo_convenio ?? `${bancoSeleccionado}-${index}`}
-                  style={{ borderBottom: '1px solid #eee' }}
-                >
-                  <td style={{ padding: '12px' }}>{item.codigo_convenio || item.id}</td>
+              listaActual.map((item, index) => (
+                <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '12px' }}>{item.codigo_convenio || item.nit || 'N/A'}</td>
                   <td style={{ padding: '12px' }}>
-                    {item.nombre_convenio || item.convenio || item.empresa}
+                    {item.nombre_convenio || item.convenio || item.empresa || 'N/A'}
                   </td>
-                  <td style={{ padding: '12px' }}>{item.nit || item.nit_convenio}</td>
-                  <td style={{ padding: '12px' }}>{item.categoria || 'N/A'}</td>
+                  <td style={{ padding: '12px' }}>{item.nit || item.referencia || 'N/A'}</td>
+                  <td style={{ padding: '12px' }}>{item.categoria || item.modalidad || 'N/A'}</td>
                   <td
                     style={{
                       padding: '12px',

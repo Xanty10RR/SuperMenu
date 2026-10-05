@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { FaPlus, FaSearch, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import '../styles/Convenios.css'
 
@@ -39,19 +39,58 @@ export const Convenios: React.FC = () => {
   const [convenioEnEdicion, setConvenioEnEdicion] = useState<Convenio | null>(null)
 
   // Estados del formulario
-  const [formulario, setFormulario] = useState({
+  type FormularioConvenio = {
+    codigo_convenio: string
+    nombre_convenio: string
+    nombre: string
+    nit: string
+    que_se_recauda: string
+    categoria: string
+    tipo_captura: string
+    ubicacion: string
+    descripcion: string
+    referencias: string
+    forma_consulta_datos: string
+  }
+
+  // Se declara el estado forzando explícitamente <FormularioConvenio>
+  const [formulario, setFormulario] = useState<FormularioConvenio>({
+    codigo_convenio: '',
+    nombre_convenio: '',
     nombre: '',
     nit: '',
+    que_se_recauda: '',
     categoria: '',
-    descripcion: ''
+    tipo_captura: '',
+    ubicacion: '',
+    descripcion: '',
+    referencias: '',
+    forma_consulta_datos: ''
   })
+
+  // Función para limpiar el formulario que sí vamos a usar
+  const resetFormulario = (): void => {
+    setFormulario({
+      codigo_convenio: '',
+      nombre_convenio: '',
+      nombre: '',
+      nit: '',
+      que_se_recauda: '',
+      categoria: '',
+      tipo_captura: '',
+      ubicacion: '',
+      descripcion: '',
+      referencias: '',
+      forma_consulta_datos: ''
+    })
+  }
 
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1)
   const elementosPorPagina = 15
 
   // Cargar datos desde el backend
-  const cargarDatos = async (): Promise<void> => {
+  const cargarDatos = useCallback(async (): Promise<void> => {
     setCargando(true)
     try {
       const response = await fetch(
@@ -67,7 +106,7 @@ export const Convenios: React.FC = () => {
     } finally {
       setCargando(false)
     }
-  }
+  }, [busqueda])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -75,14 +114,14 @@ export const Convenios: React.FC = () => {
       setPaginaActual(1)
     }, 400)
     return () => clearTimeout(timer)
-  }, [busqueda])
+  }, [cargarDatos])
 
   const handleCambiarBanco = (banco: 'bbva' | 'aval' | 'agrario'): void => {
     setBancoSeleccionado(banco)
     setPaginaActual(1)
   }
 
-  // --- 1. CREAR CONVENIO ---
+  // Crear un nuevo convenio
   const handleGuardarCreacion = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
     try {
@@ -93,8 +132,8 @@ export const Convenios: React.FC = () => {
       })
       if (response.ok) {
         setModalCrearAbierto(false)
-        setFormulario({ nombre: '', nit: '', categoria: '', descripcion: '' })
-        cargarDatos() // Recargar la tabla
+        resetFormulario()
+        cargarDatos()
       } else {
         alert('Error al guardar el convenio en el servidor.')
       }
@@ -103,14 +142,25 @@ export const Convenios: React.FC = () => {
     }
   }
 
-  // --- 2. EDITAR CONVENIO ---
+  // Editar convenio existente
   const abrirModalEditar = (item: Convenio): void => {
     setConvenioEnEdicion(item)
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const itemAny = item as any
+
     setFormulario({
-      nombre: item.nombre_convenio || item.convenio || item.empresa || '',
-      nit: String(item.nit || item.nit_convenio || ''),
-      categoria: item.categoria || item.modalidad || '',
-      descripcion: item.referencia || ''
+      codigo_convenio: String(itemAny.codigo_convenio || itemAny.id || ''),
+      nombre_convenio: String(itemAny.nombre_convenio || itemAny.convenio || itemAny.empresa || ''),
+      nombre: String(itemAny.nombre_convenio || ''),
+      nit: String(itemAny.nit || itemAny.nit_convenio || ''),
+      que_se_recauda: String(itemAny.que_se_recauda || ''),
+      categoria: String(itemAny.categoria || itemAny.modalidad || ''),
+      tipo_captura: String(itemAny.tipo_captura || ''),
+      ubicacion: String(itemAny.ubicacion || ''),
+      descripcion: String(itemAny.referencia || itemAny.descripcion || ''),
+      referencias: String(itemAny.referencias || ''),
+      forma_consulta_datos: String(itemAny.forma_consulta_datos || '')
     })
     setModalEditarAbierto(true)
   }
@@ -129,7 +179,7 @@ export const Convenios: React.FC = () => {
       if (response.ok) {
         setModalEditarAbierto(false)
         setConvenioEnEdicion(null)
-        setFormulario({ nombre: '', nit: '', categoria: '', descripcion: '' })
+        resetFormulario()
         cargarDatos()
       } else {
         alert('Error al actualizar el convenio.')
@@ -139,7 +189,7 @@ export const Convenios: React.FC = () => {
     }
   }
 
-  // --- 3. ELIMINAR CONVENIO ---
+  // Eliminar convenio
   const handleEliminar = async (item: Convenio): Promise<void> => {
     const idConvenio = item.id || item.codigo_convenio
     if (
@@ -180,7 +230,7 @@ export const Convenios: React.FC = () => {
         <button
           className="convenios-button convenios-button--new"
           onClick={() => {
-            setFormulario({ nombre: '', nit: '', categoria: '', descripcion: '' })
+            resetFormulario()
             setModalCrearAbierto(true)
           }}
         >
@@ -298,40 +348,91 @@ export const Convenios: React.FC = () => {
             <h3>
               {modalCrearAbierto
                 ? `Nuevo Convenio (${bancoSeleccionado.toUpperCase()})`
-                : 'Editar Convenio'}
+                : 'Editar Convenio (BBVA)'}
             </h3>
             <form
               className="convenios-form"
               onSubmit={modalCrearAbierto ? handleGuardarCreacion : handleGuardarEdicion}
             >
-              <input
-                className="convenios-form__field"
-                type="text"
-                placeholder="Nombre del Convenio / Empresa"
-                value={formulario.nombre}
-                onChange={(e) => setFormulario({ ...formulario, nombre: e.target.value })}
-                required
-              />
-              <input
-                className="convenios-form__field"
-                type="text"
-                placeholder="NIT"
-                value={formulario.nit}
-                onChange={(e) => setFormulario({ ...formulario, nit: e.target.value })}
-              />
-              <input
-                className="convenios-form__field"
-                type="text"
-                placeholder="Categoría"
-                value={formulario.categoria}
-                onChange={(e) => setFormulario({ ...formulario, categoria: e.target.value })}
-              />
-              <textarea
-                className="convenios-form__field convenios-form__description"
-                placeholder="Descripción / Referencia"
-                value={formulario.descripcion}
-                onChange={(e) => setFormulario({ ...formulario, descripcion: e.target.value })}
-              />
+              {/* Campos específicos para bbva */}
+              {bancoSeleccionado.toUpperCase() === 'BBVA' && (
+                <>
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="Código de Convenio"
+                    value={formulario.codigo_convenio || ''}
+                    onChange={(e) =>
+                      setFormulario({ ...formulario, codigo_convenio: e.target.value })
+                    }
+                    required
+                  />
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="Nombre del Convenio"
+                    value={formulario.nombre_convenio || ''}
+                    onChange={(e) =>
+                      setFormulario({ ...formulario, nombre_convenio: e.target.value })
+                    }
+                    required
+                  />
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="NIT"
+                    value={formulario.nit || ''}
+                    onChange={(e) => setFormulario({ ...formulario, nit: e.target.value })}
+                  />
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="Qué se recauda"
+                    value={formulario.que_se_recauda || ''}
+                    onChange={(e) =>
+                      setFormulario({ ...formulario, que_se_recauda: e.target.value })
+                    }
+                  />
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="Categoría"
+                    value={formulario.categoria || ''}
+                    onChange={(e) => setFormulario({ ...formulario, categoria: e.target.value })}
+                  />
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="Tipo de Captura (ej. BARRAS / MANUAL)"
+                    value={formulario.tipo_captura || ''}
+                    onChange={(e) => setFormulario({ ...formulario, tipo_captura: e.target.value })}
+                  />
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="Ubicación (ej. NACIONAL)"
+                    value={formulario.ubicacion || ''}
+                    onChange={(e) => setFormulario({ ...formulario, ubicacion: e.target.value })}
+                  />
+                  <textarea
+                    className="convenios-form__field convenios-form__description"
+                    placeholder="Referencias"
+                    value={formulario.referencias || ''}
+                    onChange={(e) => setFormulario({ ...formulario, referencias: e.target.value })}
+                  />
+                  <input
+                    className="convenios-form__field"
+                    type="text"
+                    placeholder="Forma Consulta Datos (W, S, N)"
+                    value={formulario.forma_consulta_datos || ''}
+                    onChange={(e) =>
+                      setFormulario({ ...formulario, forma_consulta_datos: e.target.value })
+                    }
+                  />
+                </>
+              )}
+
+              {/* Botones de acción */}
               <div className="convenios-form__actions">
                 <button
                   className="convenios-button convenios-button--cancel"

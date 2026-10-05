@@ -1,10 +1,10 @@
-import dotenv from 'dotenv'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { Pool } from 'pg'
+import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { Pool } from "pg";
 
-const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
-dotenv.config({ path: path.resolve(currentDirectory, '../../../.env') })
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(currentDirectory, "../../../.env") });
 
 export const pool = new Pool({
   host: process.env.DB_HOST,
@@ -13,6 +13,6 @@ export const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   ssl: {
-    rejectUnauthorized: false
-  }
-})
+    rejectUnauthorized: false,
+  },
+});

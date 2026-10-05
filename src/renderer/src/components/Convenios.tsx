@@ -31,58 +31,142 @@ export const Convenios: React.FC = () => {
   })
   const [busqueda, setBusqueda] = useState('')
   const [cargando, setCargando] = useState(false)
-  const [modalAbierto, setModalAbierto] = useState(false)
 
-  // Estados para la Paginación
-  const [paginaActual, setPaginaActual] = useState(1)
-  const elementosPorPagina = 15
+  // Estados para Modales (Crear y Editar)
+  const [modalCrearAbierto, setModalCrearAbierto] = useState(false)
+  const [modalEditarAbierto, setModalEditarAbierto] = useState(false)
+  const [convenioEnEdicion, setConvenioEnEdicion] = useState<Convenio | null>(null)
 
-  // Estados para el formulario de nuevo convenio
-  const [nuevoConvenio, setNuevoConvenio] = useState({
+  // Estados del formulario
+  const [formulario, setFormulario] = useState({
     nombre: '',
     nit: '',
     categoria: '',
     descripcion: ''
   })
 
-  // Cargar datos reales desde el backend en el puerto 3003
-  useEffect(() => {
-    const cargarDatos = async (): Promise<void> => {
-      setCargando(true)
-      try {
-        const response = await fetch(
-          `http://localhost:3003/api/convenios/buscar?q=${encodeURIComponent(busqueda)}`
-        )
-        const contentType = response.headers.get('content-type')
-        if (contentType && contentType.includes('application/json')) {
-          const data = await response.json()
-          setDatosConvenios(data)
-          setPaginaActual(1) // Reiniciar a la página 1 cuando cambia la búsqueda
-        }
-      } catch (error) {
-        console.error('Error al cargar convenios:', error)
-      } finally {
-        setCargando(false)
-      }
-    }
+  // Paginación
+  const [paginaActual, setPaginaActual] = useState(1)
+  const elementosPorPagina = 15
 
+  // Cargar datos desde el backend
+  const cargarDatos = async (): Promise<void> => {
+    setCargando(true)
+    try {
+      const response = await fetch(
+        `http://localhost:3003/api/convenios/buscar?q=${encodeURIComponent(busqueda)}`
+      )
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json()
+        setDatosConvenios(data)
+      }
+    } catch (error) {
+      console.error('Error al cargar convenios:', error)
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       cargarDatos()
-    }, 400) // Retraso prudente (debounce) para no saturar al escribir
-
+      setPaginaActual(1)
+    }, 400)
     return () => clearTimeout(timer)
   }, [busqueda])
 
-  // Cambiar de banco también reinicia la paginación a la 1
   const handleCambiarBanco = (banco: 'bbva' | 'aval' | 'agrario'): void => {
     setBancoSeleccionado(banco)
     setPaginaActual(1)
   }
 
-  // Obtener la lista completa del banco actual
-  const listaCompleta = datosConvenios[bancoSeleccionado] || []
+  // --- 1. CREAR CONVENIO ---
+  const handleGuardarCreacion = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault()
+    try {
+      const response = await fetch(`http://localhost:3003/api/convenios`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formulario, banco: bancoSeleccionado })
+      })
+      if (response.ok) {
+        setModalCrearAbierto(false)
+        setFormulario({ nombre: '', nit: '', categoria: '', descripcion: '' })
+        cargarDatos() // Recargar la tabla
+      } else {
+        alert('Error al guardar el convenio en el servidor.')
+      }
+    } catch (error) {
+      console.error('Error de red al crear:', error)
+    }
+  }
 
-  // Calcular los elementos que se van a mostrar en la página actual (Paginación local rápida)
+  // --- 2. EDITAR CONVENIO ---
+  const abrirModalEditar = (item: Convenio): void => {
+    setConvenioEnEdicion(item)
+    setFormulario({
+      nombre: item.nombre_convenio || item.convenio || item.empresa || '',
+      nit: String(item.nit || item.nit_convenio || ''),
+      categoria: item.categoria || item.modalidad || '',
+      descripcion: item.referencia || ''
+    })
+    setModalEditarAbierto(true)
+  }
+
+  const handleGuardarEdicion = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault()
+    if (!convenioEnEdicion) return
+    const idConvenio = convenioEnEdicion.id || convenioEnEdicion.codigo_convenio
+
+    try {
+      const response = await fetch(`http://localhost:3003/api/convenios/${idConvenio}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formulario, banco: bancoSeleccionado })
+      })
+      if (response.ok) {
+        setModalEditarAbierto(false)
+        setConvenioEnEdicion(null)
+        setFormulario({ nombre: '', nit: '', categoria: '', descripcion: '' })
+        cargarDatos()
+      } else {
+        alert('Error al actualizar el convenio.')
+      }
+    } catch (error) {
+      console.error('Error de red al editar:', error)
+    }
+  }
+
+  // --- 3. ELIMINAR CONVENIO ---
+  const handleEliminar = async (item: Convenio): Promise<void> => {
+    const idConvenio = item.id || item.codigo_convenio
+    if (
+      !confirm(
+        `¿Estás segura de eliminar el convenio ${item.nombre_convenio || item.convenio || ''}?`
+      )
+    )
+      return
+
+    try {
+      const response = await fetch(
+        `http://localhost:3003/api/convenios/${idConvenio}?banco=${bancoSeleccionado}`,
+        {
+          method: 'DELETE'
+        }
+      )
+      if (response.ok) {
+        cargarDatos()
+      } else {
+        alert('Error al eliminar el registro.')
+      }
+    } catch (error) {
+      console.error('Error de red al eliminar:', error)
+    }
+  }
+
+  // Elementos de la tabla actual con paginación
+  const listaCompleta = datosConvenios[bancoSeleccionado] || []
   const indiceUltimoElemento = paginaActual * elementosPorPagina
   const indicePrimerElemento = indiceUltimoElemento - elementosPorPagina
   const listaActual = listaCompleta.slice(indicePrimerElemento, indiceUltimoElemento)
@@ -100,8 +184,10 @@ export const Convenios: React.FC = () => {
       >
         <h2>Gestión de Convenios Bancarios</h2>
         <button
-          className="btn-nuevo"
-          onClick={() => setModalAbierto(true)}
+          onClick={() => {
+            setFormulario({ nombre: '', nit: '', categoria: '', descripcion: '' })
+            setModalCrearAbierto(true)
+          }}
           style={{
             background: '#28a745',
             color: '#fff',
@@ -118,7 +204,7 @@ export const Convenios: React.FC = () => {
         </button>
       </div>
 
-      {/* Pestañas para cambiar de banco */}
+      {/* Pestañas de Bancos */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         {(['bbva', 'aval', 'agrario'] as const).map((banco) => (
           <button
@@ -140,7 +226,7 @@ export const Convenios: React.FC = () => {
         ))}
       </div>
 
-      {/* Buscador en tiempo real */}
+      {/* Buscador */}
       <div style={{ position: 'relative', marginBottom: '20px' }}>
         <FaSearch style={{ position: 'absolute', left: '12px', top: '12px', color: '#888' }} />
         <input
@@ -157,14 +243,11 @@ export const Convenios: React.FC = () => {
         />
       </div>
 
-      {/* Indicador de carga */}
       {cargando && (
-        <div style={{ marginBottom: '10px', color: '#007bff', fontWeight: '500' }}>
-          Buscando registros... ⏳
-        </div>
+        <div style={{ marginBottom: '10px', color: '#007bff' }}>Cargando registros... ⏳</div>
       )}
 
-      {/* Tabla Interactiva */}
+      {/* Tabla */}
       <div
         style={{
           background: '#fff',
@@ -187,9 +270,7 @@ export const Convenios: React.FC = () => {
             {listaActual.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
-                  {busqueda.trim()
-                    ? 'No se encontraron convenios para esa búsqueda.'
-                    : `No hay convenios registrados en ${bancoSeleccionado.toUpperCase()}.`}
+                  No hay convenios registrados.
                 </td>
               </tr>
             ) : (
@@ -211,6 +292,7 @@ export const Convenios: React.FC = () => {
                     }}
                   >
                     <button
+                      onClick={() => abrirModalEditar(item)}
                       title="Editar"
                       style={{
                         background: '#ffc107',
@@ -223,6 +305,7 @@ export const Convenios: React.FC = () => {
                       <FaEdit />
                     </button>
                     <button
+                      onClick={() => handleEliminar(item)}
                       title="Eliminar"
                       style={{
                         background: '#dc3545',
@@ -243,7 +326,7 @@ export const Convenios: React.FC = () => {
         </table>
       </div>
 
-      {/* Controles de Paginación */}
+      {/* Paginación */}
       <div
         style={{
           display: 'flex',
@@ -252,13 +335,12 @@ export const Convenios: React.FC = () => {
           marginTop: '15px',
           background: '#fff',
           padding: '10px 15px',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          borderRadius: '8px'
         }}
       >
-        <span style={{ fontSize: '14px', color: '#555' }}>
+        <span>
           Mostrando {listaCompleta.length > 0 ? indicePrimerElemento + 1 : 0} al{' '}
-          {Math.min(indiceUltimoElemento, listaCompleta.length)} de {listaCompleta.length} registros
+          {Math.min(indiceUltimoElemento, listaCompleta.length)} de {listaCompleta.length}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
@@ -270,15 +352,12 @@ export const Convenios: React.FC = () => {
               color: paginaActual === 1 ? '#888' : '#fff',
               border: 'none',
               borderRadius: '4px',
-              cursor: paginaActual === 1 ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px'
+              cursor: 'pointer'
             }}
           >
             <FaChevronLeft /> Anterior
           </button>
-          <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
+          <span>
             Página {paginaActual} de {totalPaginas}
           </span>
           <button
@@ -290,10 +369,7 @@ export const Convenios: React.FC = () => {
               color: paginaActual === totalPaginas ? '#888' : '#fff',
               border: 'none',
               borderRadius: '4px',
-              cursor: paginaActual === totalPaginas ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px'
+              cursor: 'pointer'
             }}
           >
             Siguiente <FaChevronRight />
@@ -301,8 +377,8 @@ export const Convenios: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal para Crear Convenio Manual */}
-      {modalAbierto && (
+      {/* Modal Crear / Editar */}
+      {(modalCrearAbierto || modalEditarAbierto) && (
         <div
           style={{
             position: 'fixed',
@@ -325,44 +401,41 @@ export const Convenios: React.FC = () => {
               boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
             }}
           >
-            <h3>Registrar Nuevo Convenio ({bancoSeleccionado.toUpperCase()})</h3>
+            <h3>
+              {modalCrearAbierto
+                ? `Nuevo Convenio (${bancoSeleccionado.toUpperCase()})`
+                : 'Editar Convenio'}
+            </h3>
             <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                console.log('Guardando en tabla:', bancoSeleccionado, nuevoConvenio)
-                setModalAbierto(false)
-                setNuevoConvenio({ nombre: '', nit: '', categoria: '', descripcion: '' })
-              }}
+              onSubmit={modalCrearAbierto ? handleGuardarCreacion : handleGuardarEdicion}
               style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}
             >
               <input
                 type="text"
                 placeholder="Nombre del Convenio / Empresa"
-                value={nuevoConvenio.nombre}
-                onChange={(e) => setNuevoConvenio({ ...nuevoConvenio, nombre: e.target.value })}
+                value={formulario.nombre}
+                onChange={(e) => setFormulario({ ...formulario, nombre: e.target.value })}
                 required
                 style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
               />
               <input
                 type="text"
                 placeholder="NIT"
-                value={nuevoConvenio.nit}
-                onChange={(e) => setNuevoConvenio({ ...nuevoConvenio, nit: e.target.value })}
+                value={formulario.nit}
+                onChange={(e) => setFormulario({ ...formulario, nit: e.target.value })}
                 style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
               />
               <input
                 type="text"
                 placeholder="Categoría"
-                value={nuevoConvenio.categoria}
-                onChange={(e) => setNuevoConvenio({ ...nuevoConvenio, categoria: e.target.value })}
+                value={formulario.categoria}
+                onChange={(e) => setFormulario({ ...formulario, categoria: e.target.value })}
                 style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
               />
               <textarea
-                placeholder="Descripción de beneficios"
-                value={nuevoConvenio.descripcion}
-                onChange={(e) =>
-                  setNuevoConvenio({ ...nuevoConvenio, descripcion: e.target.value })
-                }
+                placeholder="Descripción / Referencia"
+                value={formulario.descripcion}
+                onChange={(e) => setFormulario({ ...formulario, descripcion: e.target.value })}
                 style={{
                   padding: '8px',
                   borderRadius: '4px',
@@ -380,7 +453,10 @@ export const Convenios: React.FC = () => {
               >
                 <button
                   type="button"
-                  onClick={() => setModalAbierto(false)}
+                  onClick={() => {
+                    setModalCrearAbierto(false)
+                    setModalEditarAbierto(false)
+                  }}
                   style={{
                     padding: '8px 12px',
                     background: '#6c757d',
@@ -403,7 +479,7 @@ export const Convenios: React.FC = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  Guardar
+                  {modalCrearAbierto ? 'Guardar' : 'Actualizar'}
                 </button>
               </div>
             </form>

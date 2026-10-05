@@ -51,6 +51,12 @@ export const Convenios: React.FC = () => {
     descripcion: string
     referencias: string
     forma_consulta_datos: string
+    referencia: string
+    tipo_referencia: string
+    longitud_referencia: string
+    codigo_barras: string
+    valida_fecha: string
+    manual: string
   }
 
   // Se declara el estado forzando explícitamente <FormularioConvenio>
@@ -65,7 +71,13 @@ export const Convenios: React.FC = () => {
     ubicacion: '',
     descripcion: '',
     referencias: '',
-    forma_consulta_datos: ''
+    forma_consulta_datos: '',
+    referencia: '',
+    tipo_referencia: '',
+    longitud_referencia: '',
+    codigo_barras: '',
+    valida_fecha: '',
+    manual: ''
   })
 
   // Función para limpiar el formulario que sí vamos a usar
@@ -81,7 +93,13 @@ export const Convenios: React.FC = () => {
       ubicacion: '',
       descripcion: '',
       referencias: '',
-      forma_consulta_datos: ''
+      forma_consulta_datos: '',
+      referencia: '',
+      tipo_referencia: '',
+      longitud_referencia: '',
+      codigo_barras: '',
+      valida_fecha: '',
+      manual: ''
     })
   }
 
@@ -142,25 +160,45 @@ export const Convenios: React.FC = () => {
     }
   }
 
+  // Manejar cambios en los campos del formulario
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ): void => {
+    const { name, value } = e.target
+    setFormulario((prev) => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
   // Editar convenio existente
   const abrirModalEditar = (item: Convenio): void => {
     setConvenioEnEdicion(item)
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const itemAny = item as any
+    //@typescript-eslint/no-explicit-any
+    const itemAny = item as unknown as Record<string, any>
 
     setFormulario({
       codigo_convenio: String(itemAny.codigo_convenio || itemAny.id || ''),
       nombre_convenio: String(itemAny.nombre_convenio || itemAny.convenio || itemAny.empresa || ''),
       nombre: String(itemAny.nombre_convenio || ''),
-      nit: String(itemAny.nit || itemAny.nit_convenio || ''),
+      nit: String(itemAny.nit_convenio || itemAny.nit || ''),
+      descripcion: String(itemAny.descripcion || ''),
+      referencias: String(itemAny.referencias || itemAny.referencia || ''),
+
+      // Campos específicos de Agrario:
+      referencia: String(itemAny.referencia || itemAny.descripcion || ''),
+      tipo_referencia: String(itemAny.tipo_referencia || ''),
+      longitud_referencia: String(itemAny.longitud_referencia || ''),
+      codigo_barras: String(itemAny.codigo_barras || 'NO'),
+      valida_fecha: String(itemAny.valida_fecha || 'NO'),
+      manual: String(itemAny.manual || 'SI'),
+
+      // Campos de BBVA (por si el modal es compartido)
       que_se_recauda: String(itemAny.que_se_recauda || ''),
-      categoria: String(itemAny.categoria || itemAny.modalidad || ''),
+      categoria: String(itemAny.categoria || ''),
       tipo_captura: String(itemAny.tipo_captura || ''),
       ubicacion: String(itemAny.ubicacion || ''),
-      descripcion: String(itemAny.referencia || itemAny.descripcion || ''),
-      referencias: String(itemAny.referencias || ''),
-      forma_consulta_datos: String(itemAny.forma_consulta || itemAny.forma_consulta_datos || '')
+      forma_consulta_datos: String(itemAny.forma_consulta || '')
     })
     setModalEditarAbierto(true)
   }
@@ -344,96 +382,312 @@ export const Convenios: React.FC = () => {
       {/* Modal Crear / Editar */}
       {(modalCrearAbierto || modalEditarAbierto) && (
         <div className="convenios-modal-overlay">
-          <div className="convenios-modal">
+          <div
+            className="convenios-modal"
+            style={{ maxHeight: '90vh', overflowY: 'auto', padding: '20px' }}
+          >
             <h3>
               {modalCrearAbierto
                 ? `Nuevo Convenio (${bancoSeleccionado.toUpperCase()})`
-                : 'Editar Convenio (BBVA)'}
+                : `Editar Convenio (${bancoSeleccionado.toUpperCase()})`}
             </h3>
             <form
               className="convenios-form"
               onSubmit={modalCrearAbierto ? handleGuardarCreacion : handleGuardarEdicion}
             >
-              {/* Campos específicos para bbva */}
+              {/* Campos específicos para BBVA */}
               {bancoSeleccionado.toUpperCase() === 'BBVA' && (
                 <>
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="Código de Convenio"
-                    value={formulario.codigo_convenio || ''}
-                    onChange={(e) =>
-                      setFormulario({ ...formulario, codigo_convenio: e.target.value })
-                    }
-                    required
-                  />
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="Nombre del Convenio"
-                    value={formulario.nombre_convenio || ''}
-                    onChange={(e) =>
-                      setFormulario({ ...formulario, nombre_convenio: e.target.value })
-                    }
-                    required
-                  />
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="NIT"
-                    value={formulario.nit || ''}
-                    onChange={(e) => setFormulario({ ...formulario, nit: e.target.value })}
-                  />
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="Qué se recauda"
-                    value={formulario.que_se_recauda || ''}
-                    onChange={(e) =>
-                      setFormulario({ ...formulario, que_se_recauda: e.target.value })
-                    }
-                  />
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="Categoría"
-                    value={formulario.categoria || ''}
-                    onChange={(e) => setFormulario({ ...formulario, categoria: e.target.value })}
-                  />
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="Tipo de Captura (ej. BARRAS / MANUAL)"
-                    value={formulario.tipo_captura || ''}
-                    onChange={(e) => setFormulario({ ...formulario, tipo_captura: e.target.value })}
-                  />
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="Ubicación (ej. NACIONAL)"
-                    value={formulario.ubicacion || ''}
-                    onChange={(e) => setFormulario({ ...formulario, ubicacion: e.target.value })}
-                  />
-                  <textarea
-                    className="convenios-form__field convenios-form__description"
-                    placeholder="Referencias"
-                    value={formulario.referencias || ''}
-                    onChange={(e) => setFormulario({ ...formulario, referencias: e.target.value })}
-                  />
-                  <input
-                    className="convenios-form__field"
-                    type="text"
-                    placeholder="Forma Consulta Datos (W, S, N)"
-                    value={formulario.forma_consulta_datos || ''}
-                    onChange={(e) =>
-                      setFormulario({ ...formulario, forma_consulta_datos: e.target.value })
-                    }
-                  />
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Código de Convenio
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="codigo_convenio"
+                      value={formulario.codigo_convenio || ''}
+                      onChange={handleInputChange}
+                      placeholder="Código de Convenio"
+                      style={{ width: '100%' }}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Nombre del Convenio
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="nombre_convenio"
+                      value={formulario.nombre_convenio || ''}
+                      onChange={handleInputChange}
+                      placeholder="Nombre del Convenio"
+                      style={{ width: '100%' }}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      NIT
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="nit"
+                      value={formulario.nit || ''}
+                      onChange={handleInputChange}
+                      placeholder="NIT"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Qué se recauda
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="que_se_recauda"
+                      value={formulario.que_se_recauda || ''}
+                      onChange={handleInputChange}
+                      placeholder="Qué se recauda"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Categoría
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="categoria"
+                      value={formulario.categoria || ''}
+                      onChange={handleInputChange}
+                      placeholder="Categoría"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Tipo de Captura
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="tipo_captura"
+                      value={formulario.tipo_captura || ''}
+                      onChange={handleInputChange}
+                      placeholder="ej. BARRAS / MANUAL"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Ubicación
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="ubicacion"
+                      value={formulario.ubicacion || ''}
+                      onChange={handleInputChange}
+                      placeholder="ej. NACIONAL"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Referencias
+                    </label>
+                    <textarea
+                      className="convenios-form__field convenios-form__description"
+                      name="referencias"
+                      value={formulario.referencias || ''}
+                      onChange={handleInputChange}
+                      placeholder="Referencias"
+                      style={{ width: '100%', minHeight: '60px' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Forma Consulta Datos
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="forma_consulta_datos"
+                      value={formulario.forma_consulta_datos || ''}
+                      onChange={handleInputChange}
+                      placeholder="W, S, N"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Campos específicos para AGRARIO */}
+              {bancoSeleccionado.toUpperCase() === 'AGRARIO' && (
+                <>
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Código de Convenio
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="codigo_convenio"
+                      value={formulario.codigo_convenio || ''}
+                      onChange={handleInputChange}
+                      placeholder="Código de Convenio"
+                      style={{ width: '100%' }}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Nombre del Convenio
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="nombre_convenio"
+                      value={formulario.nombre_convenio || ''}
+                      onChange={handleInputChange}
+                      placeholder="Nombre del Convenio"
+                      style={{ width: '100%' }}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      NIT
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="nit"
+                      value={formulario.nit || ''}
+                      onChange={handleInputChange}
+                      placeholder="NIT"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Referencia
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="referencia"
+                      value={formulario.referencia || ''}
+                      onChange={handleInputChange}
+                      placeholder="Referencia"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Tipo de Referencia
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="tipo_referencia"
+                      value={formulario.tipo_referencia || ''}
+                      onChange={handleInputChange}
+                      placeholder="Tipo de Referencia"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Longitud de Referencia
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="longitud_referencia"
+                      value={formulario.longitud_referencia || ''}
+                      onChange={handleInputChange}
+                      placeholder="Longitud de Referencia"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Código de Barras (SI / NO)
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="codigo_barras"
+                      value={formulario.codigo_barras || ''}
+                      onChange={handleInputChange}
+                      placeholder="SI o NO"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Valida Fecha (SI / NO)
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="valida_fecha"
+                      value={formulario.valida_fecha || ''}
+                      onChange={handleInputChange}
+                      placeholder="SI o NO"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Manual (SI / NO)
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="manual"
+                      value={formulario.manual || ''}
+                      onChange={handleInputChange}
+                      placeholder="SI o NO"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
                 </>
               )}
 
               {/* Botones de acción */}
-              <div className="convenios-form__actions">
+              <div
+                className="convenios-form__actions"
+                style={{
+                  marginTop: '20px',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '10px'
+                }}
+              >
                 <button
                   className="convenios-button convenios-button--cancel"
                   type="button"

@@ -39,6 +39,7 @@ export class ConvenioService {
           tipo_referencia,
           longitud_referencia,
           codigo_barras,
+          valida_fecha,
           manual
         FROM agrario
         WHERE
@@ -116,6 +117,7 @@ export class ConvenioService {
             tipo_referencia,
             longitud_referencia,
             codigo_barras,
+            valida_fecha,
             manual
           FROM agrario
           WHERE codigo_convenio = $1
@@ -234,30 +236,28 @@ export class ConvenioService {
         return rows[0];
       }
       case "AGRARIO": {
-        const {
-          codigo_convenio,
-          nombre_convenio,
-          nombre,
-          nit_convenio,
-          nit,
-          referencia,
-          descripcion,
-          tipo_referencia,
-          longitud_referencia,
-          codigo_barras,
-          manual,
-        } = datos;
+        const codigo = datos.codigo_convenio || datos.codigo || datos.id;
+        const nombreConvenio = datos.nombre_convenio || datos.nombre;
+        const nitConvenio = datos.nit_convenio || datos.nit;
+        const referencia = datos.referencia || datos.descripcion;
+        const tipoReferencia = datos.tipo_referencia || "";
+        const longitudReferencia = datos.longitud_referencia || 0;
+        const codigoBarras = datos.codigo_barras || "NO";
+        const validaFecha = datos.valida_fecha || "NO"; // <-- Nuevo campo añadido
+        const manual = datos.manual || "SI";
+
         const { rows } = await pool.query(
-          `INSERT INTO agrario (codigo_convenio, nombre_convenio, nit_convenio, referencia, tipo_referencia, longitud_referencia, codigo_barras, manual) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+          `INSERT INTO agrario (codigo_convenio, nombre_convenio, nit_convenio, referencia, tipo_referencia, longitud_referencia, codigo_barras, valida_fecha, manual) 
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
           [
-            codigo_convenio,
-            nombre_convenio || nombre,
-            nit_convenio || nit,
-            referencia || descripcion,
-            tipo_referencia,
-            longitud_referencia,
-            codigo_barras,
+            codigo,
+            nombreConvenio,
+            nitConvenio,
+            referencia,
+            tipoReferencia,
+            longitudReferencia,
+            codigoBarras,
+            validaFecha,
             manual,
           ],
         );
@@ -332,19 +332,21 @@ export class ConvenioService {
         const tipoReferencia = datos.tipo_referencia;
         const longitudReferencia = datos.longitud_referencia;
         const codigoBarras = datos.codigo_barras;
+        const validaFecha = datos.valida_fecha;
         const manual = datos.manual;
 
         const { rows } = await pool.query(
           `UPDATE agrario 
-           SET nombre_convenio = COALESCE($1, nombre_convenio), 
-               nit_convenio = COALESCE($2, nit_convenio), 
-               referencia = COALESCE($3, referencia), 
-               tipo_referencia = COALESCE($4, tipo_referencia), 
-               longitud_referencia = COALESCE($5, longitud_referencia), 
-               codigo_barras = COALESCE($6, codigo_barras), 
-               manual = COALESCE($7, manual) 
-           WHERE codigo_convenio = $8 
-           RETURNING *`,
+     SET nombre_convenio = COALESCE($1, nombre_convenio), 
+         nit_convenio = COALESCE($2, nit_convenio), 
+         referencia = COALESCE($3, referencia), 
+         tipo_referencia = COALESCE($4, tipo_referencia), 
+         longitud_referencia = COALESCE($5, longitud_referencia), 
+         codigo_barras = COALESCE($6, codigo_barras), 
+         valida_fecha = COALESCE($7, valida_fecha), 
+         manual = COALESCE($8, manual) 
+     WHERE codigo_convenio = $9 
+     RETURNING *`,
           [
             nombreConvenio,
             nitConvenio,
@@ -352,6 +354,7 @@ export class ConvenioService {
             tipoReferencia,
             longitudReferencia,
             codigoBarras,
+            validaFecha,
             manual,
             id,
           ],

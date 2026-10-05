@@ -204,32 +204,30 @@ export class ConvenioService {
   static async crear(banco: string, datos: any) {
     switch (banco) {
       case "BBVA": {
-        const {
-          codigo_convenio,
-          nombre_convenio,
-          nombre,
-          nit,
-          que_se_recauda,
-          categoria,
-          tipo_captura,
-          ubicacion,
-          referencias,
-          descripcion,
-          forma_consulta,
-        } = datos;
+        const codigo = datos.codigo_convenio || datos.codigo || datos.id;
+        const nombreConv =
+          datos.nombre_convenio || datos.nombre || datos.convenio;
+        const nit = datos.nit || "0";
+        const queSeRecauda = datos.que_se_recauda || "";
+        const categoria = datos.categoria || "Otros";
+        const tipoCaptura = datos.tipo_captura || "BARRAS";
+        const ubicacion = datos.ubicacion || "NACIONAL";
+        const refs = datos.referencias || "";
+        const formaConsulta = datos.forma_consulta_datos || "N";
+
         const { rows } = await pool.query(
-          `INSERT INTO bbva (codigo_convenio, nombre_convenio, nit, que_se_recauda, categoria, tipo_captura, ubicacion, referencias, forma_consulta) 
+          `INSERT INTO bbva (codigo_convenio, nombre_convenio, nit, que_se_recauda, categoria, tipo_captura, ubicacion, referencias, forma_consulta_datos) 
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
           [
-            codigo_convenio,
-            nombre_convenio || nombre,
+            codigo,
+            nombreConv,
             nit,
-            que_se_recauda,
+            queSeRecauda,
             categoria,
-            tipo_captura,
+            tipoCaptura,
             ubicacion,
-            referencias || descripcion,
-            forma_consulta || null,
+            refs,
+            formaConsulta,
           ],
         );
         return rows[0];
@@ -300,15 +298,6 @@ export class ConvenioService {
   static async actualizar(banco: string, id: string, datos: any) {
     switch (banco) {
       case "BBVA": {
-        const nombreConvenio = datos.nombre_convenio || datos.nombre;
-        const nit = datos.nit;
-        const queSeRecauda = datos.que_se_recauda;
-        const categoria = datos.categoria;
-        const tipoCaptura = datos.tipo_captura;
-        const ubicacion = datos.ubicacion;
-        const referencias = datos.referencias || datos.descripcion;
-        const formaConsulta = datos.forma_consulta;
-
         const { rows } = await pool.query(
           `UPDATE bbva 
            SET nombre_convenio = COALESCE($1, nombre_convenio), 
@@ -318,18 +307,18 @@ export class ConvenioService {
                tipo_captura = COALESCE($5, tipo_captura), 
                ubicacion = COALESCE($6, ubicacion), 
                referencias = COALESCE($7, referencias),
-                forma_consulta = COALESCE($8, forma_consulta) 
+               forma_consulta_datos = COALESCE($8, forma_consulta_datos) 
            WHERE codigo_convenio = $9 
            RETURNING *`,
           [
-            nombreConvenio,
-            nit,
-            queSeRecauda,
-            categoria,
-            tipoCaptura,
-            ubicacion,
-            referencias,
-            formaConsulta,
+            datos.nombre_convenio || datos.nombre,
+            datos.nit,
+            datos.que_se_recauda,
+            datos.categoria,
+            datos.tipo_captura,
+            datos.ubicacion,
+            datos.referencias,
+            datos.forma_consulta_datos,
             id,
           ],
         );

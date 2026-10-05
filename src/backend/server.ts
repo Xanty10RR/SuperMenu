@@ -534,7 +534,11 @@ app.get("/api/aprobaciones/rechazadas", async (_req, res) => {
   }
 });
 
-// Ruta para buscar o listar convenios de los bancos (BBVA, Agrario y Aval) con filtro de texto
+// ==========================================
+// Endpoints de convenios bancarios con CRUD completo
+// ==========================================
+
+// Ruta para buscar o listar convenios de los bancos BBVA, Agrario y Aval con filtro de texto
 app.get("/api/convenios/buscar", async (req, res) => {
   try {
     const texto = (req.query.q as string) || "";
@@ -546,7 +550,19 @@ app.get("/api/convenios/buscar", async (req, res) => {
   }
 });
 
-// 2. Ruta para obtener un convenio específico por su banco e ID/Código
+// Ruta para sugerencias inteligentes
+app.get("/api/convenios/sugerir", async (req, res) => {
+  try {
+    const texto = (req.query.q as string) || "";
+    const sugerencia = await ConvenioService.sugerir(texto);
+    res.json(sugerencia);
+  } catch (error) {
+    console.error("Error al buscar sugerencia:", error);
+    res.status(500).json({ error: "Error interno al sugerir convenio" });
+  }
+});
+
+// Ruta para obtener un convenio específico por su banco e ID/Código
 app.get("/api/convenios/:banco/:id", async (req, res) => {
   try {
     const { banco, id } = req.params;
@@ -564,31 +580,86 @@ app.get("/api/convenios/:banco/:id", async (req, res) => {
   }
 });
 
-// 3. Ruta para sugerencias inteligentes
-app.get("/api/convenios/sugerir", async (req, res) => {
-  try {
-    const texto = (req.query.q as string) || "";
-    const sugerencia = await ConvenioService.sugerir(texto);
-    res.json(sugerencia);
-  } catch (error) {
-    console.error("Error al buscar sugerencia:", error);
-    res.status(500).json({ error: "Error interno al sugerir convenio" });
-  }
-});
-
-// Ruta para registrar un nuevo convenio de forma manual (según el banco)
-app.post("/api/convenios/crear", async (req, res) => {
+// Ruta para registrar un nuevo convenio (Soporta /api/convenios y /api/convenios/crear)
+app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
   try {
     const { banco, ...datos } = req.body;
 
-    // Las usamos aquí para que ESLint no marque error
-    console.log("Banco recibido:", banco);
-    console.log("Datos del convenio:", datos);
+    if (!banco) {
+      return res.status(400).json({ error: "El campo 'banco' es obligatorio" });
+    }
 
-    res.json({ success: true, message: "Convenio creado correctamente" });
+    // Aquí llamas a tu método en ConvenioService para insertar en Supabase
+    const nuevoConvenio = await ConvenioService.crear(
+      banco.toUpperCase(),
+      datos,
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Convenio creado correctamente",
+      data: nuevoConvenio,
+    });
   } catch (error) {
     console.error("Error al crear convenio:", error);
-    res.status(500).json({ error: "Error al guardar el convenio" });
+    res
+      .status(500)
+      .json({ error: "Error al guardar el convenio en la base de datos" });
+  }
+});
+
+// Ruta para actualizar un convenio existente
+app.put("/api/convenios/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { banco, ...datos } = req.body;
+
+    if (!banco) {
+      return res
+        .status(400)
+        .json({ error: "El campo 'banco' es obligatorio para actualizar" });
+    }
+
+    // Aquí se llama al método en ConvenioService para actualizar en Supabase
+    const convenioActualizado = await ConvenioService.actualizar(
+      banco.toUpperCase(),
+      id,
+      datos,
+    );
+
+    res.json({
+      success: true,
+      message: "Convenio actualizado correctamente",
+      data: convenioActualizado,
+    });
+  } catch (error) {
+    console.error("Error al actualizar convenio:", error);
+    res.status(500).json({ error: "Error al actualizar el convenio" });
+  }
+});
+
+// Ruta para eliminar un convenio
+app.delete("/api/convenios/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const banco = (req.query.banco as string) || "";
+
+    if (!banco) {
+      return res
+        .status(400)
+        .json({ error: "El parámetro 'banco' es obligatorio para eliminar" });
+    }
+
+    // Aquí se llama al método en ConvenioService para borrar en Supabase
+    await ConvenioService.eliminar(banco.toUpperCase(), id);
+
+    res.json({
+      success: true,
+      message: "Convenio eliminado correctamente",
+    });
+  } catch (error) {
+    console.error("Error al eliminar convenio:", error);
+    res.status(500).json({ error: "Error al eliminar el convenio" });
   }
 });
 

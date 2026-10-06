@@ -343,7 +343,7 @@ export const Convenios: React.FC = () => {
   const listaActual = listaCompleta.slice(indicePrimerElemento, indiceUltimoElemento)
   const totalPaginas = Math.ceil(listaCompleta.length / elementosPorPagina) || 1
 
-  // Reúne las referencias de todos los bancos y elimina duplicados y valores vacíos (BBVA)
+  // Reúne las referencias del banco (BBVA) y elimina duplicados y valores vacíos
   const referenciasUnicasBbva = Array.from(
     new Set(
       [...datosConvenios.bbva]
@@ -352,16 +352,16 @@ export const Convenios: React.FC = () => {
     )
   )
 
-  // Reúne las ubicaciones únicas de todos los bancos y elimina duplicados (BBVA)
+  // Reúne las ubicaciones del banco (BBVA)
   const ubicacionesUnicasBbva = Array.from(
     new Set(
-      [...datosConvenios.bbva, ...datosConvenios.aval, ...datosConvenios.agrario]
+      [...datosConvenios.bbva]
         .map((convenio) => convenio.ubicacion?.trim())
         .filter((ubicacion): ubicacion is string => Boolean(ubicacion))
     )
   )
 
-  // Referencias ÚNICAS solo para el Banco Agrario
+  // Referencias únicas solo para el Banco Agrario
   const referenciasAgrario = Array.from(
     new Set(
       datosConvenios.agrario
@@ -370,14 +370,14 @@ export const Convenios: React.FC = () => {
     )
   )
 
-  // Referencias ÚNICAS solo para el Banco Agrario
+  // Referencias únicas solo para el Banco Agrario
   const longitudReferenciaAgrario = Array.from(
     new Set(
       datosConvenios.agrario
         .map((convenio) => Number(convenio.longitud_referencia))
         .filter((lon) => !isNaN(lon) && lon > 0)
     )
-  ).sort((a, b) => a - b) // Esto los ordena de menor a mayor solitos
+  ).sort((a, b) => a - b) // Esto los ordena de menor a mayor
 
   return (
     <div className="convenios-container">
@@ -874,6 +874,7 @@ export const Convenios: React.FC = () => {
                 </>
               )}
 
+              {/* Campos específicos para AVAL */}
               {bancoSeleccionado.toUpperCase() === 'AVAL' && (
                 <>
                   <div className="form-group" style={{ marginBottom: '15px' }}>
@@ -892,7 +893,6 @@ export const Convenios: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* NURA */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       NURA
@@ -908,7 +908,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* NIT */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       NIT
@@ -924,7 +923,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Empresa */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Empresa
@@ -940,7 +938,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Convenio */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Convenio
@@ -956,7 +953,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Sigla */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Sigla
@@ -972,7 +968,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Categoría */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Categoría
@@ -991,7 +986,6 @@ export const Convenios: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Descripción Recaudo */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Descripción Recaudo
@@ -1007,7 +1001,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Dato Captura */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Dato Captura
@@ -1023,7 +1016,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Modalidad */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Modalidad
@@ -1041,7 +1033,6 @@ export const Convenios: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Longitud Referencia */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Longitud Referencia
@@ -1057,7 +1048,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Departamento */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Departamento
@@ -1073,7 +1063,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Ciudad */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Ciudad
@@ -1089,7 +1078,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Modalidad Captura */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Modalidad Captura
@@ -1107,7 +1095,6 @@ export const Convenios: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Valida Fecha Vencimiento */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Valida Fecha Vencimiento
@@ -1124,7 +1111,6 @@ export const Convenios: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Recibe Pagos Parciales */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Recibe Pagos Parciales
@@ -1141,7 +1127,6 @@ export const Convenios: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Monto */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Monto
@@ -1157,7 +1142,6 @@ export const Convenios: React.FC = () => {
                     />
                   </div>
 
-                  {/* Banco Dueño */}
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Banco Dueño

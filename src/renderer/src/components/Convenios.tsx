@@ -14,6 +14,8 @@ interface Convenio {
   modalidad?: string
   referencias?: string
   referencia?: string
+  longitud_referencia?: string
+  ubicacion?: string
 }
 
 interface DatosBancos {
@@ -262,23 +264,42 @@ export const Convenios: React.FC = () => {
   const listaActual = listaCompleta.slice(indicePrimerElemento, indiceUltimoElemento)
   const totalPaginas = Math.ceil(listaCompleta.length / elementosPorPagina) || 1
 
-  // Reúne las referencias de todos los bancos y elimina duplicados y valores vacíos.
-  const referenciasUnicas = Array.from(
+  // Reúne las referencias de todos los bancos y elimina duplicados y valores vacíos (BBVA)
+  const referenciasUnicasBbva = Array.from(
     new Set(
-      [...datosConvenios.bbva, ...datosConvenios.aval, ...datosConvenios.agrario]
+      [...datosConvenios.bbva]
         .map((convenio) => convenio.referencias?.trim() || convenio.referencia?.trim())
         .filter((referencia): referencia is string => Boolean(referencia))
     )
   )
 
-  // Reúne las ubicaciones únicas de todos los bancos y elimina duplicados
-  const ubicacionesUnicas = Array.from(
+  // Reúne las ubicaciones únicas de todos los bancos y elimina duplicados (BBVA)
+  const ubicacionesUnicasBbva = Array.from(
     new Set(
       [...datosConvenios.bbva, ...datosConvenios.aval, ...datosConvenios.agrario]
         .map((convenio) => convenio.ubicacion?.trim())
         .filter((ubicacion): ubicacion is string => Boolean(ubicacion))
     )
   )
+
+  // Referencias ÚNICAS solo para el Banco Agrario
+  const referenciasAgrario = Array.from(
+    new Set(
+      datosConvenios.agrario
+        .map((convenio) => convenio.referencia?.trim() || convenio.referencias?.trim())
+        .filter((ref): ref is string => Boolean(ref))
+    )
+  )
+
+  // Referencias ÚNICAS solo para el Banco Agrario
+  // Longitudes de referencia numéricas y ordenadas solo para el Banco Agrario
+  const longitudReferenciaAgrario = Array.from(
+    new Set(
+      datosConvenios.agrario
+        .map((convenio) => Number(convenio.longitud_referencia))
+        .filter((lon) => !isNaN(lon) && lon > 0)
+    )
+  ).sort((a, b) => a - b) // Esto los ordena de menor a mayor solitos
 
   return (
     <div className="convenios-container">
@@ -427,7 +448,6 @@ export const Convenios: React.FC = () => {
                       name="codigo_convenio"
                       value={formulario.codigo_convenio || ''}
                       onChange={handleInputChange}
-                      placeholder=""
                       style={{ width: '100%' }}
                       required
                     />
@@ -443,7 +463,6 @@ export const Convenios: React.FC = () => {
                       name="nombre_convenio"
                       value={formulario.nombre_convenio || ''}
                       onChange={handleInputChange}
-                      placeholder=""
                       style={{ width: '100%' }}
                       required
                     />
@@ -459,7 +478,6 @@ export const Convenios: React.FC = () => {
                       name="nit"
                       value={formulario.nit || ''}
                       onChange={handleInputChange}
-                      placeholder=""
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -474,7 +492,6 @@ export const Convenios: React.FC = () => {
                       name="que_se_recauda"
                       value={formulario.que_se_recauda || ''}
                       onChange={handleInputChange}
-                      placeholder=""
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -519,7 +536,6 @@ export const Convenios: React.FC = () => {
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Ubicación
                     </label>
-                    {/* Para Ubicación */}
                     <input
                       type="text"
                       name="ubicacion"
@@ -529,7 +545,7 @@ export const Convenios: React.FC = () => {
                       style={{ width: '100%' }}
                     />
                     <datalist id="lista-ubicaciones">
-                      {ubicacionesUnicas.map((ubi, idx) => (
+                      {ubicacionesUnicasBbva.map((ubi, idx) => (
                         <option key={idx} value={ubi} />
                       ))}
                     </datalist>
@@ -572,7 +588,7 @@ export const Convenios: React.FC = () => {
                     </small>
 
                     <datalist id="referencias-dinamicas">
-                      {referenciasUnicas.map((ref, index) => (
+                      {referenciasUnicasBbva.map((ref, index) => (
                         <option key={index} value={String(ref)} />
                       ))}
                     </datalist>
@@ -611,7 +627,6 @@ export const Convenios: React.FC = () => {
                       name="codigo_convenio"
                       value={formulario.codigo_convenio || ''}
                       onChange={handleInputChange}
-                      placeholder="Código de Convenio"
                       style={{ width: '100%' }}
                       required
                     />
@@ -627,7 +642,6 @@ export const Convenios: React.FC = () => {
                       name="nombre_convenio"
                       value={formulario.nombre_convenio || ''}
                       onChange={handleInputChange}
-                      placeholder="Nombre del Convenio"
                       style={{ width: '100%' }}
                       required
                     />
@@ -643,7 +657,6 @@ export const Convenios: React.FC = () => {
                       name="nit"
                       value={formulario.nit || ''}
                       onChange={handleInputChange}
-                      placeholder="NIT"
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -658,24 +671,44 @@ export const Convenios: React.FC = () => {
                       name="referencia"
                       value={formulario.referencia || ''}
                       onChange={handleInputChange}
-                      placeholder="Referencia"
+                      placeholder="Escriba o seleccione la referencia..."
+                      list="lista-referencia-agrario"
                       style={{ width: '100%' }}
                     />
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Puede seleccionar una existente o escribir una nueva estructura de referencia
+                    </small>
+                    <datalist id="lista-referencia-agrario">
+                      {referenciasAgrario.map((ref, idx) => (
+                        <option key={idx} value={ref} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Tipo de referencia
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="tipo_referencia"
                       value={formulario.tipo_referencia || ''}
                       onChange={handleInputChange}
-                      placeholder="Tipo de Referencia"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione el tipo de referencia...</option>
+                      <option value="109 BASE 9">109 BASE 9</option>
+                      <option value="ALFANUMERICO">ALFANUMERICO</option>
+                      <option value="CARACTERES SIN NUMERO">CARACTERES SIN NUMERO</option>
+                      <option value="NUMERICO">NUMERICO</option>
+                    </select>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
@@ -688,54 +721,77 @@ export const Convenios: React.FC = () => {
                       name="longitud_referencia"
                       value={formulario.longitud_referencia || ''}
                       onChange={handleInputChange}
-                      placeholder="Longitud de Referencia"
+                      placeholder="Escriba o seleccione la longitud de referencia..."
+                      list="lista-longitud-agrario"
                       style={{ width: '100%' }}
                     />
+                    <datalist id="lista-longitud-agrario">
+                      {longitudReferenciaAgrario.map((lon, idx) => (
+                        <option key={idx} value={lon} />
+                      ))}
+                    </datalist>
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Puede seleccionar una existente o escribir una nueva estructura de longitud de
+                      referencia
+                    </small>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Código de barras (SI / NO)
+                      Código de barras
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="codigo_barras"
                       value={formulario.codigo_barras || ''}
                       onChange={handleInputChange}
-                      placeholder="SI o NO"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione si valida código de barras...</option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Valida fecha (SI / NO)
+                      Valida fecha
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="valida_fecha"
                       value={formulario.valida_fecha || ''}
                       onChange={handleInputChange}
-                      placeholder="SI o NO"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione si valida fecha...</option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Manual (SI / NO)
+                      Manual
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="manual"
                       value={formulario.manual || ''}
                       onChange={handleInputChange}
-                      placeholder="SI o NO"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione si es manual...</option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
                   </div>
                 </>
               )}

@@ -55,12 +55,24 @@ export class ConvenioService {
           'AVAL' AS banco,
           nit AS codigo_convenio,
           convenio AS nombre_convenio,
+          estado,
+          nura,
           nit,
           empresa,
+          convenio,
           sigla,
-          modalidad,
+          categoria,
+          descripcion_recaudo,
           dato_captura,
-          descripcion_recaudo
+          modalidad,
+          longitud_referencia,
+          ciudad,
+          departamento,
+          modalidad_captura,
+          valida_fecha_vencimiento,
+          recibe_pagos_parciales,
+          monto,
+          banco_dueno
         FROM aval
         WHERE
           LOWER(convenio) LIKE $1
@@ -135,12 +147,24 @@ export class ConvenioService {
             'AVAL' AS banco,
             nit AS codigo_convenio,
             convenio AS nombre_convenio,
-            nit,
-            empresa,
-            sigla,
-            modalidad,
-            dato_captura,
-            descripcion_recaudo
+            estado,
+          nura,
+          nit,
+          empresa,
+          convenio,
+          sigla,
+          categoria,
+          descripcion_recaudo,
+          dato_captura,
+          modalidad,
+          longitud_referencia,
+          ciudad,
+          departamento,
+          modalidad_captura,
+          valida_fecha_vencimiento,
+          recibe_pagos_parciales,
+          monto,
+          banco_dueno
           FROM aval
           WHERE nit = $1
           LIMIT 1
@@ -243,7 +267,7 @@ export class ConvenioService {
         const tipoReferencia = datos.tipo_referencia || "";
         const longitudReferencia = datos.longitud_referencia || 0;
         const codigoBarras = datos.codigo_barras || "NO";
-        const validaFecha = datos.valida_fecha || "NO"; // <-- Nuevo campo añadido
+        const validaFecha = datos.valida_fecha || "NO";
         const manual = datos.manual || "SI";
 
         const { rows } = await pool.query(
@@ -264,29 +288,57 @@ export class ConvenioService {
         return rows[0];
       }
       case "AVAL": {
-        const {
-          nit,
-          convenio,
-          nombre_convenio,
-          nombre,
-          empresa,
-          sigla,
-          modalidad,
-          dato_captura,
-          descripcion_recaudo,
-          descripcion,
-        } = datos;
+        const estado = datos.estado || "ACTIVO";
+        const nura = datos.nura || "";
+        const nit = datos.nit || "";
+        const empresa = datos.empresa || "";
+        const convenio =
+          datos.convenio || datos.nombre_convenio || datos.nombre || "";
+        const sigla = datos.sigla || "";
+        const categoria = datos.categoria || "";
+        const descripcionRecaudo =
+          datos.descripcion_recaudo || datos.descripcion || "";
+        const datoCaptura = datos.dato_captura || "";
+        const modalidad = datos.modalidad || "";
+        const longitudReferencia = datos.longitud_referencia || 0;
+        const ciudad = datos.ciudad || "";
+        const departamento = datos.departamento || "";
+        const modalidadCaptura = datos.modalidad_captura || "";
+        const validaFechaVencimiento = datos.valida_fecha_vencimiento || "NO";
+        const recibePagosParciales = datos.recibe_pagos_parciales || "NO";
+        const monto = datos.monto || "";
+        const bancoDueno = datos.banco_dueno || "";
+        const convenioAval = datos.convenio_aval || "";
+        const descripcionAval = datos.descripcion_aval || "";
+
         const { rows } = await pool.query(
-          `INSERT INTO aval (nit, convenio, empresa, sigla, modalidad, dato_captura, descripcion_recaudo) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+          `INSERT INTO aval (
+            estado, nura, nit, empresa, convenio, sigla, categoria, 
+            descripcion_recaudo, dato_captura, modalidad, longitud_referencia, 
+            ciudad, departamento, modalidad_captura, valida_fecha_vencimiento, 
+            recibe_pagos_parciales, monto, banco_dueno, convenio_aval, descripcion_aval
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING *`,
           [
+            estado,
+            nura,
             nit,
-            convenio || nombre_convenio || nombre,
             empresa,
+            convenio,
             sigla,
+            categoria,
+            descripcionRecaudo,
+            datoCaptura,
             modalidad,
-            dato_captura,
-            descripcion_recaudo || descripcion,
+            longitudReferencia,
+            ciudad,
+            departamento,
+            modalidadCaptura,
+            validaFechaVencimiento,
+            recibePagosParciales,
+            monto,
+            bancoDueno,
+            convenioAval,
+            descripcionAval,
           ],
         );
         return rows[0];
@@ -362,35 +414,74 @@ export class ConvenioService {
         return rows[0];
       }
       case "AVAL": {
-        const convenio =
-          datos.convenio || datos.nombre_convenio || datos.nombre;
-        const nit = datos.nit;
+        const estado = datos.estado;
+        const nura = datos.nura;
+        const nit = datos.nit ?? id;
         const empresa = datos.empresa;
+        const convenio =
+          datos.convenio || datos.nombre_convenio || datos.nombre || "";
         const sigla = datos.sigla;
-        const modalidad = datos.modalidad;
-        const datoCaptura = datos.dato_captura;
+        const categoria = datos.categoria;
         const descripcionRecaudo =
-          datos.descripcion_recaudo || datos.descripcion;
+          datos.descripcion_recaudo || datos.descripcion || "";
+        const datoCaptura = datos.dato_captura;
+        const modalidad = datos.modalidad;
+        const longitudReferencia = datos.longitud_referencia;
+        const ciudad = datos.ciudad;
+        const departamento = datos.departamento;
+        const modalidadCaptura = datos.modalidad_captura;
+        const validaFechaVencimiento = datos.valida_fecha_vencimiento;
+        const recibePagosParciales = datos.recibe_pagos_parciales;
+        const monto = datos.monto;
+        const bancoDueno = datos.banco_dueno;
+        const convenioAval = datos.convenio_aval || convenio;
+        const descripcionAval = datos.descripcion_aval || descripcionRecaudo;
 
         const { rows } = await pool.query(
           `UPDATE aval 
-           SET convenio = COALESCE($1, convenio), 
-               nit = COALESCE($2, nit), 
-               empresa = COALESCE($3, empresa), 
-               sigla = COALESCE($4, sigla), 
-               modalidad = COALESCE($5, modalidad), 
-               dato_captura = COALESCE($6, dato_captura), 
-               descripcion_recaudo = COALESCE($7, descripcion_recaudo) 
-           WHERE nit = $8 
-           RETURNING *`,
+       SET estado = COALESCE($1, estado), 
+           nura = COALESCE($2, nura), 
+           nit = COALESCE($3, nit), 
+           empresa = COALESCE($4, empresa), 
+           convenio = COALESCE($5, convenio), 
+           sigla = COALESCE($6, sigla), 
+           categoria = COALESCE($7, categoria), 
+           descripcion_recaudo = COALESCE($8, descripcion_recaudo), 
+           dato_captura = COALESCE($9, dato_captura), 
+           modalidad = COALESCE($10, modalidad), 
+           longitud_referencia = COALESCE($11, longitud_referencia), 
+           ciudad = COALESCE($12, ciudad), 
+           departamento = COALESCE($13, departamento), 
+           modalidad_captura = COALESCE($14, modalidad_captura), 
+           valida_fecha_vencimiento = COALESCE($15, valida_fecha_vencimiento), 
+           recibe_pagos_parciales = COALESCE($16, recibe_pagos_parciales), 
+           monto = COALESCE($17, monto), 
+           banco_dueno = COALESCE($18, banco_dueno), 
+           convenio_aval = COALESCE($19, convenio_aval), 
+           descripcion_aval = COALESCE($20, descripcion_aval)
+       WHERE nit = $21
+       RETURNING *`,
           [
-            convenio,
+            estado,
+            nura,
             nit,
             empresa,
+            convenio,
             sigla,
-            modalidad,
-            datoCaptura,
+            categoria,
             descripcionRecaudo,
+            datoCaptura,
+            modalidad,
+            longitudReferencia,
+            ciudad,
+            departamento,
+            modalidadCaptura,
+            validaFechaVencimiento,
+            recibePagosParciales,
+            monto,
+            bancoDueno,
+            convenioAval,
+            descripcionAval,
             id,
           ],
         );

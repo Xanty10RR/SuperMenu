@@ -10,12 +10,32 @@ interface Convenio {
   empresa?: string
   nit?: number | string
   nit_convenio?: number | string
+  descripcion?: string
+  que_se_recauda?: string
   categoria?: string
   modalidad?: string
+  tipo_captura?: string
   referencias?: string
   referencia?: string
+  tipo_referencia?: string
   longitud_referencia?: string
   ubicacion?: string
+  codigo_barras?: string
+  valida_fecha?: string
+  manual?: string
+  forma_consulta?: string
+  estado?: string
+  nura?: number | string
+  sigla?: string
+  descripcion_recaudo?: string
+  dato_captura?: string
+  departamento?: string
+  ciudad?: string
+  modalidad_captura?: string
+  valida_fecha_vencimiento?: string
+  recibe_pagos_parciales?: string
+  monto?: string
+  banco_dueno?: string
 }
 
 interface DatosBancos {
@@ -60,6 +80,21 @@ export const Convenios: React.FC = () => {
     codigo_barras: string
     valida_fecha: string
     manual: string
+    estado: string
+    nura: string
+    empresa: string
+    convenio: string
+    sigla: string
+    descripcion_recaudo: string
+    dato_captura: string
+    modalidad: string
+    departamento: string
+    ciudad: string
+    modalidad_captura: string
+    valida_fecha_vencimiento: string
+    recibe_pagos_parciales: string
+    monto: string
+    banco_dueno: string
   }
 
   // Se declara el estado forzando explícitamente <FormularioConvenio>
@@ -80,7 +115,22 @@ export const Convenios: React.FC = () => {
     longitud_referencia: '',
     codigo_barras: '',
     valida_fecha: '',
-    manual: ''
+    manual: '',
+    estado: 'ACTIVO',
+    nura: '',
+    empresa: '',
+    convenio: '',
+    sigla: '',
+    descripcion_recaudo: '',
+    dato_captura: '',
+    modalidad: '',
+    departamento: '',
+    ciudad: '',
+    modalidad_captura: '',
+    valida_fecha_vencimiento: 'NO',
+    recibe_pagos_parciales: 'NO',
+    monto: '',
+    banco_dueno: ''
   })
 
   // Función para limpiar el formulario que sí vamos a usar
@@ -102,7 +152,22 @@ export const Convenios: React.FC = () => {
       longitud_referencia: '',
       codigo_barras: '',
       valida_fecha: '',
-      manual: ''
+      manual: '',
+      estado: 'ACTIVO',
+      nura: '',
+      empresa: '',
+      convenio: '',
+      sigla: '',
+      descripcion_recaudo: '',
+      dato_captura: '',
+      modalidad: '',
+      departamento: '',
+      ciudad: '',
+      modalidad_captura: '',
+      valida_fecha_vencimiento: 'NO',
+      recibe_pagos_parciales: 'NO',
+      monto: '',
+      banco_dueno: ''
     })
   }
 
@@ -177,31 +242,45 @@ export const Convenios: React.FC = () => {
   // Editar convenio existente
   const abrirModalEditar = (item: Convenio): void => {
     setConvenioEnEdicion(item)
-    //@typescript-eslint/no-explicit-any
-    const itemAny = item as unknown as Record<string, any>
-
     setFormulario({
-      codigo_convenio: String(itemAny.codigo_convenio || itemAny.id || ''),
-      nombre_convenio: String(itemAny.nombre_convenio || itemAny.convenio || itemAny.empresa || ''),
-      nombre: String(itemAny.nombre_convenio || ''),
-      nit: String(itemAny.nit_convenio || itemAny.nit || ''),
-      descripcion: String(itemAny.descripcion || ''),
-      referencias: String(itemAny.referencias || itemAny.referencia || ''),
+      codigo_convenio: String(item.codigo_convenio || item.id || ''),
+      nombre_convenio: String(item.nombre_convenio || item.convenio || item.empresa || ''),
+      nombre: String(item.nombre_convenio || ''),
+      nit: String(item.nit_convenio || item.nit || ''),
+      descripcion: String(item.descripcion || ''),
+      referencias: String(item.referencias || item.referencia || ''),
 
       // Campos específicos de Agrario:
-      referencia: String(itemAny.referencia || itemAny.descripcion || ''),
-      tipo_referencia: String(itemAny.tipo_referencia || ''),
-      longitud_referencia: String(itemAny.longitud_referencia || ''),
-      codigo_barras: String(itemAny.codigo_barras || 'NO'),
-      valida_fecha: String(itemAny.valida_fecha || 'NO'),
-      manual: String(itemAny.manual || 'SI'),
+      referencia: String(item.referencia || item.descripcion || ''),
+      tipo_referencia: String(item.tipo_referencia || ''),
+      longitud_referencia: String(item.longitud_referencia || ''),
+      codigo_barras: String(item.codigo_barras || 'NO'),
+      valida_fecha: String(item.valida_fecha || 'NO'),
+      manual: String(item.manual || 'SI'),
 
       // Campos de BBVA (por si el modal es compartido)
-      que_se_recauda: String(itemAny.que_se_recauda || ''),
-      categoria: String(itemAny.categoria || ''),
-      tipo_captura: String(itemAny.tipo_captura || ''),
-      ubicacion: String(itemAny.ubicacion || ''),
-      forma_consulta_datos: String(itemAny.forma_consulta || '')
+      que_se_recauda: String(item.que_se_recauda || ''),
+      categoria: String(item.categoria || ''),
+      tipo_captura: String(item.tipo_captura || ''),
+      ubicacion: String(item.ubicacion || ''),
+      forma_consulta_datos: String(item.forma_consulta || ''),
+
+      // Campos específicos para AVAL
+      estado: String(item.estado || 'ACTIVO'),
+      nura: String(item.nura || ''),
+      empresa: String(item.empresa || ''),
+      convenio: String(item.convenio || ''),
+      sigla: String(item.sigla || ''),
+      descripcion_recaudo: String(item.descripcion_recaudo || ''),
+      dato_captura: String(item.dato_captura || ''),
+      modalidad: String(item.modalidad || ''),
+      departamento: String(item.departamento || ''),
+      ciudad: String(item.ciudad || ''),
+      modalidad_captura: String(item.modalidad_captura || ''),
+      valida_fecha_vencimiento: String(item.valida_fecha_vencimiento || 'NO'),
+      recibe_pagos_parciales: String(item.recibe_pagos_parciales || 'NO'),
+      monto: String(item.monto || ''),
+      banco_dueno: String(item.banco_dueno || '')
     })
     setModalEditarAbierto(true)
   }
@@ -292,7 +371,6 @@ export const Convenios: React.FC = () => {
   )
 
   // Referencias ÚNICAS solo para el Banco Agrario
-  // Longitudes de referencia numéricas y ordenadas solo para el Banco Agrario
   const longitudReferenciaAgrario = Array.from(
     new Set(
       datosConvenios.agrario
@@ -791,6 +869,309 @@ export const Convenios: React.FC = () => {
                       <option value="">Seleccione si es manual...</option>
                       <option value="SI">SI</option>
                       <option value="NO">NO</option>
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {bancoSeleccionado.toUpperCase() === 'AVAL' && (
+                <>
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Estado
+                    </label>
+                    <select
+                      className="convenios-form__field"
+                      name="estado"
+                      value={formulario.estado || 'ACTIVO'}
+                      onChange={handleInputChange}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="ACTIVO">ACTIVO</option>
+                      <option value="INACTIVO">INACTIVO</option>
+                    </select>
+                  </div>
+
+                  {/* NURA */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      NURA
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="nura"
+                      value={formulario.nura || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: 2, 5, 6"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* NIT */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      NIT
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="nit"
+                      value={formulario.nit || ''}
+                      onChange={handleInputChange}
+                      placeholder="NIT de la empresa"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Empresa */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Empresa
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="empresa"
+                      value={formulario.empresa || ''}
+                      onChange={handleInputChange}
+                      placeholder="Nombre de la empresa"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Convenio */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Convenio
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="convenio"
+                      value={formulario.convenio || ''}
+                      onChange={handleInputChange}
+                      placeholder="Nombre del convenio"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Sigla */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Sigla
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="sigla"
+                      value={formulario.sigla || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: KIMELCOLSA"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Categoría */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Categoría
+                    </label>
+                    <select
+                      className="convenios-form__field"
+                      name="categoria"
+                      value={formulario.categoria || ''}
+                      onChange={handleInputChange}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="">Seleccione categoría...</option>
+                      <option value="Servicios publicos">Servicios publicos</option>
+                      <option value="Otros servicios">Otros servicios</option>
+                      <option value="Instituciones educativas">Instituciones educativas</option>
+                    </select>
+                  </div>
+
+                  {/* Descripción Recaudo */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Descripción Recaudo
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="descripcion_recaudo"
+                      value={formulario.descripcion_recaudo || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: SIN DESCRIPCION"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Dato Captura */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Dato Captura
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="dato_captura"
+                      value={formulario.dato_captura || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: CEDULA, Referencia De Pago, NRO DOCUMENTO"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Modalidad */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Modalidad
+                    </label>
+                    <select
+                      className="convenios-form__field"
+                      name="modalidad"
+                      value={formulario.modalidad || ''}
+                      onChange={handleInputChange}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="">Seleccione modalidad...</option>
+                      <option value="Facturador">Facturador</option>
+                      <option value="No Facturador">No Facturador</option>
+                    </select>
+                  </div>
+
+                  {/* Longitud Referencia */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Longitud Referencia
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="longitud_referencia"
+                      value={formulario.longitud_referencia || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: 0, 12"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Departamento */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Departamento
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="departamento"
+                      value={formulario.departamento || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: Valle del Cauca, Antioquia"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Ciudad */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Ciudad
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="ciudad"
+                      value={formulario.ciudad || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: Cali, Medellin"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Modalidad Captura */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Modalidad Captura
+                    </label>
+                    <select
+                      className="convenios-form__field"
+                      name="modalidad_captura"
+                      value={formulario.modalidad_captura || ''}
+                      onChange={handleInputChange}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="">Seleccione modalidad captura...</option>
+                      <option value="Manual">Manual</option>
+                      <option value="Codigo de barras">Codigo de barras</option>
+                    </select>
+                  </div>
+
+                  {/* Valida Fecha Vencimiento */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Valida Fecha Vencimiento
+                    </label>
+                    <select
+                      className="convenios-form__field"
+                      name="valida_fecha_vencimiento"
+                      value={formulario.valida_fecha_vencimiento || 'NO'}
+                      onChange={handleInputChange}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+
+                  {/* Recibe Pagos Parciales */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Recibe Pagos Parciales
+                    </label>
+                    <select
+                      className="convenios-form__field"
+                      name="recibe_pagos_parciales"
+                      value={formulario.recibe_pagos_parciales || 'NO'}
+                      onChange={handleInputChange}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+
+                  {/* Monto */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Monto
+                    </label>
+                    <input
+                      className="convenios-form__field"
+                      type="text"
+                      name="monto"
+                      value={formulario.monto || ''}
+                      onChange={handleInputChange}
+                      placeholder="Ej: No Valida, Exactamente Igual"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Banco Dueño */}
+                  <div className="form-group" style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                      Banco Dueño
+                    </label>
+                    <select
+                      className="convenios-form__field"
+                      name="banco_dueno"
+                      value={formulario.banco_dueno || ''}
+                      onChange={handleInputChange}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="">Seleccione banco dueño...</option>
+                      <option value="Banco AV Villas">Banco AV Villas</option>
+                      <option value="Banco de Bogotá">Banco de Bogotá</option>
                     </select>
                   </div>
                 </>

@@ -12,6 +12,7 @@ interface Convenio {
   nit_convenio?: number | string
   categoria?: string
   modalidad?: string
+  referencias?: string
   referencia?: string
 }
 
@@ -261,6 +262,24 @@ export const Convenios: React.FC = () => {
   const listaActual = listaCompleta.slice(indicePrimerElemento, indiceUltimoElemento)
   const totalPaginas = Math.ceil(listaCompleta.length / elementosPorPagina) || 1
 
+  // Reúne las referencias de todos los bancos y elimina duplicados y valores vacíos.
+  const referenciasUnicas = Array.from(
+    new Set(
+      [...datosConvenios.bbva, ...datosConvenios.aval, ...datosConvenios.agrario]
+        .map((convenio) => convenio.referencias?.trim() || convenio.referencia?.trim())
+        .filter((referencia): referencia is string => Boolean(referencia))
+    )
+  )
+
+  // Reúne las ubicaciones únicas de todos los bancos y elimina duplicados
+  const ubicacionesUnicas = Array.from(
+    new Set(
+      [...datosConvenios.bbva, ...datosConvenios.aval, ...datosConvenios.agrario]
+        .map((convenio) => convenio.ubicacion?.trim())
+        .filter((ubicacion): ubicacion is string => Boolean(ubicacion))
+    )
+  )
+
   return (
     <div className="convenios-container">
       <div className="convenios-header">
@@ -400,7 +419,7 @@ export const Convenios: React.FC = () => {
                 <>
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Código de Convenio
+                      Código de convenio
                     </label>
                     <input
                       className="convenios-form__field"
@@ -408,7 +427,7 @@ export const Convenios: React.FC = () => {
                       name="codigo_convenio"
                       value={formulario.codigo_convenio || ''}
                       onChange={handleInputChange}
-                      placeholder="Código de Convenio"
+                      placeholder=""
                       style={{ width: '100%' }}
                       required
                     />
@@ -416,7 +435,7 @@ export const Convenios: React.FC = () => {
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Nombre del Convenio
+                      Nombre del convenio
                     </label>
                     <input
                       className="convenios-form__field"
@@ -424,7 +443,7 @@ export const Convenios: React.FC = () => {
                       name="nombre_convenio"
                       value={formulario.nombre_convenio || ''}
                       onChange={handleInputChange}
-                      placeholder="Nombre del Convenio"
+                      placeholder=""
                       style={{ width: '100%' }}
                       required
                     />
@@ -440,14 +459,14 @@ export const Convenios: React.FC = () => {
                       name="nit"
                       value={formulario.nit || ''}
                       onChange={handleInputChange}
-                      placeholder="NIT"
+                      placeholder=""
                       style={{ width: '100%' }}
                     />
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Qué se recauda
+                      ¿Qué se recauda?
                     </label>
                     <input
                       className="convenios-form__field"
@@ -455,7 +474,7 @@ export const Convenios: React.FC = () => {
                       name="que_se_recauda"
                       value={formulario.que_se_recauda || ''}
                       onChange={handleInputChange}
-                      placeholder="Qué se recauda"
+                      placeholder=""
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -464,74 +483,117 @@ export const Convenios: React.FC = () => {
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Categoría
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="categoria"
                       value={formulario.categoria || ''}
                       onChange={handleInputChange}
-                      placeholder="Categoría"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione una categoría...</option>
+                      <option value="Servicios públicos">Servicios públicos</option>
+                      <option value="Impuestos">Impuestos</option>
+                      <option value="Otros">Otros</option>
+                    </select>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Tipo de Captura
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="tipo_captura"
                       value={formulario.tipo_captura || ''}
                       onChange={handleInputChange}
-                      placeholder="ej. BARRAS / MANUAL"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione el tipo de captura...</option>
+                      <option value="BARRAS">BARRAS</option>
+                      <option value="MANUAL">MANUAL</option>
+                      <option value="OTROS">OTROS</option>
+                    </select>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Ubicación
                     </label>
+                    {/* Para Ubicación */}
                     <input
-                      className="convenios-form__field"
                       type="text"
                       name="ubicacion"
                       value={formulario.ubicacion || ''}
                       onChange={handleInputChange}
-                      placeholder="ej. NACIONAL"
+                      list="lista-ubicaciones"
                       style={{ width: '100%' }}
                     />
+                    <datalist id="lista-ubicaciones">
+                      {ubicacionesUnicas.map((ubi, idx) => (
+                        <option key={idx} value={ubi} />
+                      ))}
+                    </datalist>
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Si su ubicación no se encuentra en la lista, escriba o seleccione en formato{' '}
+                      <strong>Departamento - Ciudad</strong> para guardar.
+                    </small>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Referencias
                     </label>
-                    <textarea
+                    <input
                       className="convenios-form__field convenios-form__description"
+                      type="text"
                       name="referencias"
                       value={formulario.referencias || ''}
                       onChange={handleInputChange}
-                      placeholder="Referencias"
-                      style={{ width: '100%', minHeight: '60px' }}
+                      placeholder="Escriba o seleccione la referencia..."
+                      list="referencias-dinamicas"
+                      style={{ width: '100%' }}
                     />
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Puede seleccionar una existente o escribir una nueva estructura de referencia.
+                    </small>
+
+                    <datalist id="referencias-dinamicas">
+                      {referenciasUnicas.map((ref, index) => (
+                        <option key={index} value={String(ref)} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Forma Consulta Datos
+                      Forma consulta datos - WEB SERVICE (W), BASE DE DATOS (S), NO CONSULTA (N)
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="forma_consulta_datos"
                       value={formulario.forma_consulta_datos || ''}
                       onChange={handleInputChange}
-                      placeholder="W, S, N"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione la forma de consulta...</option>
+                      <option value="W">W</option>
+                      <option value="S">S</option>
+                      <option value="N">N</option>
+                    </select>
                   </div>
                 </>
               )}
@@ -541,7 +603,7 @@ export const Convenios: React.FC = () => {
                 <>
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Código de Convenio
+                      Código de convenio
                     </label>
                     <input
                       className="convenios-form__field"
@@ -557,7 +619,7 @@ export const Convenios: React.FC = () => {
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Nombre del Convenio
+                      Nombre del convenio
                     </label>
                     <input
                       className="convenios-form__field"
@@ -603,7 +665,7 @@ export const Convenios: React.FC = () => {
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Tipo de Referencia
+                      Tipo de referencia
                     </label>
                     <input
                       className="convenios-form__field"
@@ -618,7 +680,7 @@ export const Convenios: React.FC = () => {
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Longitud de Referencia
+                      Longitud de referencia
                     </label>
                     <input
                       className="convenios-form__field"
@@ -633,7 +695,7 @@ export const Convenios: React.FC = () => {
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Código de Barras (SI / NO)
+                      Código de barras (SI / NO)
                     </label>
                     <input
                       className="convenios-form__field"
@@ -648,7 +710,7 @@ export const Convenios: React.FC = () => {
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Valida Fecha (SI / NO)
+                      Valida fecha (SI / NO)
                     </label>
                     <input
                       className="convenios-form__field"

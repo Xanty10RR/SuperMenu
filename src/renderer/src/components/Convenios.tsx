@@ -243,6 +243,7 @@ export const Convenios: React.FC = () => {
   const abrirModalEditar = (item: Convenio): void => {
     setConvenioEnEdicion(item)
     setFormulario({
+      // Campos comunes
       codigo_convenio: String(item.codigo_convenio || item.id || ''),
       nombre_convenio: String(item.nombre_convenio || item.convenio || item.empresa || ''),
       nombre: String(item.nombre_convenio || ''),
@@ -250,7 +251,7 @@ export const Convenios: React.FC = () => {
       descripcion: String(item.descripcion || ''),
       referencias: String(item.referencias || item.referencia || ''),
 
-      // Campos específicos de Agrario:
+      // Campos específicos de Agrario
       referencia: String(item.referencia || item.descripcion || ''),
       tipo_referencia: String(item.tipo_referencia || ''),
       longitud_referencia: String(item.longitud_referencia || ''),

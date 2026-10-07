@@ -116,7 +116,7 @@ export const Convenios: React.FC = () => {
     codigo_barras: '',
     valida_fecha: '',
     manual: '',
-    estado: 'ACTIVO',
+    estado: '',
     nura: '',
     empresa: '',
     convenio: '',
@@ -153,7 +153,7 @@ export const Convenios: React.FC = () => {
       codigo_barras: '',
       valida_fecha: '',
       manual: '',
-      estado: 'ACTIVO',
+      estado: '',
       nura: '',
       empresa: '',
       convenio: '',
@@ -267,7 +267,7 @@ export const Convenios: React.FC = () => {
       forma_consulta_datos: String(item.forma_consulta || ''),
 
       // Campos específicos para AVAL
-      estado: String(item.estado || 'ACTIVO'),
+      estado: String(item.estado),
       nura: String(item.nura || ''),
       empresa: String(item.empresa || ''),
       sigla: String(item.sigla || ''),

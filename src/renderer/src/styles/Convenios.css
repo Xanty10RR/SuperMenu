@@ -15,6 +15,7 @@
 
 .convenios-tabs {
   display: flex;
+  align-items: center;
   gap: 10px;
   margin-bottom: 20px;
 }
@@ -33,6 +34,17 @@
   border-radius: 5px;
   background: #28a745;
   color: #fff;
+}
+
+.convenios-button--export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 8px 16px;
+  background: #28a745;
+  color: #fff;
+  font-weight: bold;
 }
 
 .convenios-tab {

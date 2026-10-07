@@ -416,6 +416,47 @@ export const Convenios: React.FC = () => {
     )
   )
 
+  // Función para exportar a Excel (CSV) los convenios de un banco específico
+  const exportarBancoExcel = (nombreBanco: string, listaConvenios: Convenio[]): void => {
+    if (!listaConvenios || listaConvenios.length === 0) {
+      alert('No hay convenios para exportar en este banco.')
+      return
+    }
+
+    // 1. Obtenemos las cabeceras (keys) dinámicamente del primer objeto de convenios
+    const keys = Object.keys(listaConvenios[0]) as Array<keyof Convenio>
+
+    // 2. Armamos la cabecera del CSV separada por punto y coma (;) para que Excel la lea bien en español
+    let csvContent = '\uFEFF' + keys.join(';') + '\n'
+
+    // 3. Recorremos cada convenio para rellenar las filas
+    listaConvenios.forEach((item) => {
+      const fila = keys.map((key) => {
+        let valor = String(item[key] ?? '')
+        // Limpiamos saltos de línea y comillas para que no rompan la estructura del CSV
+        valor = valor.replace(/"/g, '""')
+        if (valor.includes(';') || valor.includes('\n') || valor.includes('"')) {
+          valor = `"${valor}"`
+        }
+        return valor
+      })
+      csvContent += fila.join(';') + '\n'
+    })
+
+    // 4. Creamos el archivo virtual y disparamos la descarga automática
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute(
+      'download',
+      `Convenios_${nombreBanco}_${new Date().toISOString().slice(0, 10)}.csv`
+    )
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <div className="convenios-container">
       <div className="convenios-header">
@@ -442,6 +483,15 @@ export const Convenios: React.FC = () => {
             {banco} ({datosConvenios[banco]?.length || 0})
           </button>
         ))}
+        <button
+          type="button"
+          className="convenios-button convenios-button--export"
+          onClick={() =>
+            exportarBancoExcel(bancoSeleccionado.toUpperCase(), datosConvenios[bancoSeleccionado])
+          }
+        >
+          📥 Exportar convenios {bancoSeleccionado.toUpperCase()} a Excel
+        </button>
       </div>
 
       {/* Buscador */}

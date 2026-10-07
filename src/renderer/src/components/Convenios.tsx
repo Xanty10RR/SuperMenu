@@ -423,18 +423,59 @@ export const Convenios: React.FC = () => {
       return
     }
 
-    // 1. Obtenemos las cabeceras (keys) dinámicamente del primer objeto de convenios
+    // Diccionario con todas los campos mapeadas a títulos limpios y en mayúsculas
+    const nombresCabeceras: Record<string, string> = {
+      banco: 'BANCO',
+      codigo_convenio: 'CÓDIGO CONVENIO',
+      nombre_convenio: 'NOMBRE CONVENIO',
+      nombre: 'NOMBRE',
+      nit: 'NIT',
+      que_se_recauda: 'QUÉ SE RECAUDA',
+      categoria: 'CATEGORÍA',
+      tipo_captura: 'TIPO CAPTURA',
+      ubicacion: 'UBICACIÓN',
+      descripcion: 'DESCRIPCIÓN',
+      referencias: 'REFERENCIAS',
+      forma_consulta_datos: 'FORMA CONSULTA DATOS',
+      referencia: 'REFERENCIA',
+      tipo_referencia: 'TIPO REFERENCIA',
+      longitud_referencia: 'LONGITUD REFERENCIA',
+      codigo_barras: 'CÓDIGO BARRAS',
+      valida_fecha: 'VALIDA FECHA',
+      manual: 'MANUAL',
+      estado: 'ESTADO',
+      nura: 'NURA',
+      empresa: 'EMPRESA',
+      convenio: 'CONVENIO',
+      sigla: 'SIGLA',
+      descripcion_recaudo: 'DESCRIPCIÓN RECAUDO',
+      dato_captura: 'DATO CAPTURA',
+      modalidad: 'MODALIDAD',
+      departamento: 'DEPARTAMENTO',
+      ciudad: 'CIUDAD',
+      modalidad_captura: 'MODALIDAD CAPTURA',
+      valida_fecha_vencimiento: 'VALIDA FECHA VENCIMIENTO',
+      recibe_pagos_parciales: 'RECIBE PAGOS PARCIALES',
+      monto: 'MONTO',
+      banco_dueno: 'BANCO DUEÑO'
+    }
+
+    // Obtiene las cabeceras (keys) dinámicamente del primer objeto de convenios
     const keys = Object.keys(listaConvenios[0]) as Array<keyof Convenio>
 
-    // 2. Armamos la cabecera del CSV separada por punto y coma (;) para que Excel la lea bien en español
-    let csvContent = '\uFEFF' + keys.join(';') + '\n'
+    // Transforma cada llave usando el diccionario o formateándola automáticamente por si aparece alguna extra
+    const headersFormateadas = keys.map((key) => {
+      return nombresCabeceras[key] || key.replace(/_/g, ' ').toUpperCase()
+    })
 
-    // 3. Recorremos cada convenio para rellenar las filas
+    // Arma la cabecera del CSV separada por punto y coma (;) para que Excel la lea bien en español
+    let csvContent = '\uFEFF' + headersFormateadas.join(';') + '\n'
+
+    // Recorre cada convenio para rellenar las filas
     listaConvenios.forEach((item) => {
       const fila = keys.map((key) => {
-        let valor = String(item[key] ?? '')
-        // Limpiamos saltos de línea y comillas para que no rompan la estructura del CSV
-        valor = valor.replace(/"/g, '""')
+        let valor = item[key] !== null && item[key] !== undefined ? item[key] : ''
+        valor = String(valor).replace(/"/g, '""')
         if (valor.includes(';') || valor.includes('\n') || valor.includes('"')) {
           valor = `"${valor}"`
         }
@@ -443,7 +484,7 @@ export const Convenios: React.FC = () => {
       csvContent += fila.join(';') + '\n'
     })
 
-    // 4. Creamos el archivo virtual y disparamos la descarga automática
+    // Crear el archivo virtual y disparamos la descarga automática
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')

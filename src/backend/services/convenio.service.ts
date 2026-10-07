@@ -308,16 +308,14 @@ export class ConvenioService {
         const recibePagosParciales = datos.recibe_pagos_parciales || "NO";
         const monto = datos.monto || "";
         const bancoDueno = datos.banco_dueno || "";
-        const convenioAval = datos.convenio_aval || "";
-        const descripcionAval = datos.descripcion_aval || "";
 
         const { rows } = await pool.query(
           `INSERT INTO aval (
             estado, nura, nit, empresa, convenio, sigla, categoria, 
             descripcion_recaudo, dato_captura, modalidad, longitud_referencia, 
             ciudad, departamento, modalidad_captura, valida_fecha_vencimiento, 
-            recibe_pagos_parciales, monto, banco_dueno, convenio_aval, descripcion_aval
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING *`,
+            recibe_pagos_parciales, monto, banco_dueno
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *`,
           [
             estado,
             nura,
@@ -337,8 +335,6 @@ export class ConvenioService {
             recibePagosParciales,
             monto,
             bancoDueno,
-            convenioAval,
-            descripcionAval,
           ],
         );
         return rows[0];
@@ -434,33 +430,29 @@ export class ConvenioService {
         const recibePagosParciales = datos.recibe_pagos_parciales;
         const monto = datos.monto;
         const bancoDueno = datos.banco_dueno;
-        const convenioAval = datos.convenio_aval || convenio;
-        const descripcionAval = datos.descripcion_aval || descripcionRecaudo;
 
         const { rows } = await pool.query(
           `UPDATE aval 
-       SET estado = COALESCE($1, estado), 
-           nura = COALESCE($2, nura), 
-           nit = COALESCE($3, nit), 
-           empresa = COALESCE($4, empresa), 
-           convenio = COALESCE($5, convenio), 
-           sigla = COALESCE($6, sigla), 
-           categoria = COALESCE($7, categoria), 
-           descripcion_recaudo = COALESCE($8, descripcion_recaudo), 
-           dato_captura = COALESCE($9, dato_captura), 
-           modalidad = COALESCE($10, modalidad), 
-           longitud_referencia = COALESCE($11, longitud_referencia), 
-           ciudad = COALESCE($12, ciudad), 
-           departamento = COALESCE($13, departamento), 
-           modalidad_captura = COALESCE($14, modalidad_captura), 
-           valida_fecha_vencimiento = COALESCE($15, valida_fecha_vencimiento), 
-           recibe_pagos_parciales = COALESCE($16, recibe_pagos_parciales), 
-           monto = COALESCE($17, monto), 
-           banco_dueno = COALESCE($18, banco_dueno), 
-           convenio_aval = COALESCE($19, convenio_aval), 
-           descripcion_aval = COALESCE($20, descripcion_aval)
-       WHERE nit = $21
-       RETURNING *`,
+           SET estado = COALESCE($1, estado), 
+               nura = COALESCE($2, nura), 
+               nit = COALESCE($3, nit), 
+               empresa = COALESCE($4, empresa), 
+               convenio = COALESCE($5, convenio), 
+               sigla = COALESCE($6, sigla), 
+               categoria = COALESCE($7, categoria), 
+               descripcion_recaudo = COALESCE($8, descripcion_recaudo), 
+               dato_captura = COALESCE($9, dato_captura), 
+               modalidad = COALESCE($10, modalidad), 
+               longitud_referencia = COALESCE($11, longitud_referencia), 
+               ciudad = COALESCE($12, ciudad), 
+               departamento = COALESCE($13, departamento), 
+               modalidad_captura = COALESCE($14, modalidad_captura), 
+               valida_fecha_vencimiento = COALESCE($15, valida_fecha_vencimiento), 
+               recibe_pagos_parciales = COALESCE($16, recibe_pagos_parciales), 
+               monto = COALESCE($17, monto), 
+               banco_dueno = COALESCE($18, banco_dueno)
+           WHERE nit = $1
+           RETURNING *`,
           [
             estado,
             nura,
@@ -480,9 +472,6 @@ export class ConvenioService {
             recibePagosParciales,
             monto,
             bancoDueno,
-            convenioAval,
-            descripcionAval,
-            id,
           ],
         );
         return rows[0];

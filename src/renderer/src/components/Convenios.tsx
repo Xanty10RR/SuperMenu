@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { FaPlus, FaSearch, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import {
+  FaPlus,
+  FaSearch,
+  FaEdit,
+  FaTrash,
+  FaChevronLeft,
+  FaChevronRight,
+  FaDownload
+} from 'react-icons/fa'
 import '../styles/Convenios.css'
 
 interface Convenio {
@@ -531,7 +539,7 @@ export const Convenios: React.FC = () => {
             exportarBancoExcel(bancoSeleccionado.toUpperCase(), datosConvenios[bancoSeleccionado])
           }
         >
-          📥 Exportar convenios {bancoSeleccionado.toUpperCase()} a Excel
+          <FaDownload /> Exportar convenios {bancoSeleccionado.toUpperCase()} a Excel
         </button>
       </div>
 

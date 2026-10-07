@@ -10,8 +10,6 @@ interface Convenio {
   empresa?: string
   nit?: number | string
   nit_convenio?: number | string
-  convenio_aval?: string
-  descripcion_aval?: string
   descripcion?: string
   que_se_recauda?: string
   categoria?: string
@@ -86,10 +84,8 @@ export const Convenios: React.FC = () => {
     nura: string
     empresa: string
     convenio: string
-    convenio_aval: string
     sigla: string
     descripcion_recaudo: string
-    descripcion_aval: string
     dato_captura: string
     modalidad: string
     departamento: string
@@ -124,10 +120,8 @@ export const Convenios: React.FC = () => {
     nura: '',
     empresa: '',
     convenio: '',
-    convenio_aval: '',
     sigla: '',
     descripcion_recaudo: '',
-    descripcion_aval: '',
     dato_captura: '',
     modalidad: '',
     departamento: '',
@@ -163,10 +157,8 @@ export const Convenios: React.FC = () => {
       nura: '',
       empresa: '',
       convenio: '',
-      convenio_aval: '',
       sigla: '',
       descripcion_recaudo: '',
-      descripcion_aval: '',
       dato_captura: '',
       modalidad: '',
       departamento: '',
@@ -278,11 +270,9 @@ export const Convenios: React.FC = () => {
       estado: String(item.estado || 'ACTIVO'),
       nura: String(item.nura || ''),
       empresa: String(item.empresa || ''),
-      convenio: String(item.convenio || item.nombre_convenio || ''),
-      convenio_aval: String(item.convenio_aval || item.convenio || item.nombre_convenio || ''),
       sigla: String(item.sigla || ''),
+      convenio: String(item.convenio || ''),
       descripcion_recaudo: String(item.descripcion_recaudo || ''),
-      descripcion_aval: String(item.descripcion_aval || item.descripcion_recaudo || ''),
       dato_captura: String(item.dato_captura || ''),
       modalidad: String(item.modalidad || ''),
       departamento: String(item.departamento || ''),
@@ -299,10 +289,7 @@ export const Convenios: React.FC = () => {
   const handleGuardarEdicion = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
     if (!convenioEnEdicion) return
-    const idConvenio =
-      bancoSeleccionado === 'aval'
-        ? (convenioEnEdicion.nit ?? convenioEnEdicion.codigo_convenio ?? convenioEnEdicion.id)
-        : (convenioEnEdicion.id ?? convenioEnEdicion.codigo_convenio)
+    const idConvenio = convenioEnEdicion.id || convenioEnEdicion.codigo_convenio
 
     try {
       const response = await fetch(`http://localhost:3003/api/convenios/${idConvenio}`, {
@@ -325,10 +312,7 @@ export const Convenios: React.FC = () => {
 
   // Eliminar convenio
   const handleEliminar = async (item: Convenio): Promise<void> => {
-    const idConvenio =
-      bancoSeleccionado === 'aval'
-        ? (item.nit ?? item.codigo_convenio ?? item.id)
-        : (item.id ?? item.codigo_convenio)
+    const idConvenio = item.id || item.codigo_convenio
     if (
       !confirm(
         `¿Estás segura de eliminar el convenio ${item.nombre_convenio || item.convenio || ''}?`
@@ -901,10 +885,11 @@ export const Convenios: React.FC = () => {
                     <select
                       className="convenios-form__field"
                       name="estado"
-                      value={formulario.estado || 'ACTIVO'}
+                      value={formulario.estado}
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
                     >
+                      <option value="default">Seleccione el estado...</option>
                       <option value="ACTIVO">ACTIVO</option>
                       <option value="INACTIVO">INACTIVO</option>
                     </select>
@@ -920,7 +905,7 @@ export const Convenios: React.FC = () => {
                       name="nura"
                       value={formulario.nura || ''}
                       onChange={handleInputChange}
-                      placeholder="Ej: 2, 5, 6"
+                      placeholder="Número NURA del convenio"
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -935,7 +920,7 @@ export const Convenios: React.FC = () => {
                       name="nit"
                       value={formulario.nit || ''}
                       onChange={handleInputChange}
-                      placeholder="NIT de la empresa"
+                      placeholder="NIT del convenio"
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -966,21 +951,6 @@ export const Convenios: React.FC = () => {
                       value={formulario.convenio || ''}
                       onChange={handleInputChange}
                       placeholder="Nombre del convenio"
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Convenio AVAL
-                    </label>
-                    <input
-                      className="convenios-form__field"
-                      type="text"
-                      name="convenio_aval"
-                      value={formulario.convenio_aval || ''}
-                      onChange={handleInputChange}
-                      placeholder="Nombre alterno del convenio AVAL"
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -1029,21 +999,6 @@ export const Convenios: React.FC = () => {
                       value={formulario.descripcion_recaudo || ''}
                       onChange={handleInputChange}
                       placeholder="Ej: SIN DESCRIPCION"
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Descripción AVAL
-                    </label>
-                    <input
-                      className="convenios-form__field"
-                      type="text"
-                      name="descripcion_aval"
-                      value={formulario.descripcion_aval || ''}
-                      onChange={handleInputChange}
-                      placeholder="Descripción alterna del convenio AVAL"
                       style={{ width: '100%' }}
                     />
                   </div>

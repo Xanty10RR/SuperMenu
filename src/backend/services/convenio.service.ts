@@ -451,7 +451,7 @@ export class ConvenioService {
                recibe_pagos_parciales = COALESCE($16, recibe_pagos_parciales), 
                monto = COALESCE($17, monto), 
                banco_dueno = COALESCE($18, banco_dueno)
-           WHERE nit = $1
+           WHERE nit = $3
            RETURNING *`,
           [
             estado,

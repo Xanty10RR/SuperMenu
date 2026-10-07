@@ -127,8 +127,8 @@ export const Convenios: React.FC = () => {
     departamento: '',
     ciudad: '',
     modalidad_captura: '',
-    valida_fecha_vencimiento: 'NO',
-    recibe_pagos_parciales: 'NO',
+    valida_fecha_vencimiento: '',
+    recibe_pagos_parciales: '',
     monto: '',
     banco_dueno: ''
   })
@@ -164,8 +164,8 @@ export const Convenios: React.FC = () => {
       departamento: '',
       ciudad: '',
       modalidad_captura: '',
-      valida_fecha_vencimiento: 'NO',
-      recibe_pagos_parciales: 'NO',
+      valida_fecha_vencimiento: '',
+      recibe_pagos_parciales: '',
       monto: '',
       banco_dueno: ''
     })
@@ -267,7 +267,7 @@ export const Convenios: React.FC = () => {
       forma_consulta_datos: String(item.forma_consulta || ''),
 
       // Campos específicos para AVAL
-      estado: String(item.estado),
+      estado: String(item.estado || 'ACTIVO'),
       nura: String(item.nura || ''),
       empresa: String(item.empresa || ''),
       sigla: String(item.sigla || ''),
@@ -278,8 +278,8 @@ export const Convenios: React.FC = () => {
       departamento: String(item.departamento || ''),
       ciudad: String(item.ciudad || ''),
       modalidad_captura: String(item.modalidad_captura || ''),
-      valida_fecha_vencimiento: String(item.valida_fecha_vencimiento || 'NO'),
-      recibe_pagos_parciales: String(item.recibe_pagos_parciales || 'NO'),
+      valida_fecha_vencimiento: String(item.valida_fecha_vencimiento),
+      recibe_pagos_parciales: String(item.recibe_pagos_parciales),
       monto: String(item.monto || ''),
       banco_dueno: String(item.banco_dueno || '')
     })
@@ -379,6 +379,42 @@ export const Convenios: React.FC = () => {
         .filter((lon) => !isNaN(lon) && lon > 0)
     )
   ).sort((a, b) => a - b) // Esto los ordena de menor a mayor
+
+  // Categorías únicas solo para la tabla Aval desde la bd
+  const categoriasAval = Array.from(
+    new Set(
+      datosConvenios.aval
+        .map((convenio) => convenio.categoria?.trim())
+        .filter((cat): cat is string => Boolean(cat))
+    )
+  )
+
+  // Dato captura únicos para la tabla Aval
+  const datosCapturaAval = Array.from(
+    new Set(
+      datosConvenios.aval
+        .map((convenio) => convenio.dato_captura?.trim())
+        .filter((val): val is string => Boolean(val))
+    )
+  )
+
+  // Longitudes de referencia únicas para la tabla Aval
+  const longitudesReferenciaAval = Array.from(
+    new Set(
+      datosConvenios.aval
+        .map((convenio) => convenio.longitud_referencia?.toString().trim())
+        .filter((val): val is string => Boolean(val))
+    )
+  )
+
+  // Bancos dueños para la tabla Aval desde la bd
+  const bancosDuenoAval = Array.from(
+    new Set(
+      datosConvenios.aval
+        .map((convenio) => convenio.banco_dueno?.trim())
+        .filter((val): val is string => Boolean(val))
+    )
+  )
 
   return (
     <div className="convenios-container">
@@ -555,6 +591,7 @@ export const Convenios: React.FC = () => {
                       className="convenios-form__field"
                       type="text"
                       name="nit"
+                      placeholder="Ej: 900123456-7"
                       value={formulario.nit || ''}
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
@@ -569,6 +606,7 @@ export const Convenios: React.FC = () => {
                       className="convenios-form__field"
                       type="text"
                       name="que_se_recauda"
+                      placeholder="Descripción del recaudo..."
                       value={formulario.que_se_recauda || ''}
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
@@ -619,6 +657,7 @@ export const Convenios: React.FC = () => {
                       type="text"
                       name="ubicacion"
                       value={formulario.ubicacion || ''}
+                      placeholder="Ej: Antioquia - Medellín"
                       onChange={handleInputChange}
                       list="lista-ubicaciones"
                       style={{ width: '100%' }}
@@ -734,6 +773,7 @@ export const Convenios: React.FC = () => {
                       className="convenios-form__field"
                       type="text"
                       name="nit"
+                      placeholder="Ej: 900123456-7"
                       value={formulario.nit || ''}
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
@@ -905,7 +945,7 @@ export const Convenios: React.FC = () => {
                       name="nura"
                       value={formulario.nura || ''}
                       onChange={handleInputChange}
-                      placeholder="Número NURA del convenio"
+                      placeholder="(Número Único de Recaudos)"
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -920,14 +960,14 @@ export const Convenios: React.FC = () => {
                       name="nit"
                       value={formulario.nit || ''}
                       onChange={handleInputChange}
-                      placeholder="NIT del convenio"
+                      placeholder="Ej: 900123456-7"
                       style={{ width: '100%' }}
                     />
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Empresa
+                      Nombre de la empresa
                     </label>
                     <input
                       className="convenios-form__field"
@@ -935,14 +975,13 @@ export const Convenios: React.FC = () => {
                       name="empresa"
                       value={formulario.empresa || ''}
                       onChange={handleInputChange}
-                      placeholder="Nombre de la empresa"
                       style={{ width: '100%' }}
                     />
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Convenio
+                      Nombre del convenio
                     </label>
                     <input
                       className="convenios-form__field"
@@ -950,7 +989,6 @@ export const Convenios: React.FC = () => {
                       name="convenio"
                       value={formulario.convenio || ''}
                       onChange={handleInputChange}
-                      placeholder="Nombre del convenio"
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -965,7 +1003,7 @@ export const Convenios: React.FC = () => {
                       name="sigla"
                       value={formulario.sigla || ''}
                       onChange={handleInputChange}
-                      placeholder="Ej: KIMELCOLSA"
+                      placeholder="Escriba solo las siglas. Ej: AVV (Banco AV Villas)"
                       style={{ width: '100%' }}
                     />
                   </div>
@@ -974,23 +1012,36 @@ export const Convenios: React.FC = () => {
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Categoría
                     </label>
-                    <select
+                    <input
                       className="convenios-form__field"
+                      type="text"
                       name="categoria"
                       value={formulario.categoria || ''}
                       onChange={handleInputChange}
+                      placeholder="Escriba o seleccione la categoría..."
+                      list="lista-categoria-aval"
                       style={{ width: '100%' }}
+                    />
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
                     >
-                      <option value="">Seleccione categoría...</option>
-                      <option value="Servicios publicos">Servicios publicos</option>
-                      <option value="Otros servicios">Otros servicios</option>
-                      <option value="Instituciones educativas">Instituciones educativas</option>
-                    </select>
+                      Puede seleccionar una categoría existente o escribir una nueva
+                    </small>
+                    <datalist id="lista-categoria-aval">
+                      {categoriasAval.map((cat, idx) => (
+                        <option key={idx} value={cat} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Descripción Recaudo
+                      Descripción recaudo
                     </label>
                     <input
                       className="convenios-form__field"
@@ -998,14 +1049,14 @@ export const Convenios: React.FC = () => {
                       name="descripcion_recaudo"
                       value={formulario.descripcion_recaudo || ''}
                       onChange={handleInputChange}
-                      placeholder="Ej: SIN DESCRIPCION"
+                      placeholder="¿Que se recauda?"
                       style={{ width: '100%' }}
                     />
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Dato Captura
+                      Dato de captura
                     </label>
                     <input
                       className="convenios-form__field"
@@ -1013,9 +1064,25 @@ export const Convenios: React.FC = () => {
                       name="dato_captura"
                       value={formulario.dato_captura || ''}
                       onChange={handleInputChange}
-                      placeholder="Ej: CEDULA, Referencia De Pago, NRO DOCUMENTO"
+                      placeholder="Escriba o seleccione el dato de captura..."
+                      list="lista-dato-captura-aval"
                       style={{ width: '100%' }}
                     />
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Puede seleccionar un dato de captura existente o escribir uno nuevo
+                    </small>
+                    <datalist id="lista-dato-captura-aval">
+                      {datosCapturaAval.map((item, idx) => (
+                        <option key={idx} value={item} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
@@ -1029,9 +1096,11 @@ export const Convenios: React.FC = () => {
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
                     >
-                      <option value="">Seleccione modalidad...</option>
+                      <option value="">Seleccione una modalidad...</option>
                       <option value="Facturador">Facturador</option>
                       <option value="No Facturador">No Facturador</option>
+                      <option value="Web Service">Web Service</option>
+                      <option value="Web Service Facturador">Web Service Facturador</option>
                     </select>
                   </div>
 
@@ -1045,9 +1114,25 @@ export const Convenios: React.FC = () => {
                       name="longitud_referencia"
                       value={formulario.longitud_referencia || ''}
                       onChange={handleInputChange}
-                      placeholder="Ej: 0, 12"
+                      placeholder="Escriba o seleccione la longitud de referencia..."
+                      list="lista-longitud-referencia-aval"
                       style={{ width: '100%' }}
                     />
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Puede seleccionar una longitud de referencia existente o escribir una nueva
+                    </small>
+                    <datalist id="lista-longitud-referencia-aval">
+                      {longitudesReferenciaAval.map((item, idx) => (
+                        <option key={idx} value={item} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
@@ -1091,7 +1176,7 @@ export const Convenios: React.FC = () => {
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
                     >
-                      <option value="">Seleccione modalidad captura...</option>
+                      <option value="">Seleccione una modalidad de captura...</option>
                       <option value="Manual">Manual</option>
                       <option value="Codigo de barras">Codigo de barras</option>
                     </select>
@@ -1104,10 +1189,11 @@ export const Convenios: React.FC = () => {
                     <select
                       className="convenios-form__field"
                       name="valida_fecha_vencimiento"
-                      value={formulario.valida_fecha_vencimiento || 'NO'}
+                      value={formulario.valida_fecha_vencimiento}
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
                     >
+                      <option value="">Seleccione si valida fecha de vencimiento...</option>
                       <option value="SI">SI</option>
                       <option value="NO">NO</option>
                     </select>
@@ -1120,10 +1206,11 @@ export const Convenios: React.FC = () => {
                     <select
                       className="convenios-form__field"
                       name="recibe_pagos_parciales"
-                      value={formulario.recibe_pagos_parciales || 'NO'}
+                      value={formulario.recibe_pagos_parciales}
                       onChange={handleInputChange}
                       style={{ width: '100%' }}
                     >
+                      <option value="">Seleccione si recibe pagos parciales...</option>
                       <option value="SI">SI</option>
                       <option value="NO">NO</option>
                     </select>
@@ -1133,32 +1220,50 @@ export const Convenios: React.FC = () => {
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Monto
                     </label>
-                    <input
+                    <select
                       className="convenios-form__field"
-                      type="text"
                       name="monto"
                       value={formulario.monto || ''}
                       onChange={handleInputChange}
-                      placeholder="Ej: No Valida, Exactamente Igual"
                       style={{ width: '100%' }}
-                    />
+                    >
+                      <option value="">Seleccione una opción...</option>
+                      <option value="Exactamente Igual">Exactamente Igual</option>
+                      <option value="Mayor o Igual">Mayor o Igual</option>
+                      <option value="Menor o Igual">Menor o Igual</option>
+                      <option value="No Valida">No Valida</option>
+                    </select>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                       Banco Dueño
                     </label>
-                    <select
+                    <input
                       className="convenios-form__field"
+                      type="text"
                       name="banco_dueno"
                       value={formulario.banco_dueno || ''}
                       onChange={handleInputChange}
+                      placeholder="Seleccione o escriba el banco dueño..."
+                      list="lista-banco-dueno-aval"
                       style={{ width: '100%' }}
+                    />
+                    <small
+                      style={{
+                        display: 'block',
+                        marginTop: '4px',
+                        color: '#666',
+                        fontSize: '12px'
+                      }}
                     >
-                      <option value="">Seleccione banco dueño...</option>
-                      <option value="Banco AV Villas">Banco AV Villas</option>
-                      <option value="Banco de Bogotá">Banco de Bogotá</option>
-                    </select>
+                      Puede seleccionar una opción o escribir una nueva
+                    </small>
+                    <datalist id="lista-banco-dueno-aval">
+                      {bancosDuenoAval.map((banco, idx) => (
+                        <option key={idx} value={banco} />
+                      ))}
+                    </datalist>
                   </div>
                 </>
               )}

@@ -528,36 +528,38 @@ export const Convenios: React.FC = () => {
 
       {/* Pestañas de Bancos */}
       <div className="convenios-tabs">
-        {(['bbva', 'aval', 'agrario'] as const).map((banco) => (
+        <div className="convenios-tabs__controls">
+          {(['bbva', 'aval', 'agrario'] as const).map((banco) => (
+            <button
+              key={banco}
+              className={`convenios-button convenios-tab${bancoSeleccionado === banco ? ' convenios-tab--active' : ''}`}
+              onClick={() => handleCambiarBanco(banco)}
+            >
+              {banco} ({datosConvenios[banco]?.length || 0})
+            </button>
+          ))}
           <button
-            key={banco}
-            className={`convenios-button convenios-tab${bancoSeleccionado === banco ? ' convenios-tab--active' : ''}`}
-            onClick={() => handleCambiarBanco(banco)}
+            type="button"
+            className="convenios-button convenios-button--export"
+            onClick={() =>
+              exportarBancoExcel(bancoSeleccionado.toUpperCase(), datosConvenios[bancoSeleccionado])
+            }
           >
-            {banco} ({datosConvenios[banco]?.length || 0})
+            <FaDownload /> Exportar convenios {bancoSeleccionado.toUpperCase()} a Excel
           </button>
-        ))}
-        <button
-          type="button"
-          className="convenios-button convenios-button--export"
-          onClick={() =>
-            exportarBancoExcel(bancoSeleccionado.toUpperCase(), datosConvenios[bancoSeleccionado])
-          }
-        >
-          <FaDownload /> Exportar convenios {bancoSeleccionado.toUpperCase()} a Excel
-        </button>
-      </div>
+        </div>
 
-      {/* Buscador */}
-      <div className="convenios-search">
-        <FaSearch className="convenios-search__icon" />
-        <input
-          className="convenios-search__input"
-          type="text"
-          placeholder="Buscar por nombre, empresa, NIT o sigla..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
+        {/* Buscador */}
+        <div className="searchContainer">
+          <FaSearch className="searchIcon" />
+          <input
+            className="searchInput"
+            type="text"
+            placeholder="Buscar por nombre, empresa, NIT o sigla..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </div>
       </div>
 
       {cargando && <div className="convenios-loading">Cargando registros... ⏳</div>}

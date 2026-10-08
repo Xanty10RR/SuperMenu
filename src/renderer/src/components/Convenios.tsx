@@ -181,7 +181,7 @@ export const Convenios: React.FC = () => {
 
   // Paginación
   const [paginaActual, setPaginaActual] = useState(1)
-  const elementosPorPagina = 15
+  const elementosPorPagina = 20
 
   // Cargar datos desde el backend
   const cargarDatos = useCallback(async (): Promise<void> => {
@@ -424,6 +424,11 @@ export const Convenios: React.FC = () => {
     )
   )
 
+  // La función comodín para leer la descripción
+  const obtenerDescripcion = (conv: Convenio): string => {
+    return conv.que_se_recauda || conv.descripcion || conv.descripcion_recaudo || 'Sin descripción'
+  }
+
   // Función para exportar a Excel (CSV) los convenios de un banco específico
   const exportarBancoExcel = (nombreBanco: string, listaConvenios: Convenio[]): void => {
     if (!listaConvenios || listaConvenios.length === 0) {
@@ -566,6 +571,9 @@ export const Convenios: React.FC = () => {
               <th>Nombre / Convenio / Empresa</th>
               <th>NIT / Referencia</th>
               <th>Categoría / Modalidad</th>
+              <th style={{ padding: '10px 12px', fontSize: '13.5px' }}>
+                Descripción / Qué se recauda
+              </th>
               <th className="convenios-table__actions-heading">Acciones</th>
             </tr>
           </thead>
@@ -583,6 +591,9 @@ export const Convenios: React.FC = () => {
                   <td>{item.nombre_convenio || item.convenio || item.empresa || 'N/A'}</td>
                   <td>{item.nit || item.referencia || 'N/A'}</td>
                   <td>{item.categoria || item.modalidad || 'N/A'}</td>
+                  <td style={{ padding: '8px 12px', fontSize: '13px', color: '#555' }}>
+                    {obtenerDescripcion(item)}
+                  </td>
                   <td className="convenios-table__actions">
                     <button
                       className="convenios-button convenios-button--edit"

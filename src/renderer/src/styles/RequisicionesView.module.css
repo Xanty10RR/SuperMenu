@@ -1,6 +1,5 @@
 /* RequisicionesView.module.css */
 .container {
-  min-height: 100vh;
   background: linear-gradient(135deg, #f0f8ff 0%, #e6f0ff 100%);
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

@@ -1,8 +1,6 @@
 /* Base styles */
 .approval-list-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 1200px;
-  margin: 20px auto;
   padding: 20px;
   background-color: #f5f9fc;
   border-radius: 8px;

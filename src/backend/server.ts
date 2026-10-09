@@ -19,6 +19,22 @@ app.use(express.json());
 
 export default pool;
 
+// Asegúrate de que esta función esté arriba en server.ts:
+const tienePermisosEscritura = (req: express.Request): boolean => {
+  const rolValor =
+    req.headers["rol"] ??
+    req.headers["x-user-rol"] ??
+    req.body?.rol ??
+    req.query?.rol ??
+    "";
+
+  const rol = Array.isArray(rolValor)
+    ? String(rolValor[0] ?? "").toLowerCase()
+    : String(rolValor ?? "").toLowerCase();
+
+  return ["admin", "comercial", "jefecomercial"].includes(rol);
+};
+
 // Función para normalizar el estado con la primera letra en mayúscula
 const normalizarEstado = (
   rows: Array<Record<string, unknown>>,
@@ -28,7 +44,7 @@ const normalizarEstado = (
       typeof row.estado === "string" && row.estado.trim()
         ? row.estado.trim().toLowerCase()
         : "pendiente";
-    // Capitaliza la primera letra (ej. "pendiente" -> "Pendiente")
+    // Capitaliza la primera letra ("pendiente" -> "Pendiente")
     const estadoFormateado =
       estadoActual.charAt(0).toUpperCase() + estadoActual.slice(1);
     return {
@@ -538,19 +554,6 @@ app.get("/api/aprobaciones/rechazadas", async (_req, res) => {
 // Endpoints de convenios bancarios con CRUD completo y seguridad por roles
 // ==========================================
 
-// Función auxiliar para verificar si el usuario tiene permisos de escritura
-const tienePermisosEscritura = (req: express.Request): boolean => {
-  const rolValor: unknown =
-    req.headers["rol"] ||
-    req.headers["x-user-rol"] ||
-    req.body?.rol ||
-    req.query?.rol ||
-    "";
-  const rol = typeof rolValor === "string" ? rolValor.toLowerCase() : "";
-
-  return ["admin", "comercial", "jefecomercial"].includes(rol);
-};
-
 // Ruta para buscar o listar convenios de los bancos BBVA, Agrario y Aval con filtro de texto (lectura abierta)
 app.get("/api/convenios/buscar", async (req, res) => {
   try {
@@ -595,7 +598,7 @@ app.get("/api/convenios/:banco/:id", async (req, res) => {
 
 // Ruta para registrar un nuevo convenio (protegida)
 app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
-  // Validación de seguridad por roles
+  // Blindaje de seguridad en el servidor
   if (!tienePermisosEscritura(req)) {
     return res.status(403).json({
       error: "Acceso denegado: No tienes permisos para crear convenios.",
@@ -604,7 +607,6 @@ app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
 
   try {
     const { banco, ...datos } = req.body;
-
     if (!banco) {
       return res.status(400).json({ error: "El campo 'banco' es obligatorio" });
     }
@@ -613,7 +615,6 @@ app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
       banco.toUpperCase(),
       datos,
     );
-
     res.status(201).json({
       success: true,
       message: "Convenio creado correctamente",

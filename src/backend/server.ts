@@ -600,8 +600,40 @@ app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
       message: "Convenio creado correctamente",
       data: nuevoConvenio,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error al crear convenio:", error);
+    const err = error as Partial<{
+      code?: string;
+      message?: string;
+      detail?: string;
+    }>;
+
+    // Validamos si es un error de llave duplicada en la base de datos (PostgreSQL código 23505)
+    const codigoError = err.code;
+    const mensajeError = err.message || "";
+    const detalleError = err.detail || "";
+
+    if (
+      codigoError === "23505" ||
+      mensajeError.includes("already exists") ||
+      detalleError.includes("already exists")
+    ) {
+      let campoAfectado = "código de convenio o NIT";
+      if (
+        mensajeError.includes("codigo_convenio") ||
+        detalleError.includes("codigo_convenio")
+      ) {
+        campoAfectado = "código de convenio";
+      } else if (mensajeError.includes("nit") || detalleError.includes("nit")) {
+        campoAfectado = "NIT";
+      }
+
+      return res.status(400).json({
+        error: `El ${campoAfectado} que ingresaste ya existe en la base de datos. Por favor, ingresa uno diferente.`,
+      });
+    }
+
+    // Si es cualquier otro error, responde con el 500 normal
     res
       .status(500)
       .json({ error: "Error al guardar el convenio en la base de datos" });

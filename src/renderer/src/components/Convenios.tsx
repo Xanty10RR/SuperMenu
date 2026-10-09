@@ -656,13 +656,40 @@ export const Convenios: React.FC = () => {
           >
             <FaChevronLeft /> Anterior
           </button>
-          <span>
-            Página {paginaActual} de {totalPaginas}
-          </span>
+
+          {/* Input interactivo para saltar de página */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '0 8px' }}>
+            <span style={{ fontSize: '13px', fontWeight: '500' }}>Página</span>
+            <input
+              type="number"
+              min={1}
+              max={totalPaginas || 1}
+              value={paginaActual}
+              onChange={(e) => {
+                const valor = parseInt(e.target.value, 10)
+                if (!isNaN(valor) && valor >= 1 && valor <= totalPaginas) {
+                  setPaginaActual(valor)
+                }
+              }}
+              style={{
+                width: '55px',
+                textAlign: 'center',
+                padding: '4px 6px',
+                borderRadius: '6px',
+                border: '1px solid #cbd5e1',
+                fontSize: '13px',
+                fontWeight: '600',
+                outline: 'none',
+                backgroundColor: '#fff'
+              }}
+            />
+            <span style={{ fontSize: '13px', fontWeight: '500' }}>de {totalPaginas || 1}</span>
+          </div>
+
           <button
-            className={`convenios-button convenios-pagination__button${paginaActual === totalPaginas ? ' convenios-pagination__button--disabled' : ''}`}
+            className={`convenios-button convenios-pagination__button${paginaActual === totalPaginas || totalPaginas === 0 ? ' convenios-pagination__button--disabled' : ''}`}
             onClick={() => setPaginaActual((p) => Math.min(p + 1, totalPaginas))}
-            disabled={paginaActual === totalPaginas}
+            disabled={paginaActual === totalPaginas || totalPaginas === 0}
           >
             Siguiente <FaChevronRight />
           </button>

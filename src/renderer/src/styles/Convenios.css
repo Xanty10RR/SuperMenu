@@ -386,9 +386,17 @@
 }
 
 .convenios-button--cancel {
+  background: #81888F;
+}
+
+.convenios-button--cancel:hover {
   background: #6c757d;
 }
 
 .convenios-button--save {
+  background: #46B35F;
+}
+
+.convenios-button--save:hover {
   background: #28a745;
 }

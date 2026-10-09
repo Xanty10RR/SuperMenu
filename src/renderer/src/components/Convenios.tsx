@@ -560,9 +560,8 @@ export const Convenios: React.FC = () => {
             onChange={(e) => setBusqueda(e.target.value)}
           />
         </div>
+        {cargando && <div className="convenios-loading">Cargando registros... ⏳</div>}
       </div>
-
-      {cargando && <div className="convenios-loading">Cargando registros... ⏳</div>}
 
       {/* Tabla */}
       <div className="convenios-table-container">
@@ -571,19 +570,32 @@ export const Convenios: React.FC = () => {
             <tr className="convenios-table__header">
               <th>Nombre Convenio</th>
               <th>NIT</th>
-              <th>Categoría / Modalidad</th>
-              <th>Referencia / Dato Captura</th>
+              <th>
+                {bancoSeleccionado.toLowerCase() === 'agrario'
+                  ? 'Longitud Referencia'
+                  : 'Categoría'}
+              </th>
+              <th>{bancoSeleccionado.toLowerCase() === 'aval' ? 'Dato Captura' : 'Referencia'}</th>
 
-              {/* Cabecera dinámica, si es Aval muestra Banco Dueño y Empresa, si no, la Descripción */}
+              {/* Cabeceras específicas para cada banco */}
               {bancoSeleccionado.toLowerCase() === 'aval' ? (
                 <>
-                  <th>Banco Dueño</th>
                   <th>Empresa</th>
+                  <th>Banco Dueño</th>
+                </>
+              ) : bancoSeleccionado.toLowerCase() === 'agrario' ? (
+                <>
+                  <th>Código de barras</th>
+                  <th>Valida Fecha</th>
+                  <th>Manual</th>
                 </>
               ) : (
-                <th style={{ padding: '10px 12px', fontSize: '13.5px' }}>
-                  Descripción del recaudo
-                </th>
+                <>
+                  <th style={{ padding: '10px 12px', fontSize: '13.5px' }}>
+                    Descripción del recaudo
+                  </th>
+                  {bancoSeleccionado.toLowerCase() === 'bbva' && <th>Tipo Captura</th>}
+                </>
               )}
 
               <th className="convenios-table__actions-heading">Acciones</th>
@@ -593,7 +605,7 @@ export const Convenios: React.FC = () => {
             {listaActual.length === 0 ? (
               <tr>
                 <td
-                  colSpan={bancoSeleccionado.toLowerCase() === 'aval' ? 7 : 6}
+                  colSpan={bancoSeleccionado.toLowerCase() === 'agrario' ? 8 : 7}
                   className="convenios-table__empty"
                 >
                   No hay convenios registrados.
@@ -604,19 +616,38 @@ export const Convenios: React.FC = () => {
                 <tr key={index} className="convenios-table__row">
                   <td>{item.nombre_convenio || item.convenio || 'N/A'}</td>
                   <td>{item.nit || 'N/A'}</td>
-                  <td>{item.categoria || item.modalidad || 'N/A'}</td>
-                  <td>{item.referencia || item.referencias || item.dato_captura || 'N/A'}</td>
+                  <td>
+                    {bancoSeleccionado.toLowerCase() === 'agrario'
+                      ? item.longitud_referencia || 'N/A'
+                      : item.categoria || item.modalidad || 'N/A'}
+                  </td>
+                  <td>
+                    {bancoSeleccionado.toLowerCase() === 'aval'
+                      ? item.dato_captura || 'N/A'
+                      : item.referencia || item.referencias || 'N/A'}
+                  </td>
 
-                  {/* Celdas dinámicas según el banco */}
+                  {/* Filas de tabla dinámicas según el banco seleccionado */}
                   {bancoSeleccionado.toLowerCase() === 'aval' ? (
                     <>
                       <td>{item.empresa || 'N/A'}</td>
                       <td>{item.banco_dueno || 'N/A'}</td>
                     </>
+                  ) : bancoSeleccionado.toLowerCase() === 'agrario' ? (
+                    <>
+                      <td>{item.codigo_barras || 'N/A'}</td>
+                      <td>{item.valida_fecha || 'N/A'}</td>
+                      <td>{item.manual || 'N/A'}</td>
+                    </>
                   ) : (
-                    <td style={{ padding: '8px 12px', fontSize: '13px', color: '#555' }}>
-                      {obtenerDescripcion(item)}
-                    </td>
+                    <>
+                      <td style={{ padding: '8px 12px', fontSize: '13px', color: '#555' }}>
+                        {obtenerDescripcion(item)}
+                      </td>
+                      {bancoSeleccionado.toLowerCase() === 'bbva' && (
+                        <td>{item.tipo_captura || 'N/A'}</td>
+                      )}
+                    </>
                   )}
 
                   <td className="convenios-table__actions">

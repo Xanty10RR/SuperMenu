@@ -146,7 +146,8 @@
 }
 
 .convenios-loading {
-  margin-bottom: 10px;
+  padding-bottom: 10px;
+  padding-top: 20px;
   color: #007bff;
 }
 

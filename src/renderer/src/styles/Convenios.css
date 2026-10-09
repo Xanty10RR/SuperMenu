@@ -337,7 +337,7 @@
   margin-top: 15px;
 }
 
-.convenios-form__field {
+.convenios-form .convenios-form__field {
   box-sizing: border-box;
   width: 100%;
   padding: 8px;
@@ -352,7 +352,7 @@
 }
 
 .convenios-form__group {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .convenios-form__label {

@@ -237,6 +237,10 @@
 
 .convenios-button--edit {
   padding: 6px 10px;
+  background: #FFD24D;
+}
+
+.convenios-button--edit:hover {
   background: #ffc107;
 }
 
@@ -244,6 +248,10 @@
   padding: 6px 10px;
   background: #dc3545;
   color: #fff;
+}
+
+.convenios-button--delete:hover {
+  background: #c82333;
 }
 
 .convenios-pagination {

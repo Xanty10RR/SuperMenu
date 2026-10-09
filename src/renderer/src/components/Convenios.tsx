@@ -795,6 +795,10 @@ export const Convenios: React.FC = () => {
               className="convenios-form"
               onSubmit={modalCrearAbierto ? handleGuardarCreacion : handleGuardarEdicion}
             >
+              <p className="convenios-form__notice" role="note">
+                <b>Nota: </b>Complete todos los campos antes de guardar
+              </p>
+
               {/* Campos específicos para BBVA */}
               {bancoSeleccionado.toUpperCase() === 'BBVA' && (
                 <>

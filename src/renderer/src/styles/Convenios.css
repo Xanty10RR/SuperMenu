@@ -330,11 +330,25 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.convenios-modal h3 {
+  text-align: center;
+}
+
 .convenios-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 15px;
+  margin-top: 25px;
+}
+
+.convenios-form__notice {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid #1e40af;
+  border-radius: 4px;
+  background-color: #eff6ff;
+  color: #1e3a8a;
+  font-size: 13px;
 }
 
 .convenios-form .convenios-form__field {
@@ -349,6 +363,12 @@
 .convenios-form select,
 .convenios-form textarea {
   width: 100%;
+}
+
+.convenios-form__field:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
 }
 
 .convenios-form__group {

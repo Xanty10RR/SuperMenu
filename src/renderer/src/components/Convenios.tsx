@@ -585,6 +585,7 @@ export const Convenios: React.FC = () => {
                 </>
               ) : bancoSeleccionado.toLowerCase() === 'agrario' ? (
                 <>
+                  <th>Tipo Referencia</th>
                   <th>Código de barras</th>
                   <th>Valida Fecha</th>
                   <th>Manual</th>
@@ -605,7 +606,7 @@ export const Convenios: React.FC = () => {
             {listaActual.length === 0 ? (
               <tr>
                 <td
-                  colSpan={bancoSeleccionado.toLowerCase() === 'agrario' ? 8 : 7}
+                  colSpan={bancoSeleccionado.toLowerCase() === 'agrario' ? 9 : 7}
                   className="convenios-table__empty"
                 >
                   No hay convenios registrados.
@@ -635,6 +636,7 @@ export const Convenios: React.FC = () => {
                     </>
                   ) : bancoSeleccionado.toLowerCase() === 'agrario' ? (
                     <>
+                      <td>{item.tipo_referencia || 'N/A'}</td>
                       <td>{item.codigo_barras || 'N/A'}</td>
                       <td>{item.valida_fecha || 'N/A'}</td>
                       <td>{item.manual || 'N/A'}</td>

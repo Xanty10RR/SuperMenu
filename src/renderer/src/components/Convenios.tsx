@@ -569,33 +569,56 @@ export const Convenios: React.FC = () => {
         <table className="convenios-table">
           <thead>
             <tr className="convenios-table__header">
-              <th>ID / Código / NIT</th>
-              <th>Nombre / Convenio / Empresa</th>
-              <th>NIT / Referencia</th>
+              <th>Nombre Convenio</th>
+              <th>NIT</th>
               <th>Categoría / Modalidad</th>
-              <th style={{ padding: '10px 12px', fontSize: '13.5px' }}>
-                Descripción / Qué se recauda
-              </th>
+              <th>Referencia / Dato Captura</th>
+
+              {/* Cabecera dinámica, si es Aval muestra Banco Dueño y Empresa, si no, la Descripción */}
+              {bancoSeleccionado.toLowerCase() === 'aval' ? (
+                <>
+                  <th>Banco Dueño</th>
+                  <th>Empresa</th>
+                </>
+              ) : (
+                <th style={{ padding: '10px 12px', fontSize: '13.5px' }}>
+                  Descripción del recaudo
+                </th>
+              )}
+
               <th className="convenios-table__actions-heading">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {listaActual.length === 0 ? (
               <tr>
-                <td colSpan={5} className="convenios-table__empty">
+                <td
+                  colSpan={bancoSeleccionado.toLowerCase() === 'aval' ? 7 : 6}
+                  className="convenios-table__empty"
+                >
                   No hay convenios registrados.
                 </td>
               </tr>
             ) : (
               listaActual.map((item, index) => (
                 <tr key={index} className="convenios-table__row">
-                  <td>{item.codigo_convenio || item.nit || 'N/A'}</td>
-                  <td>{item.nombre_convenio || item.convenio || item.empresa || 'N/A'}</td>
-                  <td>{item.nit || item.referencia || 'N/A'}</td>
+                  <td>{item.nombre_convenio || item.convenio || 'N/A'}</td>
+                  <td>{item.nit || 'N/A'}</td>
                   <td>{item.categoria || item.modalidad || 'N/A'}</td>
-                  <td style={{ padding: '8px 12px', fontSize: '13px', color: '#555' }}>
-                    {obtenerDescripcion(item)}
-                  </td>
+                  <td>{item.referencia || item.referencias || item.dato_captura || 'N/A'}</td>
+
+                  {/* Celdas dinámicas según el banco */}
+                  {bancoSeleccionado.toLowerCase() === 'aval' ? (
+                    <>
+                      <td>{item.empresa || 'N/A'}</td>
+                      <td>{item.banco_dueno || 'N/A'}</td>
+                    </>
+                  ) : (
+                    <td style={{ padding: '8px 12px', fontSize: '13px', color: '#555' }}>
+                      {obtenerDescripcion(item)}
+                    </td>
+                  )}
+
                   <td className="convenios-table__actions">
                     <button
                       className="convenios-button convenios-button--edit"

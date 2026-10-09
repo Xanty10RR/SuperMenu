@@ -535,10 +535,23 @@ app.get("/api/aprobaciones/rechazadas", async (_req, res) => {
 });
 
 // ==========================================
-// Endpoints de convenios bancarios con CRUD completo
+// Endpoints de convenios bancarios con CRUD completo y seguridad por roles
 // ==========================================
 
-// Ruta para buscar o listar convenios de los bancos BBVA, Agrario y Aval con filtro de texto
+// Función auxiliar para verificar si el usuario tiene permisos de escritura
+const tienePermisosEscritura = (req: express.Request): boolean => {
+  const rolValor: unknown =
+    req.headers["rol"] ||
+    req.headers["x-user-rol"] ||
+    req.body?.rol ||
+    req.query?.rol ||
+    "";
+  const rol = typeof rolValor === "string" ? rolValor.toLowerCase() : "";
+
+  return ["admin", "comercial", "jefecomercial"].includes(rol);
+};
+
+// Ruta para buscar o listar convenios de los bancos BBVA, Agrario y Aval con filtro de texto (lectura abierta)
 app.get("/api/convenios/buscar", async (req, res) => {
   try {
     const texto = (req.query.q as string) || "";
@@ -550,7 +563,7 @@ app.get("/api/convenios/buscar", async (req, res) => {
   }
 });
 
-// Ruta para sugerencias inteligentes
+// Ruta para sugerencias inteligentes (lectura abierta)
 app.get("/api/convenios/sugerir", async (req, res) => {
   try {
     const texto = (req.query.q as string) || "";
@@ -562,7 +575,7 @@ app.get("/api/convenios/sugerir", async (req, res) => {
   }
 });
 
-// Ruta para obtener un convenio específico por su banco e ID/Código
+// Ruta para obtener un convenio específico por su banco e ID/Código (lectura abierta)
 app.get("/api/convenios/:banco/:id", async (req, res) => {
   try {
     const { banco, id } = req.params;
@@ -580,8 +593,15 @@ app.get("/api/convenios/:banco/:id", async (req, res) => {
   }
 });
 
-// Ruta para registrar un nuevo convenio (Soporta /api/convenios y /api/convenios/crear)
+// Ruta para registrar un nuevo convenio (protegida)
 app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
+  // Validación de seguridad por roles
+  if (!tienePermisosEscritura(req)) {
+    return res.status(403).json({
+      error: "Acceso denegado: No tienes permisos para crear convenios.",
+    });
+  }
+
   try {
     const { banco, ...datos } = req.body;
 
@@ -589,7 +609,6 @@ app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
       return res.status(400).json({ error: "El campo 'banco' es obligatorio" });
     }
 
-    // Aquí llamas a tu método en ConvenioService para insertar en Supabase
     const nuevoConvenio = await ConvenioService.crear(
       banco.toUpperCase(),
       datos,
@@ -608,7 +627,6 @@ app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
       detail?: string;
     }>;
 
-    // Validamos si es un error de llave duplicada en la base de datos (PostgreSQL código 23505)
     const codigoError = err.code;
     const mensajeError = err.message || "";
     const detalleError = err.detail || "";
@@ -633,15 +651,21 @@ app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
       });
     }
 
-    // Si es cualquier otro error, responde con el 500 normal
     res
       .status(500)
       .json({ error: "Error al guardar el convenio en la base de datos" });
   }
 });
 
-// Ruta para actualizar un convenio existente
+// Ruta para actualizar un convenio existente (protegida)
 app.put("/api/convenios/:id", async (req, res) => {
+  // Validación de seguridad por roles
+  if (!tienePermisosEscritura(req)) {
+    return res.status(403).json({
+      error: "Acceso denegado: No tienes permisos para actualizar convenios.",
+    });
+  }
+
   try {
     const { id } = req.params;
     const { banco, ...datos } = req.body;
@@ -652,7 +676,6 @@ app.put("/api/convenios/:id", async (req, res) => {
         .json({ error: "El campo 'banco' es obligatorio para actualizar" });
     }
 
-    // Aquí se llama al método en ConvenioService para actualizar en Supabase
     const convenioActualizado = await ConvenioService.actualizar(
       banco.toUpperCase(),
       id,
@@ -670,8 +693,15 @@ app.put("/api/convenios/:id", async (req, res) => {
   }
 });
 
-// Ruta para eliminar un convenio
+// Ruta para eliminar un convenio (protegida)
 app.delete("/api/convenios/:id", async (req, res) => {
+  // Validación de seguridad por roles
+  if (!tienePermisosEscritura(req)) {
+    return res.status(403).json({
+      error: "Acceso denegado: No tienes permisos para eliminar convenios.",
+    });
+  }
+
   try {
     const { id } = req.params;
     const banco = (req.query.banco as string) || "";
@@ -682,7 +712,6 @@ app.delete("/api/convenios/:id", async (req, res) => {
         .json({ error: "El parámetro 'banco' es obligatorio para eliminar" });
     }
 
-    // Aquí se llama al método en ConvenioService para borrar en Supabase
     await ConvenioService.eliminar(banco.toUpperCase(), id);
 
     res.json({

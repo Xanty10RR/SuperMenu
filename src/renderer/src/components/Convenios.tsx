@@ -64,6 +64,15 @@ export const Convenios: React.FC = () => {
   const [busqueda, setBusqueda] = useState('')
   const [cargando, setCargando] = useState(false)
 
+  // Obtenemos los datos del usuario actual (según cómo los guardes en tu app)
+  const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}')
+  const departamentoUsuario = (usuarioActual.departamento || usuarioActual.rol || '').toLowerCase()
+
+  // Agregamos 'admin' junto con los demás roles con privilegios de escritura
+  const tienePermisoEscritura = ['admin', 'comercial', 'jefecomercial'].includes(
+    departamentoUsuario
+  )
+
   // Estados para Modales (Crear y Editar)
   const [modalCrearAbierto, setModalCrearAbierto] = useState(false)
   const [modalEditarAbierto, setModalEditarAbierto] = useState(false)
@@ -515,15 +524,19 @@ export const Convenios: React.FC = () => {
     <div className="convenios-container">
       <div className="convenios-header">
         <h2>Gestión de Convenios Bancarios</h2>
-        <button
-          className="convenios-button convenios-button--new"
-          onClick={() => {
-            resetFormulario()
-            setModalCrearAbierto(true)
-          }}
-        >
-          <FaPlus /> Nuevo Convenio
-        </button>
+
+        {/* Solo se muestra si es comercial o jefecomercial */}
+        {tienePermisoEscritura && (
+          <button
+            className="convenios-button convenios-button--new"
+            onClick={() => {
+              resetFormulario()
+              setModalCrearAbierto(true)
+            }}
+          >
+            <FaPlus /> Nuevo Convenio
+          </button>
+        )}
       </div>
 
       {/* Pestañas de Bancos */}
@@ -599,14 +612,25 @@ export const Convenios: React.FC = () => {
                 </>
               )}
 
-              <th className="convenios-table__actions-heading">Acciones</th>
+              {/* Acciones solo si tiene permisos de escritura (los del departmento de comercial, jefecomercial y admin) */}
+              {tienePermisoEscritura && (
+                <th className="convenios-table__actions-heading">Acciones</th>
+              )}
             </tr>
           </thead>
           <tbody>
             {listaActual.length === 0 ? (
               <tr>
                 <td
-                  colSpan={bancoSeleccionado.toLowerCase() === 'agrario' ? 9 : 7}
+                  colSpan={
+                    bancoSeleccionado.toLowerCase() === 'agrario'
+                      ? tienePermisoEscritura
+                        ? 9
+                        : 8
+                      : tienePermisoEscritura
+                        ? 7
+                        : 6
+                  }
                   className="convenios-table__empty"
                 >
                   No hay convenios registrados.
@@ -652,22 +676,25 @@ export const Convenios: React.FC = () => {
                     </>
                   )}
 
-                  <td className="convenios-table__actions">
-                    <button
-                      className="convenios-button convenios-button--edit"
-                      onClick={() => abrirModalEditar(item)}
-                      title="Editar"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="convenios-button convenios-button--delete"
-                      onClick={() => handleEliminar(item)}
-                      title="Eliminar"
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
+                  {/* Botones de Editar y Eliminar condicionados por seguridad */}
+                  {tienePermisoEscritura && (
+                    <td className="convenios-table__actions">
+                      <button
+                        className="convenios-button convenios-button--edit"
+                        onClick={() => abrirModalEditar(item)}
+                        title="Editar"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="convenios-button convenios-button--delete"
+                        onClick={() => handleEliminar(item)}
+                        title="Eliminar"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

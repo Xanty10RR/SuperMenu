@@ -20,19 +20,23 @@ app.use(express.json());
 export default pool;
 
 // Asegúrate de que esta función esté arriba en server.ts:
+// Función auxiliar robusta para verificar permisos (igual que en logística)
 const tienePermisosEscritura = (req: express.Request): boolean => {
-  const rolValor =
-    req.headers["rol"] ??
-    req.headers["x-user-rol"] ??
-    req.body?.rol ??
-    req.query?.rol ??
-    "";
+  const rolUsuario = String(
+    req.headers["x-user-role"] ??
+      req.headers["x-role"] ??
+      req.headers["rol"] ??
+      req.body?.rol ??
+      req.query?.rol ??
+      "",
+  ).toLowerCase();
 
-  const rol = Array.isArray(rolValor)
-    ? String(rolValor[0] ?? "").toLowerCase()
-    : String(rolValor ?? "").toLowerCase();
-
-  return ["admin", "comercial", "jefecomercial"].includes(rol);
+  // Verificamos si incluye comercial o admin (cubre jefecomercial, jefe_comercial, admin, etc.)
+  return (
+    rolUsuario.includes("admin") ||
+    rolUsuario.includes("comercial") ||
+    rolUsuario.includes("jefecomercial")
+  );
 };
 
 // Función para normalizar el estado con la primera letra en mayúscula

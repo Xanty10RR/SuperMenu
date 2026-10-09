@@ -54,24 +54,54 @@ interface DatosBancos {
 }
 
 export const Convenios: React.FC = () => {
+  const usuarioRaw = localStorage.getItem('userData') || localStorage.getItem('usuario') || ''
+  let usuario: Record<string, unknown> = {}
+
+  try {
+    const parsed: unknown = JSON.parse(usuarioRaw)
+    if (typeof parsed === 'object' && parsed !== null) {
+      usuario = parsed as Record<string, unknown>
+    }
+  } catch {
+    usuario = { departamento: usuarioRaw }
+  }
+
+  const rolesUsuario = [usuario.departamento, usuario.rol, usuario.role, usuario.cargo]
+    .filter((rol): rol is string => typeof rol === 'string')
+    .map((rol) =>
+      rol
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '')
+    )
+  const rolParaPermiso =
+    rolesUsuario.find(
+      (rol) => rol.includes('admin') || rol.includes('comercial') || rol.includes('jefecomercial')
+    ) ||
+    rolesUsuario[0] ||
+    ''
+  const tienePermisoEscritura = rolesUsuario.some(
+    (rol) => rol.includes('admin') || rol.includes('comercial') || rol.includes('jefecomercial')
+  )
+  const headersPermiso = {
+    'Content-Type': 'application/json',
+    rol: rolParaPermiso,
+    'x-user-role': rolParaPermiso
+  }
+
+  // Estados y lógica de la aplicación
   const [bancoSeleccionado, setBancoSeleccionado] = useState<'bbva' | 'aval' | 'agrario'>('bbva')
+
   const [datosConvenios, setDatosConvenios] = useState<DatosBancos>({
     total: 0,
     bbva: [],
     agrario: [],
     aval: []
   })
+
   const [busqueda, setBusqueda] = useState('')
   const [cargando, setCargando] = useState(false)
-
-  // Obtenemos los datos del usuario actual (según cómo los guardes en tu app)
-  const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}')
-  const departamentoUsuario = (usuarioActual.departamento || usuarioActual.rol || '').toLowerCase()
-
-  // Agregamos 'admin' junto con los demás roles con privilegios de escritura
-  const tienePermisoEscritura = ['admin', 'comercial', 'jefecomercial'].includes(
-    departamentoUsuario
-  )
 
   // Estados para Modales (Crear y Editar)
   const [modalCrearAbierto, setModalCrearAbierto] = useState(false)
@@ -227,21 +257,25 @@ export const Convenios: React.FC = () => {
   // Crear un nuevo convenio
   const handleGuardarCreacion = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
+
     try {
       const response = await fetch(`http://localhost:3003/api/convenios`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headersPermiso,
         body: JSON.stringify({ ...formulario, banco: bancoSeleccionado })
       })
+
       if (response.ok) {
         setModalCrearAbierto(false)
         resetFormulario()
         cargarDatos()
       } else {
-        alert('Error al guardar el convenio en el servidor.')
+        const dataError = await response.json().catch(() => null)
+        alert(dataError?.error || 'Error al guardar el convenio en el servidor.')
       }
     } catch (error) {
       console.error('Error de red al crear:', error)
+      alert('Error de red al intentar conectar con el servidor.')
     }
   }
 
@@ -311,7 +345,7 @@ export const Convenios: React.FC = () => {
     try {
       const response = await fetch(`http://localhost:3003/api/convenios/${idConvenio}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headersPermiso,
         body: JSON.stringify({ ...formulario, banco: bancoSeleccionado })
       })
       if (response.ok) {
@@ -341,7 +375,11 @@ export const Convenios: React.FC = () => {
       const response = await fetch(
         `http://localhost:3003/api/convenios/${idConvenio}?banco=${bancoSeleccionado}`,
         {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: {
+            rol: rolParaPermiso,
+            'x-user-role': rolParaPermiso
+          }
         }
       )
       if (response.ok) {

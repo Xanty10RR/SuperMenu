@@ -879,6 +879,7 @@ export const Convenios: React.FC = () => {
                   <div className="convenios-form__group">
                     <label className="convenios-form__label">Ubicación</label>
                     <input
+                      className="convenios-form__field"
                       type="text"
                       name="ubicacion"
                       value={formulario.ubicacion || ''}

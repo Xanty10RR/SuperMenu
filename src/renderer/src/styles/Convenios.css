@@ -154,7 +154,9 @@
 .convenios-table-container {
   background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.08);
   overflow-x: auto;
   /* Para pantallas pequeñas o tablas anchas */
   margin-top: 20px;
@@ -181,12 +183,23 @@
   padding: 18px;
 }
 
+.convenios-table__header th.convenios-table__description-heading {
+  padding: 10px 12px;
+  font-size: 13.5px;
+}
+
 .convenios-table td {
   padding: 9px 16px;
   font-size: 12.5px;
   color: #334155;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
+}
+
+.convenios-table td.convenios-table__description-cell {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #555;
 }
 
 .convenios-table__row {
@@ -249,6 +262,30 @@
   gap: 10px;
 }
 
+.convenios-pagination__jump {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 8px;
+}
+
+.convenios-pagination__jump-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.convenios-pagination__page-input {
+  width: 55px;
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+  background-color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .convenios-pagination__button {
   padding: 6px 12px;
   background: #007bff;
@@ -285,7 +322,9 @@
 
 .convenios-modal {
   width: 400px;
-  padding: 30px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
   border-radius: 8px;
   background: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -299,9 +338,34 @@
 }
 
 .convenios-form__field {
+  box-sizing: border-box;
+  width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.convenios-form input,
+.convenios-form select,
+.convenios-form textarea {
+  width: 100%;
+}
+
+.convenios-form__group {
+  margin-bottom: 15px;
+}
+
+.convenios-form__label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.convenios-form__hint {
+  display: block;
+  margin-top: 4px;
+  color: #666;
+  font-size: 12px;
 }
 
 .convenios-form__description {
@@ -312,7 +376,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .convenios-button--cancel,

@@ -56,11 +56,13 @@
 
 .searchContainer {
   position: relative;
+  width: 100%;
   margin: 15px 0;
 }
 
 .searchInput {
-  width: 94%;
+  box-sizing: border-box;
+  width: 100%;
   padding: 12px 15px 12px 40px;
   border: 1px solid #cbd5e0;
   border-radius: 8px;

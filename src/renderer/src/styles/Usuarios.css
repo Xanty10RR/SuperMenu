@@ -1,0 +1,190 @@
+.usuarios-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #1e293b;
+}
+
+.usuarios-header {
+    color: #1e3a8a;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    letter-spacing: -0.5px;
+}
+
+.usuarios-card {
+    padding: 24px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover elegante para las tarjetas principales */
+.usuarios-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+.usuarios-form-card {
+    margin-bottom: 30px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.usuarios-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.usuarios-input {
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Efecto cuando haces clic o escribes en los inputs */
+.usuarios-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.usuarios-button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.usuarios-button {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.usuarios-button:active {
+    transform: translateY(1px);
+}
+
+.usuarios-button-primary {
+    border: none;
+    background: #1e3a8a;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(30, 58, 138, 0.2);
+}
+
+.usuarios-button-primary:hover {
+    background: #1d4ed8;
+    box-shadow: 0 4px 8px rgba(30, 58, 138, 0.3);
+}
+
+.usuarios-button-secondary {
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #475569;
+}
+
+.usuarios-button-secondary:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-color: #94a3b8;
+}
+
+.usuarios-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/* Cada fila de la lista se ilumina y se desplaza sutilmente al pasar el mouse */
+.usuarios-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.2s ease, padding 0.2s ease;
+    border-radius: 8px;
+}
+
+.usuarios-item:hover {
+    background-color: #f8fafc;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+.usuarios-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.usuarios-info strong {
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.usuarios-info span {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.usuarios-button-edit,
+.usuarios-button-delete {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.usuarios-button-edit {
+    background: #2563eb;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.usuarios-button-edit:hover {
+    background: #1d4ed8;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+}
+
+.usuarios-button-delete {
+    background: #ef4444;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.usuarios-button-delete:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+}
+
+@media (max-width: 600px) {
+    .usuarios-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .usuarios-button-group {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .usuarios-button-edit,
+    .usuarios-button-delete {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+    }
+}

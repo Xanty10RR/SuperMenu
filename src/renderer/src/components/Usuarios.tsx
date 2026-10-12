@@ -17,6 +17,26 @@ const Usuarios: React.FC = () => {
     tabla_asignada: 'requisiciones'
   })
 
+  // ---- Detección de Rol Admin ----
+  const usuarioRaw = localStorage.getItem('userData') || localStorage.getItem('usuario') || '{}'
+  let rolUsuario = ''
+  let nombreUsuario = ''
+
+  try {
+    const parsed = JSON.parse(usuarioRaw)
+    if (typeof parsed === 'object' && parsed !== null) {
+      rolUsuario = (parsed.departamento || parsed.rol || parsed.cargo || '').toLowerCase()
+      nombreUsuario = (parsed.usuario || parsed.username || '').toLowerCase()
+    } else {
+      rolUsuario = String(parsed).toLowerCase()
+    }
+  } catch {
+    rolUsuario = usuarioRaw.toLowerCase()
+  }
+
+  // Es admin si el usuario se llama "admin" o si su departamento/rol incluye "admin"
+  const esAdmin = nombreUsuario === 'admin' || rolUsuario.includes('admin')
+
   useEffect((): void => {
     fetchUsuarios()
   }, [])
@@ -40,6 +60,11 @@ const Usuarios: React.FC = () => {
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
+    if (!esAdmin) {
+      alert('Solo el administrador puede realizar esta acción.')
+      return
+    }
+
     if (!formData.usuario) {
       alert('El nombre de usuario es requerido.')
       return
@@ -89,6 +114,7 @@ const Usuarios: React.FC = () => {
   }
 
   const handleDelete = async (id: number): Promise<void> => {
+    if (!esAdmin) return
     if (window.confirm('¿Estás seguro de que quieres eliminar este jefe de área?')) {
       try {
         const response = await fetch(`http://localhost:3003/api/usuarios/${id}`, {
@@ -117,53 +143,57 @@ const Usuarios: React.FC = () => {
     <div style={styles.container}>
       <h1 style={styles.header}>Gestión de Jefes y Usuarios Aprobadores</h1>
 
-      <div style={styles.formCard}>
-        <h2>{editingUser ? 'Editar Jefe de Área' : 'Añadir Nuevo Jefe de Área'}</h2>
-        <form onSubmit={handleFormSubmit} style={styles.form}>
-          <input
-            type="text"
-            name="usuario"
-            placeholder="Usuario (ej. jefelogistica)"
-            value={formData.usuario}
-            onChange={handleInputChange}
-            style={styles.input}
-            required
-          />
-          <input
-            type="password"
-            name="clave"
-            placeholder={editingUser ? 'Nueva contraseña (opcional)' : 'Contraseña'}
-            value={formData.clave}
-            onChange={handleInputChange}
-            style={styles.input}
-            {...(!editingUser ? { required: true } : {})}
-          />
-          <select
-            name="departamento"
-            value={formData.departamento}
-            onChange={handleInputChange}
-            style={styles.input}
-          >
-            <option value="IT/Sistemas">IT/Sistemas</option>
-            <option value="Logística">Logística</option>
-            <option value="RRHH">RRHH</option>
-            <option value="Comercial">Comercial</option>
-            <option value="Otros">Otros</option>
-          </select>
+      {/* SOLO EL ADMIN PUEDE VER EL FORMULARIO DE CREAR / EDITAR */}
+      {esAdmin && (
+        <div style={styles.formCard}>
+          <h2>{editingUser ? 'Editar Jefe de Área' : 'Añadir Nuevo Jefe de Área'}</h2>
+          <form onSubmit={handleFormSubmit} style={styles.form}>
+            <input
+              type="text"
+              name="usuario"
+              placeholder="Usuario (ej. jefelogistica)"
+              value={formData.usuario}
+              onChange={handleInputChange}
+              style={styles.input}
+              required
+            />
+            <input
+              type="password"
+              name="clave"
+              placeholder={editingUser ? 'Nueva contraseña (opcional)' : 'Contraseña'}
+              value={formData.clave}
+              onChange={handleInputChange}
+              style={styles.input}
+              {...(!editingUser ? { required: true } : {})}
+            />
+            <select
+              name="departamento"
+              value={formData.departamento}
+              onChange={handleInputChange}
+              style={styles.input}
+            >
+              <option value="IT/Sistemas">IT/Sistemas</option>
+              <option value="Logística">Logística</option>
+              <option value="RRHH">RRHH</option>
+              <option value="Comercial">Comercial</option>
+              <option value="Otros">Otros</option>
+            </select>
 
-          <div style={styles.buttonGroup}>
-            <button type="submit" style={styles.buttonPrimary}>
-              {editingUser ? 'Actualizar' : 'Añadir'}
-            </button>
-            {editingUser && (
-              <button type="button" onClick={cancelEdit} style={styles.buttonSecondary}>
-                Cancelar
+            <div style={styles.buttonGroup}>
+              <button type="submit" style={styles.buttonPrimary}>
+                {editingUser ? 'Actualizar' : 'Añadir'}
               </button>
-            )}
-          </div>
-        </form>
-      </div>
+              {editingUser && (
+                <button type="button" onClick={cancelEdit} style={styles.buttonSecondary}>
+                  Cancelar
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
 
+      {/* LISTA DE JEFES REGISTRADOS (LECTURA PARA TODOS) */}
       <div style={styles.listCard}>
         <h2>Lista de Jefes Registrados</h2>
         <ul style={styles.userList}>
@@ -173,14 +203,18 @@ const Usuarios: React.FC = () => {
                 <strong>{user.usuario}</strong>
                 <span>Departamento: {user.departamento}</span>
               </div>
-              <div style={styles.buttonGroup}>
-                <button onClick={() => handleEdit(user)} style={styles.buttonEdit}>
-                  Editar
-                </button>
-                <button onClick={() => handleDelete(user.id)} style={styles.buttonDelete}>
-                  Eliminar
-                </button>
-              </div>
+
+              {/* SOLO MOSTRAR BOTONES DE EDITAR Y ELIMINAR SI ES ADMIN */}
+              {esAdmin && (
+                <div style={styles.buttonGroup}>
+                  <button onClick={() => handleEdit(user)} style={styles.buttonEdit}>
+                    Editar
+                  </button>
+                  <button onClick={() => handleDelete(user.id)} style={styles.buttonDelete}>
+                    Eliminar
+                  </button>
+                </div>
+              )}
             </li>
           ))}
         </ul>

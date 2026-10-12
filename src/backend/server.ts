@@ -588,10 +588,6 @@ app.get("/api/aprobaciones/rechazadas", async (_req, res) => {
   }
 });
 
-// ==========================================
-// Endpoints de convenios bancarios con CRUD completo y seguridad por roles
-// ==========================================
-
 // Ruta para buscar o listar convenios de los bancos BBVA, Agrario y Aval con filtro de texto (lectura abierta)
 app.get("/api/convenios/buscar", async (req, res) => {
   try {

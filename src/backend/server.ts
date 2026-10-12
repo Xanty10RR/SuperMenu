@@ -19,7 +19,6 @@ app.use(express.json());
 
 export default pool;
 
-// Asegúrate de que esta función esté arriba en server.ts:
 // Función auxiliar robusta para verificar permisos (igual que en logística)
 const tienePermisosEscritura = (req: express.Request): boolean => {
   const rolUsuario = String(
@@ -27,15 +26,18 @@ const tienePermisosEscritura = (req: express.Request): boolean => {
       req.headers["x-role"] ??
       req.headers["rol"] ??
       req.body?.rol ??
-      req.query?.rol ??
       "",
   ).toLowerCase();
 
-  // Verificamos si incluye comercial o admin (cubre jefecomercial, jefe_comercial, admin, etc.)
+  const usuarioHeader = String(
+    req.headers["x-user-name"] ?? req.headers["usuario"] ?? "",
+  ).toLowerCase();
+
   return (
     rolUsuario.includes("admin") ||
     rolUsuario.includes("comercial") ||
-    rolUsuario.includes("jefecomercial")
+    rolUsuario.includes("jefecomercial") ||
+    usuarioHeader === "admin"
   );
 };
 

@@ -2,7 +2,7 @@
 .approval-list-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 20px;
-  background-color: #f5f9fc;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f0ff 100%);
   border-radius: 8px;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }

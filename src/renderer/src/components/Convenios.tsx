@@ -66,6 +66,10 @@ export const Convenios: React.FC = () => {
     usuario = { departamento: usuarioRaw }
   }
 
+  // Extrae el nombre de usuario para verificar si es "admin"
+  const nombreUsuario = String(usuario.usuario || usuario.username || '').toLowerCase()
+  const esAdminPorNombre = nombreUsuario === 'admin'
+
   const rolesUsuario = [usuario.departamento, usuario.rol, usuario.role, usuario.cargo]
     .filter((rol): rol is string => typeof rol === 'string')
     .map((rol) =>
@@ -75,19 +79,28 @@ export const Convenios: React.FC = () => {
         .toLowerCase()
         .replace(/[^a-z0-9]/g, '')
     )
-  const rolParaPermiso =
-    rolesUsuario.find(
+
+  // Si es admin por nombre, forza el rol para permisos
+  const rolParaPermiso = esAdminPorNombre
+    ? 'admin'
+    : rolesUsuario.find(
+        (rol) => rol.includes('admin') || rol.includes('comercial') || rol.includes('jefecomercial')
+      ) ||
+      rolesUsuario[0] ||
+      ''
+
+  // Permiso de escritura total si es admin por nombre o cumple con los roles
+  const tienePermisoEscritura =
+    esAdminPorNombre ||
+    rolesUsuario.some(
       (rol) => rol.includes('admin') || rol.includes('comercial') || rol.includes('jefecomercial')
-    ) ||
-    rolesUsuario[0] ||
-    ''
-  const tienePermisoEscritura = rolesUsuario.some(
-    (rol) => rol.includes('admin') || rol.includes('comercial') || rol.includes('jefecomercial')
-  )
+    )
+
   const headersPermiso = {
     'Content-Type': 'application/json',
     rol: rolParaPermiso,
-    'x-user-role': rolParaPermiso
+    'x-user-role': rolParaPermiso,
+    'x-user-name': nombreUsuario
   }
 
   // Estados y lógica de la aplicación

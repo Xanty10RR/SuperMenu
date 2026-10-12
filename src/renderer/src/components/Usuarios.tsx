@@ -23,7 +23,7 @@ const Usuarios: React.FC = () => {
 
   const fetchUsuarios = async (): Promise<void> => {
     try {
-      const response = await fetch('/api/usuarios')
+      const response = await fetch('http://localhost:3003/api/usuarios')
       if (response.ok) {
         const data: User[] = await response.json()
         setUsers(data)
@@ -47,7 +47,7 @@ const Usuarios: React.FC = () => {
 
     try {
       if (editingUser) {
-        const response = await fetch(`/api/usuarios/${editingUser.id}`, {
+        const response = await fetch(`http://localhost:3003/api/usuarios/${editingUser.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
@@ -57,7 +57,7 @@ const Usuarios: React.FC = () => {
           await fetchUsuarios()
         }
       } else {
-        const response = await fetch('/api/usuarios', {
+        const response = await fetch('http://localhost:3003/api/usuarios', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
@@ -91,7 +91,9 @@ const Usuarios: React.FC = () => {
   const handleDelete = async (id: number): Promise<void> => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este jefe de área?')) {
       try {
-        const response = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' })
+        const response = await fetch(`http://localhost:3003/api/usuarios/${id}`, {
+          method: 'DELETE'
+        })
         if (response.ok) {
           await fetchUsuarios()
         }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react'
+import '../styles/Usuarios.css'
 
 interface User {
   id: number
@@ -140,21 +141,21 @@ const Usuarios: React.FC = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>Gestión de Jefes y Usuarios Aprobadores</h1>
+    <div className="usuarios-container">
+      <h1 className="usuarios-header">Gestión de Jefes y Usuarios</h1>
 
-      {/* SOLO EL ADMIN PUEDE VER EL FORMULARIO DE CREAR / EDITAR */}
+      {/* Solo el admin puede ver el formulario de crear / editar */}
       {esAdmin && (
-        <div style={styles.formCard}>
-          <h2>{editingUser ? 'Editar Jefe de Área' : 'Añadir Nuevo Jefe de Área'}</h2>
-          <form onSubmit={handleFormSubmit} style={styles.form}>
+        <div className="usuarios-card usuarios-form-card">
+          <h2>{editingUser ? 'Editar usuario' : 'Añadir usuario'}</h2>
+          <form onSubmit={handleFormSubmit} className="usuarios-form">
             <input
               type="text"
               name="usuario"
               placeholder="Usuario (ej. jefelogistica)"
               value={formData.usuario}
               onChange={handleInputChange}
-              style={styles.input}
+              className="usuarios-input"
               required
             />
             <input
@@ -163,14 +164,14 @@ const Usuarios: React.FC = () => {
               placeholder={editingUser ? 'Nueva contraseña (opcional)' : 'Contraseña'}
               value={formData.clave}
               onChange={handleInputChange}
-              style={styles.input}
+              className="usuarios-input"
               {...(!editingUser ? { required: true } : {})}
             />
             <select
               name="departamento"
               value={formData.departamento}
               onChange={handleInputChange}
-              style={styles.input}
+              className="usuarios-input"
             >
               <option value="IT/Sistemas">IT/Sistemas</option>
               <option value="Logística">Logística</option>
@@ -179,12 +180,16 @@ const Usuarios: React.FC = () => {
               <option value="Otros">Otros</option>
             </select>
 
-            <div style={styles.buttonGroup}>
-              <button type="submit" style={styles.buttonPrimary}>
+            <div className="usuarios-button-group">
+              <button type="submit" className="usuarios-button usuarios-button-primary">
                 {editingUser ? 'Actualizar' : 'Añadir'}
               </button>
               {editingUser && (
-                <button type="button" onClick={cancelEdit} style={styles.buttonSecondary}>
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="usuarios-button usuarios-button-secondary"
+                >
                   Cancelar
                 </button>
               )}
@@ -193,24 +198,30 @@ const Usuarios: React.FC = () => {
         </div>
       )}
 
-      {/* LISTA DE JEFES REGISTRADOS (LECTURA PARA TODOS) */}
-      <div style={styles.listCard}>
-        <h2>Lista de Jefes Registrados</h2>
-        <ul style={styles.userList}>
+      {/* Lista de usuarios registrados */}
+      <div className="usuarios-card usuarios-list-card">
+        <h2>Lista de usuarios registrados</h2>
+        <ul className="usuarios-list">
           {users.map((user) => (
-            <li key={user.id} style={styles.userItem}>
-              <div style={styles.userInfo}>
+            <li key={user.id} className="usuarios-item">
+              <div className="usuarios-info">
                 <strong>{user.usuario}</strong>
                 <span>Departamento: {user.departamento}</span>
               </div>
 
               {/* SOLO MOSTRAR BOTONES DE EDITAR Y ELIMINAR SI ES ADMIN */}
               {esAdmin && (
-                <div style={styles.buttonGroup}>
-                  <button onClick={() => handleEdit(user)} style={styles.buttonEdit}>
+                <div className="usuarios-button-group">
+                  <button
+                    onClick={() => handleEdit(user)}
+                    className="usuarios-button usuarios-button-edit"
+                  >
                     Editar
                   </button>
-                  <button onClick={() => handleDelete(user.id)} style={styles.buttonDelete}>
+                  <button
+                    onClick={() => handleDelete(user.id)}
+                    className="usuarios-button usuarios-button-delete"
+                  >
                     Eliminar
                   </button>
                 </div>
@@ -221,75 +232,6 @@ const Usuarios: React.FC = () => {
       </div>
     </div>
   )
-}
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  header: { textAlign: 'center', color: '#23395d' },
-  formCard: {
-    background: '#f9f9f9',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    marginBottom: '30px'
-  },
-  form: { display: 'flex', flexDirection: 'column', gap: '15px' },
-  input: { padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' },
-  buttonGroup: { display: 'flex', gap: '10px' },
-  buttonPrimary: {
-    padding: '10px 15px',
-    border: 'none',
-    borderRadius: '4px',
-    background: '#23395d',
-    color: 'white',
-    fontSize: '16px',
-    cursor: 'pointer'
-  },
-  buttonSecondary: {
-    padding: '10px 15px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    background: '#fff',
-    color: '#333',
-    fontSize: '16px',
-    cursor: 'pointer'
-  },
-  listCard: {
-    background: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-  },
-  userList: { listStyle: 'none', padding: 0 },
-  userItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '15px',
-    borderBottom: '1px solid #eee'
-  },
-  userInfo: { display: 'flex', flexDirection: 'column' },
-  buttonEdit: {
-    background: '#2f6db2',
-    color: 'white',
-    border: 'none',
-    padding: '8px 12px',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  },
-  buttonDelete: {
-    background: '#dc3545',
-    color: 'white',
-    border: 'none',
-    padding: '8px 12px',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  }
 }
 
 export default Usuarios

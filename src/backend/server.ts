@@ -82,7 +82,7 @@ setInterval(
     try {
       await pool.query("SELECT 1");
       console.log(
-        "Ping a Supabase OK -",
+        "Ping a Supabase OK",
         new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" }),
       );
     } catch (e) {
@@ -158,13 +158,16 @@ app.post("/api/logout", async (req, res) => {
 });
 
 // Endpoint de Usuarios para obtener todos los usuarios
+
+// Obtener todos los usuarios
 app.get("/api/usuarios", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT id, usuario, departamento, tabla_asignada FROM usuarios_aprobadores ORDER BY id ASC",
     );
     res.json(result.rows);
-  } catch {
+  } catch (error) {
+    console.error("Error al obtener usuarios:", error);
     res.status(500).send("Error al obtener usuarios");
   }
 });
@@ -181,8 +184,38 @@ app.post("/api/usuarios", async (req, res) => {
       [usuario, hash, departamento, tabla_asignada || "requisiciones"],
     );
     res.status(201).send("Usuario creado con éxito");
-  } catch {
+  } catch (error) {
+    console.error("Error al crear usuario:", error);
     res.status(500).send("Error al crear usuario");
+  }
+});
+
+// Actualizar un usuario existente (¡Este era el que faltaba para que funcione el botón de editar!)
+app.put("/api/usuarios/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { usuario, clave, departamento, tabla_asignada } = req.body;
+
+    // Si el usuario escribió una nueva contraseña, se encripta y la actualizamos con clave
+    if (clave && clave.trim() !== "") {
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(clave, salt);
+      await pool.query(
+        "UPDATE usuarios_aprobadores SET usuario = $1, clave = $2, departamento = $3, tabla_asignada = $4 WHERE id = $5",
+        [usuario, hash, departamento, tabla_asignada || "requisiciones", id],
+      );
+    } else {
+      // Si deja la contraseña vacía, actualizamos los datos sin tocar su clave actual
+      await pool.query(
+        "UPDATE usuarios_aprobadores SET usuario = $1, departamento = $2, tabla_asignada = $3 WHERE id = $4",
+        [usuario, departamento, tabla_asignada || "requisiciones", id],
+      );
+    }
+
+    res.send("Usuario actualizado con éxito");
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error);
+    res.status(500).send("Error al actualizar usuario");
   }
 });
 
@@ -192,7 +225,8 @@ app.delete("/api/usuarios/:id", async (req, res) => {
     const { id } = req.params;
     await pool.query("DELETE FROM usuarios_aprobadores WHERE id = $1", [id]);
     res.send("Usuario eliminado");
-  } catch {
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
     res.status(500).send("Error al eliminar usuario");
   }
 });

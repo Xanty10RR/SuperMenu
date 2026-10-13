@@ -7,18 +7,15 @@ import {
   FaGift,
   FaChevronRight,
   FaUser,
-  FaChartBar,
   FaFileExport,
   FaCog,
   FaFileAlt
 } from 'react-icons/fa'
 import { LogOut } from 'lucide-react'
-import { MindMap } from './Soporte'
 import { InicioView } from './InicioView'
 import { RequisicionesView } from './Requisiciones'
 import { ApprovalList } from './Logistica'
 import { Convenios } from './Convenios'
-import ErrorBoundary from './ErrorBoundary'
 import Usuarios from './Usuarios'
 
 interface Props {
@@ -29,7 +26,7 @@ const SuperMenu: React.FC<Props> = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeView, setActiveView] = useState<
-    'inicio' | 'requisicion' | 'mejoras' | 'convenios' | 'soporte' | 'usuarios' | 'logistica'
+    'inicio' | 'requisicion' | 'convenios' | 'usuarios' | 'logistica'
   >('inicio')
 
   const navigate = useNavigate()
@@ -50,13 +47,10 @@ const SuperMenu: React.FC<Props> = () => {
     setActiveView('convenios')
   }
 
-  const handleSoporteClick = (): void => {
-    setActiveView('soporte')
-  }
-
   const handleUsuariosClick = (): void => {
     setActiveView('usuarios')
   }
+
   const handleLogisticaClick = (): void => {
     setActiveView('logistica')
   }
@@ -84,10 +78,6 @@ const SuperMenu: React.FC<Props> = () => {
           <li onClick={handleUsuariosClick}>
             <FaUser className="menu-icon" />
             {!sidebarCollapsed && <span>Usuarios</span>}
-          </li>
-          <li onClick={handleSoporteClick}>
-            <FaChartBar className="menu-icon" />
-            {!sidebarCollapsed && <span>Soporte</span>}
           </li>
           <li onClick={handleConveniosClick}>
             <FaFileExport className="menu-icon" />
@@ -124,15 +114,6 @@ const SuperMenu: React.FC<Props> = () => {
             <InicioView onNavigate={setActiveView} />
           ) : activeView === 'usuarios' ? (
             <Usuarios />
-          ) : activeView === 'soporte' ? (
-            <ErrorBoundary>
-              <div
-                className="mindmap-container"
-                style={{ width: '100%', height: 'calc(100vh - 60px)' }}
-              >
-                <MindMap />
-              </div>
-            </ErrorBoundary>
           ) : activeView === 'convenios' ? (
             <Convenios />
           ) : activeView === 'logistica' ? (

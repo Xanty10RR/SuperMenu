@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react'
+import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from 'react-icons/fi'
 import '../styles/Usuarios.css'
 
 interface User {
@@ -11,6 +12,7 @@ interface User {
 const Usuarios: React.FC = () => {
   const [users, setUsers] = useState<User[]>([])
   const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
   const [formData, setFormData] = useState({
     usuario: '',
     clave: '',
@@ -37,6 +39,19 @@ const Usuarios: React.FC = () => {
 
   // Es admin si el usuario se llama "admin" o si su departamento/rol incluye "admin"
   const esAdmin = nombreUsuario === 'admin' || rolUsuario.includes('admin')
+  const normalizedSearchTerm = searchTerm
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+  const filteredUsers = users.filter((user) => {
+    const searchableText = `${user.usuario} ${user.departamento}`
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+
+    return searchableText.includes(normalizedSearchTerm)
+  })
 
   useEffect((): void => {
     fetchUsuarios()
@@ -182,6 +197,7 @@ const Usuarios: React.FC = () => {
 
             <div className="usuarios-button-group">
               <button type="submit" className="usuarios-button usuarios-button-primary">
+                {editingUser ? <FiEdit2 aria-hidden="true" /> : <FiPlus aria-hidden="true" />}
                 {editingUser ? 'Actualizar' : 'Añadir'}
               </button>
               {editingUser && (
@@ -201,8 +217,19 @@ const Usuarios: React.FC = () => {
       {/* Lista de usuarios registrados */}
       <div className="usuarios-card usuarios-list-card">
         <h2>Lista de usuarios registrados</h2>
+        <div className="usuarios-searchContainer">
+          <FiSearch className="usuarios-searchIcon" aria-hidden="true" />
+          <input
+            type="search"
+            className="usuarios-searchInput"
+            placeholder="Buscar por nombre o departamento"
+            aria-label="Buscar usuarios por nombre o departamento"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <ul className="usuarios-list">
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <li key={user.id} className="usuarios-item">
               <div className="usuarios-info">
                 <strong>{user.usuario}</strong>
@@ -215,19 +242,26 @@ const Usuarios: React.FC = () => {
                   <button
                     onClick={() => handleEdit(user)}
                     className="usuarios-button usuarios-button-edit"
+                    aria-label={`Editar usuario ${user.usuario}`}
                   >
+                    <FiEdit2 aria-hidden="true" />
                     Editar
                   </button>
                   <button
                     onClick={() => handleDelete(user.id)}
                     className="usuarios-button usuarios-button-delete"
+                    aria-label={`Eliminar usuario ${user.usuario}`}
                   >
+                    <FiTrash2 aria-hidden="true" />
                     Eliminar
                   </button>
                 </div>
               )}
             </li>
           ))}
+          {filteredUsers.length === 0 && (
+            <li className="usuarios-empty">No se encontraron usuarios.</li>
+          )}
         </ul>
       </div>
     </div>

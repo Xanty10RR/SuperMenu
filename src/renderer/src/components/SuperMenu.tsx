@@ -10,8 +10,7 @@ import {
   FaChartBar,
   FaFileExport,
   FaCog,
-  FaFileAlt,
-  FaChartLine
+  FaFileAlt
 } from 'react-icons/fa'
 import { LogOut } from 'lucide-react'
 import { MindMap } from './Soporte'
@@ -19,7 +18,6 @@ import { InicioView } from './InicioView'
 import { RequisicionesView } from './Requisiciones'
 import { ApprovalList } from './Logistica'
 import { Convenios } from './Convenios'
-import { PokeApiComponent } from './Mejoras'
 import ErrorBoundary from './ErrorBoundary'
 import Usuarios from './Usuarios'
 
@@ -46,10 +44,6 @@ const SuperMenu: React.FC<Props> = () => {
 
   const handleInicioClick = (): void => {
     setActiveView('inicio')
-  }
-
-  const handleMejorassClick = (): void => {
-    setActiveView('mejoras')
   }
 
   const handleConveniosClick = (): void => {
@@ -91,10 +85,6 @@ const SuperMenu: React.FC<Props> = () => {
             <FaUser className="menu-icon" />
             {!sidebarCollapsed && <span>Usuarios</span>}
           </li>
-          <li onClick={handleMejorassClick}>
-            <FaChartLine className="menu-icon" />
-            {!sidebarCollapsed && <span>Mejoras</span>}
-          </li>
           <li onClick={handleSoporteClick}>
             <FaChartBar className="menu-icon" />
             {!sidebarCollapsed && <span>Soporte</span>}
@@ -132,8 +122,6 @@ const SuperMenu: React.FC<Props> = () => {
         <div className="content-area">
           {activeView === 'inicio' ? (
             <InicioView onNavigate={setActiveView} />
-          ) : activeView === 'mejoras' ? (
-            <PokeApiComponent />
           ) : activeView === 'usuarios' ? (
             <Usuarios />
           ) : activeView === 'soporte' ? (

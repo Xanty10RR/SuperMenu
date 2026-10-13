@@ -94,6 +94,11 @@ setInterval(
   1000 * 60 * 60 * 24 * 2,
 );
 
+// Iniciar el servidor
+app.listen(3003, () => {
+  console.log("Servidor backend corriendo en http://localhost:3003");
+});
+
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -920,11 +925,6 @@ app.delete("/api/mindmap/connections/:id", async (req, res) => {
     await registrarErrorServidor(error, `/api/mindmap/connections/${id}`);
     res.status(500).send("Error al eliminar conexión");
   }
-});
-
-// Iniciar el servidor
-app.listen(3003, () => {
-  console.log("Servidor backend corriendo en http://localhost:3003");
 });
 
 // Endpoint unificado para las métricas (KPIs) de Requisiciones, Bancos, Sesiones e Interacciones en vivo

@@ -1,27 +1,17 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/InicioView.css'
-import {
-  FaUsers,
-  FaGift,
-  FaLightbulb,
-  FaHeadset,
-  FaHandshake,
-  FaFileInvoice,
-  FaWhatsapp
-} from 'react-icons/fa'
+import { FaUsers, FaGift, FaHandshake, FaFileInvoice, FaWhatsapp } from 'react-icons/fa'
 
 interface Opcion {
   nombre: string
   descripcion: string
   icono: React.ReactNode
-  view: 'usuarios' | 'mejoras' | 'soporte' | 'convenios' | 'requisicion' | 'logistica'
+  view: 'usuarios' | 'convenios' | 'requisicion' | 'logistica'
 }
 
 interface InicioViewProps {
-  onNavigate: (
-    view: 'usuarios' | 'mejoras' | 'soporte' | 'convenios' | 'requisicion' | 'logistica'
-  ) => void
+  onNavigate: (view: 'usuarios' | 'convenios' | 'requisicion' | 'logistica') => void
 }
 
 export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
@@ -31,18 +21,6 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
       descripcion: 'Gestión de usuarios',
       icono: <FaUsers size={50} />,
       view: 'usuarios'
-    },
-    {
-      nombre: 'Mejoras',
-      descripcion: 'Ideas y mejoras',
-      icono: <FaLightbulb size={50} />,
-      view: 'mejoras'
-    },
-    {
-      nombre: 'Soporte',
-      descripcion: 'Soporte técnico',
-      icono: <FaHeadset size={50} />,
-      view: 'soporte'
     },
     {
       nombre: 'Convenios',

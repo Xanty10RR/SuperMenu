@@ -69,6 +69,10 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .usuarios-button:active {
@@ -103,6 +107,42 @@
     padding: 0;
     margin: 0;
     list-style: none;
+}
+
+.usuarios-searchContainer {
+    position: relative;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.usuarios-searchInput {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.usuarios-searchInput:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+}
+
+.usuarios-searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #718096;
+}
+
+.usuarios-empty {
+    padding: 16px 14px;
+    color: #64748b;
+    text-align: center;
 }
 
 /* Cada fila de la lista se ilumina y se desplaza sutilmente al pasar el mouse */

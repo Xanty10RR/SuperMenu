@@ -216,7 +216,7 @@ const Usuarios: React.FC = () => {
 
       {/* Lista de usuarios registrados */}
       <div className="usuarios-card usuarios-list-card">
-        <h2>Lista de usuarios registrados</h2>
+        <h2>Lista de usuarios registrados ({users.length})</h2>
         <div className="usuarios-searchContainer">
           <FiSearch className="usuarios-searchIcon" aria-hidden="true" />
           <input

@@ -131,7 +131,7 @@ const Usuarios: React.FC = () => {
 
   const handleDelete = async (id: number): Promise<void> => {
     if (!esAdmin) return
-    if (window.confirm('¿Estás seguro de que quieres eliminar este jefe de área?')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar a este usuario?')) {
       try {
         const response = await fetch(`http://localhost:3003/api/usuarios/${id}`, {
           method: 'DELETE'
@@ -167,7 +167,7 @@ const Usuarios: React.FC = () => {
             <input
               type="text"
               name="usuario"
-              placeholder="Usuario (ej. jefelogistica)"
+              placeholder="Nombre de usuario (ej: jefelogistica)"
               value={formData.usuario}
               onChange={handleInputChange}
               className="usuarios-input"
@@ -236,7 +236,7 @@ const Usuarios: React.FC = () => {
                 <span>Departamento: {user.departamento}</span>
               </div>
 
-              {/* SOLO MOSTRAR BOTONES DE EDITAR Y ELIMINAR SI ES ADMIN */}
+              {/* Solo mostrar botones de editar y eliminar si es admin */}
               {esAdmin && (
                 <div className="usuarios-button-group">
                   <button

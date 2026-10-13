@@ -60,16 +60,6 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
-ipcMain.handle('fetch-pokemon', async (_event, pokemonName: string) => {
-  try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
-    return await response.json()
-  } catch (error) {
-    console.error('Error fetching Pokémon:', error)
-    throw error
-  }
-})
-
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.

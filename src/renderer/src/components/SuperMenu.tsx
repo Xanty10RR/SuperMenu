@@ -18,6 +18,8 @@ import { ApprovalList } from './Logistica'
 import { Convenios } from './Convenios'
 import Usuarios from './Usuarios'
 
+type ActiveView = 'inicio' | 'requisicion' | 'convenios' | 'usuarios' | 'logistica'
+
 interface Props {
   // Eliminamos la prop aprobaciones ya que no es necesaria
 }
@@ -25,9 +27,7 @@ interface Props {
 const SuperMenu: React.FC<Props> = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [activeView, setActiveView] = useState<
-    'inicio' | 'requisicion' | 'convenios' | 'usuarios' | 'logistica'
-  >('inicio')
+  const [activeView, setActiveView] = useState<ActiveView>('inicio')
 
   const navigate = useNavigate()
 
@@ -71,23 +71,43 @@ const SuperMenu: React.FC<Props> = () => {
         </div>
 
         <ul className="sidebar-menu">
-          <li onClick={handleInicioClick}>
+          <li
+            className={activeView === 'inicio' ? 'active' : ''}
+            onClick={handleInicioClick}
+            aria-current={activeView === 'inicio' ? 'page' : undefined}
+          >
             <FaCog className="menu-icon" />
             {!sidebarCollapsed && <span>Inicio</span>}
           </li>
-          <li onClick={handleUsuariosClick}>
+          <li
+            className={activeView === 'usuarios' ? 'active' : ''}
+            onClick={handleUsuariosClick}
+            aria-current={activeView === 'usuarios' ? 'page' : undefined}
+          >
             <FaUser className="menu-icon" />
             {!sidebarCollapsed && <span>Usuarios</span>}
           </li>
-          <li onClick={handleConveniosClick}>
+          <li
+            className={activeView === 'convenios' ? 'active' : ''}
+            onClick={handleConveniosClick}
+            aria-current={activeView === 'convenios' ? 'page' : undefined}
+          >
             <FaFileExport className="menu-icon" />
             {!sidebarCollapsed && <span>Convenios</span>}
           </li>
-          <li onClick={handleRequisicionClick}>
+          <li
+            className={activeView === 'requisicion' ? 'active' : ''}
+            onClick={handleRequisicionClick}
+            aria-current={activeView === 'requisicion' ? 'page' : undefined}
+          >
             <FaFileAlt className="menu-icon" />
             {!sidebarCollapsed && <span>Requisición</span>}
           </li>
-          <li onClick={handleLogisticaClick}>
+          <li
+            className={activeView === 'logistica' ? 'active' : ''}
+            onClick={handleLogisticaClick}
+            aria-current={activeView === 'logistica' ? 'page' : undefined}
+          >
             <FaGift className="menu-icon" />
             {!sidebarCollapsed && <span>Logistica</span>}
           </li>
@@ -96,9 +116,6 @@ const SuperMenu: React.FC<Props> = () => {
 
       <div className="main-content">
         <header className="top-header">
-          <button className="inicio-btn" onClick={handleInicioClick}>
-            Inicio
-          </button>
           <div className="user-section">
             <span className="user-label">
               Bienvenido, {userData.username || userData.usuario || 'Invitado'}

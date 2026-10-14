@@ -1,3 +1,8 @@
+.usuarios-page {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
+}
+
 .usuarios-container {
     max-width: 800px;
     margin: 0 auto;

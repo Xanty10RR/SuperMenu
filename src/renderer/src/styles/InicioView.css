@@ -68,6 +68,11 @@
   transform: translateX(113px);
 }
 
+.honeycomb-row-final {
+  margin-top: -56px;
+  transform: translateX(56px);
+}
+
 .honeycomb-row-centered {
   margin-left: 0;
   transform: translateX(-50%);
@@ -85,6 +90,11 @@
 /* z-index alto al hacer hover para que el efecto resalte por encima de los demás */
 .honeycomb-cell:hover {
   z-index: 10;
+}
+
+.honeycomb-cell:focus-visible {
+  outline: 3px solid #ff8c00;
+  outline-offset: 4px;
 }
 
 .honeycomb-hex {
@@ -159,7 +169,8 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.honeycomb-hex-content button {
+.honeycomb-hex-content .honeycomb-action {
+  display: inline-block;
   background-color: rgba(255, 165, 0, 0.95);
   color: white;
   padding: 10px 20px;
@@ -173,7 +184,7 @@
   min-width: 120px;
 }
 
-.honeycomb-hex-content button:hover {
+.honeycomb-hex-content .honeycomb-action:hover {
   background-color: rgba(255, 140, 0, 1);
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);

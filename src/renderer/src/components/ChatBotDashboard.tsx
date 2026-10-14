@@ -16,7 +16,7 @@ import {
   FiAlertTriangle
 } from 'react-icons/fi'
 
-// Ampliamos la interfaz para recibir todas las métricas del backend
+// Interfaz para recibir todas las métricas del backend
 interface ChatbotMetrics {
   totalConveniosBancos: number
   totalHistoricoUsuarios: number
@@ -375,7 +375,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
     }
 
     fetchData()
-    // Opcional: Refrescar cada 10 segundos automáticamente
+    // Refresca cada 10 segundos automáticamente
     const interval = setInterval(fetchData, 10000)
     return () => clearInterval(interval)
   }, [])
@@ -532,7 +532,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           )}
         </Panel>
 
-        {/* Panel Salud de Servidorvidores */}
+        {/* Panel Salud de Servidores */}
         <Panel>
           <PanelTitle>
             <FiServer /> Estado del Servidor y API

@@ -3,7 +3,7 @@
   min-height: 100vh;
   padding: 25px 20px;
   overflow-y: auto;
-  background: #f5f7fa;
+  background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
   color: #333;
   font-family: 'Segoe UI', sans-serif;
   animation: chatbot-dashboard-fade-in 0.4s ease-out;

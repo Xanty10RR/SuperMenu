@@ -2,11 +2,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  
   background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
   justify-content: center;
   width: 100%;
-  min-height: calc(100vh - 80px); /* Centra verticalmente en la pantalla */
+  min-height: calc(100vh - 80px);
   padding: 2rem;
   box-sizing: border-box;
 }

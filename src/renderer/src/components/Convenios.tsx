@@ -572,7 +572,7 @@ export const Convenios: React.FC = () => {
   }
 
   return (
-    <div className="convenios-container">
+    <div className="convenios-page convenios-container">
       <div className="convenios-header">
         <h2>Gestión de Convenios Bancarios</h2>
 

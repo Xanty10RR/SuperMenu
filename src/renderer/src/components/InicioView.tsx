@@ -62,17 +62,17 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
       {/* Contenedor del panal centrado */}
       <div className="honeycomb-container">
         <div className="honeycomb">
-          {/* Primera fila de hexágonos */}
+          {/* Primera fila: 2 hexágonos (Usuarios y Convenios) */}
           <div className="honeycomb-row">
-            {opciones.slice(0, 3).map((op, idx) => (
+            {opciones.slice(0, 2).map((op, idx) => (
               <HexagonItem key={idx} opcion={op} onNavigate={onNavigate} />
             ))}
           </div>
 
-          {/* Segunda fila de hexágonos (centrada) */}
-          <div className="honeycomb-row honeycomb-row-centered">
-            {opciones.slice(3).map((op, idx) => (
-              <HexagonItem key={idx + 3} opcion={op} onNavigate={onNavigate} />
+          {/* Segunda fila: 2 hexágonos (Requisición y Logística) */}
+          <div className="honeycomb-row honeycomb-row-offset">
+            {opciones.slice(2, 4).map((op, idx) => (
+              <HexagonItem key={idx + 2} opcion={op} onNavigate={onNavigate} />
             ))}
           </div>
         </div>

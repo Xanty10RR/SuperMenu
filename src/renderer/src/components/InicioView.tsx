@@ -1,7 +1,6 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import '../styles/InicioView.css'
-import { FaUsers, FaGift, FaHandshake, FaFileInvoice, FaRobot, FaWhatsapp } from 'react-icons/fa'
+import { FaUsers, FaGift, FaHandshake, FaFileInvoice, FaRobot } from 'react-icons/fa'
 
 interface Opcion {
   nombre: string
@@ -11,11 +10,12 @@ interface Opcion {
 }
 
 interface InicioViewProps {
-  onNavigate: (view: 'usuarios' | 'convenios' | 'requisicion' | 'logistica') => void
+  onNavigate: (
+    view: 'usuarios' | 'convenios' | 'requisicion' | 'logistica' | 'superasistente'
+  ) => void
 }
 
 export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
-  const navigate = useNavigate()
   const opciones: Opcion[] = [
     {
       nombre: 'Usuarios',
@@ -45,25 +45,12 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
       nombre: 'SuperAsistente',
       descripcion: 'Métricas y actividad del asistente',
       icono: <FaRobot size={50} />,
-      onClick: () => navigate('/chatbot-metrics')
+      onClick: () => onNavigate('superasistente')
     }
   ]
 
   return (
     <div className="inicio-container">
-      {/* Header con WhatsApp - Ahora es clickeable y lleva al Dashboard */}
-      <div className="header">
-        <div
-          className="chatbot-label"
-          onClick={() => navigate('/chatbot-metrics')}
-          style={{ cursor: 'pointer' }}
-          title="Ver Dashboard de Operaciones del Bot"
-        >
-          <FaWhatsapp size={28} className="chatbot-icon" />
-          <span>Métricas SuperAsistente</span>
-        </div>
-      </div>
-
       {/* Contenedor del panal centrado */}
       <div className="honeycomb-container">
         <div className="honeycomb">

@@ -18,8 +18,15 @@ import { RequisicionesView } from './Requisiciones'
 import { ApprovalList } from './Logistica'
 import { Convenios } from './Convenios'
 import Usuarios from './Usuarios'
+import ChatBotDashboard from './ChatBotDashboard'
 
-type ActiveView = 'inicio' | 'requisicion' | 'convenios' | 'usuarios' | 'logistica'
+type ActiveView =
+  | 'inicio'
+  | 'requisicion'
+  | 'convenios'
+  | 'usuarios'
+  | 'logistica'
+  | 'superasistente'
 
 interface Props {
   // Eliminamos la prop aprobaciones ya que no es necesaria
@@ -113,15 +120,17 @@ const SuperMenu: React.FC<Props> = () => {
             {!sidebarCollapsed && <span>Logistica</span>}
           </li>
           <li
-            onClick={() => navigate('/chatbot-metrics')}
+            className={activeView === 'superasistente' ? 'active' : ''}
+            onClick={() => setActiveView('superasistente')}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault()
-                navigate('/chatbot-metrics')
+                setActiveView('superasistente')
               }
             }}
             role="button"
             tabIndex={0}
+            aria-current={activeView === 'superasistente' ? 'page' : undefined}
             aria-label="Abrir módulo SuperAsistente"
             title="SuperAsistente"
           >
@@ -152,6 +161,8 @@ const SuperMenu: React.FC<Props> = () => {
             <Convenios />
           ) : activeView === 'logistica' ? (
             <ApprovalList />
+          ) : activeView === 'superasistente' ? (
+            <ChatBotDashboard onBack={() => setActiveView('inicio')} />
           ) : (
             <RequisicionesView />
           )}

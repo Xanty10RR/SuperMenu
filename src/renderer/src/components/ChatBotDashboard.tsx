@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import styled, { keyframes } from 'styled-components'
+import '../styles/ChatBotDashboard.css'
 import {
   FiArrowLeft,
   FiMessageSquare,
@@ -41,295 +41,14 @@ interface ActivityItem {
   status: 'success' | 'warning' | 'info'
 }
 
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-`
-
-const Container = styled.div`
-  padding: 25px 20px;
-  background: #f5f7fa;
-  min-height: 100vh;
-  color: #333;
-  font-family: 'Segoe UI', sans-serif;
-  animation: ${fadeIn} 0.4s ease-out;
-  overflow-y: auto;
-  box-sizing: border-box;
-`
-
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 15px;
-`
-
-const TitleArea = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-`
-
-const BackButton = styled.button`
-  background: #2f6db2;
-  border: none;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: #1d2f4a;
-  }
-`
-
-const Title = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #23395d;
-  margin: 0;
-`
-
-const GridKpis = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const KpiCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-`
-
-const KpiIcon = styled.div<{ color?: string; textColor?: string }>`
-  background: ${(props) => props.color || 'rgba(47, 109, 178, 0.12)'};
-  color: ${(props) => props.textColor || '#2f6db2'};
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-`
-
-const KpiInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const KpiValue = styled.span`
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #23395d;
-`
-
-const KpiLabel = styled.span`
-  font-size: 0.85rem;
-  color: #666;
-  margin-top: 4px;
-`
-
-const SectionGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
-`
-
-const Panel = styled.div`
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-`
-
-const PanelTitle = styled.h3`
-  font-size: 1.1rem;
-  margin-bottom: 15px;
-  font-weight: 600;
-  color: #23395d;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  border-radius: 6px;
-  overflow: hidden;
-
-  thead {
-    background-color: #2f6db2;
-    color: white;
-  }
-
-  th,
-  td {
-    padding: 12px 14px;
-    font-size: 0.88rem;
-  }
-
-  th {
-    font-weight: 500;
-  }
-
-  tbody tr {
-    border-bottom: 1px solid #dddddd;
-  }
-
-  tbody tr:nth-of-type(even) {
-    background-color: #f8fafc;
-  }
-
-  tbody tr:hover {
-    background-color: #f1f5f9;
-  }
-`
-
-const StatusBadge = styled.span<{ status: 'success' | 'warning' | 'info' }>`
-  background: ${(props) =>
-    props.status === 'success' ? '#d1fae5' : props.status === 'warning' ? '#fef3c7' : '#dbeafe'};
-  color: ${(props) =>
-    props.status === 'success' ? '#10b981' : props.status === 'warning' ? '#d97706' : '#2f6db2'};
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: inline-block;
-`
-
-const HealthItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`
-
-const HealthLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.92rem;
-  color: #333;
-`
-const colorLatencia = (latencyStr?: string): string => {
-  if (!latencyStr) return '#2f6db2'
+const claseLatencia = (latencyStr?: string): string => {
+  if (!latencyStr) return 'latency--unknown'
   const milliseconds = Number.parseInt(latencyStr.replace(/[^0-9]/g, ''), 10)
-  if (Number.isNaN(milliseconds)) return '#2f6db2'
-  if (milliseconds < 150) return '#10b981'
-  if (milliseconds <= 300) return '#f59e0b'
-  return '#ef4444'
+  if (Number.isNaN(milliseconds)) return 'latency--unknown'
+  if (milliseconds < 150) return 'latency--good'
+  if (milliseconds <= 300) return 'latency--warning'
+  return 'latency--error'
 }
-
-const pulse = keyframes`
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
-`
-
-const PanelHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-`
-
-const LiveIndicator = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: #10b981;
-  font-weight: 600;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 4px 10px;
-  border-radius: 12px;
-`
-
-const LiveDot = styled.span`
-  width: 8px;
-  height: 8px;
-  background-color: #10b981;
-  border-radius: 50%;
-  animation: ${pulse} 1.5s infinite;
-`
-
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 15px;
-  padding-top: 12px;
-  border-top: 1px solid #eee;
-  font-size: 0.85rem;
-  color: #666;
-`
-
-const PaginationControls = styled.div`
-  display: flex;
-  gap: 6px;
-  align-items: center;
-`
-
-const PageButton = styled.button<{ active?: boolean }>`
-  background: ${(props) => (props.active ? '#2f6db2' : '#f8fafc')};
-  color: ${(props) => (props.active ? '#fff' : '#333')};
-  border: 1px solid #cbd5e1;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background: ${(props) => (props.active ? '#1d2f4a' : '#e2e8f0')};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`
 
 interface ChatBotDashboardProps {
   onBack?: () => void
@@ -381,92 +100,107 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
   }, [])
 
   return (
-    <Container>
-      <Header>
-        <TitleArea>
-          <BackButton onClick={onBack ?? (() => navigate('/supermenu'))}>
+    <main className="chatbot-dashboard">
+      <header className="chatbot-dashboard__header">
+        <div className="chatbot-dashboard__title-area">
+          <button
+            className="chatbot-dashboard__back-button"
+            onClick={onBack ?? (() => navigate('/supermenu'))}
+          >
             <FiArrowLeft /> Volver
-          </BackButton>
-          <Title>Centro de Operaciones - Chatbot SuperAsistente</Title>
-        </TitleArea>
-      </Header>
+          </button>
+          <h1 className="chatbot-dashboard__title">
+            Centro de Operaciones - Chatbot SuperAsistente
+          </h1>
+        </div>
+      </header>
 
       {/* Tarjetas de Métricas KPI Dinámicas */}
-      <GridKpis>
-        <KpiCard>
-          <KpiIcon color="rgba(47, 109, 178, 0.12)" textColor="#2f6db2">
+      <section className="chatbot-dashboard__kpi-grid">
+        <article className="chatbot-dashboard__kpi-card">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
             <FiBriefcase />
-          </KpiIcon>
-          <KpiInfo>
-            <KpiValue>{metrics.totalConveniosBancos?.toLocaleString() || 0}</KpiValue>
-            <KpiLabel>Convenios Bancarios Totales</KpiLabel>
-          </KpiInfo>
-        </KpiCard>
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.totalConveniosBancos?.toLocaleString() || 0}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">Convenios Bancarios Totales</span>
+          </div>
+        </article>
 
-        <KpiCard>
-          <KpiIcon color="rgba(47, 109, 178, 0.12)" textColor="#2f6db2">
+        <article className="chatbot-dashboard__kpi-card">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
             <FiUsers />
-          </KpiIcon>
-          <KpiInfo>
-            <KpiValue>{metrics.totalHistoricoUsuarios?.toLocaleString() || 0}</KpiValue>
-            <KpiLabel>Total Histórico de Usuarios</KpiLabel>
-          </KpiInfo>
-        </KpiCard>
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.totalHistoricoUsuarios?.toLocaleString() || 0}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">Total Histórico de Usuarios</span>
+          </div>
+        </article>
 
-        <KpiCard>
-          <KpiIcon color="rgba(47, 109, 178, 0.12)" textColor="#2f6db2">
+        <article className="chatbot-dashboard__kpi-card">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
             <FiMessageSquare />
-          </KpiIcon>
-          <KpiInfo>
-            <KpiValue>{metrics.messagesToday?.toLocaleString() || 0}</KpiValue>
-            <KpiLabel>Flujos Conversacionales Ejecutados Hoy</KpiLabel>
-          </KpiInfo>
-        </KpiCard>
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.messagesToday?.toLocaleString() || 0}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">
+              Flujos Conversacionales Ejecutados Hoy
+            </span>
+          </div>
+        </article>
 
-        <KpiCard>
-          <KpiIcon color="rgba(16, 185, 129, 0.15)" textColor="#10b981">
+        <article className="chatbot-dashboard__kpi-card">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--green">
             <FiMessageCircle />
-          </KpiIcon>
-          <KpiInfo>
-            <KpiValue>{metrics.activeChats?.toLocaleString() || 0}</KpiValue>
-            <KpiLabel>Chats Únicos (Últimas 24h)</KpiLabel>
-          </KpiInfo>
-        </KpiCard>
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.activeChats?.toLocaleString() || 0}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">Chats Únicos (Últimas 24h)</span>
+          </div>
+        </article>
 
-        <KpiCard>
-          <KpiIcon color="rgba(155, 89, 182, 0.15)" textColor="#9b59b6">
+        <article className="chatbot-dashboard__kpi-card">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--purple">
             <FiActivity />
-          </KpiIcon>
-          <KpiInfo>
-            <KpiValue>{metrics.automationRate}%</KpiValue>
-            <KpiLabel>Tasa de Automatización Chatbot</KpiLabel>
-          </KpiInfo>
-        </KpiCard>
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">{metrics.automationRate}%</span>
+            <span className="chatbot-dashboard__kpi-label">Tasa de Automatización Chatbot</span>
+          </div>
+        </article>
 
-        <KpiCard>
-          <KpiIcon color="rgba(245, 158, 11, 0.15)" textColor="#f59e0b">
+        <article className="chatbot-dashboard__kpi-card">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--orange">
             <FiAlertTriangle />
-          </KpiIcon>
-          <KpiInfo>
-            <KpiValue>{metrics.pendingErrors}</KpiValue>
-            <KpiLabel>Fallas de API Pendientes</KpiLabel>
-          </KpiInfo>
-        </KpiCard>
-      </GridKpis>
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">{metrics.pendingErrors}</span>
+            <span className="chatbot-dashboard__kpi-label">Fallas de API Pendientes</span>
+          </div>
+        </article>
+      </section>
 
-      <SectionGrid>
-        <Panel>
-          <PanelHeader>
-            <PanelTitle style={{ margin: 0 }}>
+      <section className="chatbot-dashboard__section-grid">
+        <article className="chatbot-dashboard__panel">
+          <div className="chatbot-dashboard__panel-header">
+            <h3 className="chatbot-dashboard__panel-title chatbot-dashboard__panel-title--compact">
               <FiActivity /> Actividad Reciente de Conversaciones
-            </PanelTitle>
-            <LiveIndicator>
-              <LiveDot />
+            </h3>
+            <div className="chatbot-dashboard__live-indicator">
+              <span className="chatbot-dashboard__live-dot" />
               Actualización en vivo
-            </LiveIndicator>
-          </PanelHeader>
+            </div>
+          </div>
 
-          <Table>
+          <table className="chatbot-dashboard__table">
             <thead>
               <tr>
                 <th>Usuario / Remitente</th>
@@ -483,118 +217,128 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
                     <td>{item.intent}</td>
                     <td>{item.time}</td>
                     <td>
-                      <StatusBadge status={item.status}>Completado</StatusBadge>
+                      <span
+                        className={`chatbot-dashboard__status-badge chatbot-dashboard__status-badge--${item.status}`}
+                      >
+                        Completado
+                      </span>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', color: '#666' }}>
+                  <td colSpan={4} className="chatbot-dashboard__empty-state">
                     No hay actividad reciente registrada aún.
                   </td>
                 </tr>
               )}
             </tbody>
-          </Table>
+          </table>
 
           {/* Paginación tabla*/}
           {recentActivity.length > 0 && (
-            <PaginationContainer>
+            <div className="chatbot-dashboard__pagination">
               <span>
                 Mostrando {indexOfFirstItem + 1} -{' '}
                 {Math.min(indexOfLastItem, recentActivity.length)} de {recentActivity.length}{' '}
                 registros
               </span>
-              <PaginationControls>
-                <PageButton
+              <div className="chatbot-dashboard__pagination-controls">
+                <button
+                  className="chatbot-dashboard__page-button"
                   onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
                 >
                   Anterior
-                </PageButton>
+                </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-                  <PageButton
+                  <button
                     key={pageNumber}
-                    active={currentPage === pageNumber}
+                    className={`chatbot-dashboard__page-button ${
+                      currentPage === pageNumber ? 'chatbot-dashboard__page-button--active' : ''
+                    }`}
                     onClick={() => setCurrentPage(pageNumber)}
                   >
                     {pageNumber}
-                  </PageButton>
+                  </button>
                 ))}
-                <PageButton
+                <button
+                  className="chatbot-dashboard__page-button"
                   onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
                 >
                   Siguiente
-                </PageButton>
-              </PaginationControls>
-            </PaginationContainer>
+                </button>
+              </div>
+            </div>
           )}
-        </Panel>
+        </article>
 
         {/* Panel Salud de Servidores */}
-        <Panel>
-          <PanelTitle>
+        <article className="chatbot-dashboard__panel">
+          <h3 className="chatbot-dashboard__panel-title">
             <FiServer /> Estado del Servidor y API
-          </PanelTitle>
-          <HealthItem>
-            <HealthLabel>
-              <FiCheckCircle color="#2ecc71" size={18} />
+          </h3>
+          <div className="chatbot-dashboard__health-item">
+            <div className="chatbot-dashboard__health-label">
+              <FiCheckCircle className="chatbot-dashboard__health-icon chatbot-dashboard__health-icon--green" />
               Servidor Web (Render)
-            </HealthLabel>
-            <StatusBadge status="success">
+            </div>
+            <span className="chatbot-dashboard__status-badge chatbot-dashboard__status-badge--success">
               {metrics?.saludServidores?.serverStatus || 'Online (100%)'}
-            </StatusBadge>
-          </HealthItem>
+            </span>
+          </div>
 
-          <HealthItem>
-            <HealthLabel>
-              <FiCheckCircle color="#2ecc71" size={18} />
+          <div className="chatbot-dashboard__health-item">
+            <div className="chatbot-dashboard__health-label">
+              <FiCheckCircle className="chatbot-dashboard__health-icon chatbot-dashboard__health-icon--green" />
               Meta Cloud API (Webhook)
-            </HealthLabel>
-            <StatusBadge status="success">
+            </div>
+            <span className="chatbot-dashboard__status-badge chatbot-dashboard__status-badge--success">
               {metrics?.saludServidores?.metaApiStatus || 'Conectado'}
-            </StatusBadge>
-          </HealthItem>
+            </span>
+          </div>
 
-          <HealthItem>
-            <HealthLabel>
-              <FiCheckCircle color="#2ecc71" size={18} />
+          <div className="chatbot-dashboard__health-item">
+            <div className="chatbot-dashboard__health-label">
+              <FiCheckCircle className="chatbot-dashboard__health-icon chatbot-dashboard__health-icon--green" />
               Supabase (Base de Datos - Servidor)
-            </HealthLabel>
-            <StatusBadge status="success">
+            </div>
+            <span className="chatbot-dashboard__status-badge chatbot-dashboard__status-badge--success">
               {metrics?.saludServidores?.supabaseStatus || 'Conectado'}
-            </StatusBadge>
-          </HealthItem>
+            </span>
+          </div>
 
-          <HealthItem>
-            <HealthLabel>
-              <FiCpu color="#9b59b6" size={18} />
+          <div className="chatbot-dashboard__health-item">
+            <div className="chatbot-dashboard__health-label">
+              <FiCpu className="chatbot-dashboard__health-icon chatbot-dashboard__health-icon--purple" />
               Motor BuilderBot
-            </HealthLabel>
-            <StatusBadge status="success">
+            </div>
+            <span className="chatbot-dashboard__status-badge chatbot-dashboard__status-badge--success">
               {metrics?.saludServidores?.builderBotStatus || 'Estable'}
-            </StatusBadge>
-          </HealthItem>
+            </span>
+          </div>
 
-          <HealthItem>
-            <HealthLabel>
-              <FiClock color={colorLatencia(metrics?.saludServidores?.latencyMs)} size={18} />
+          <div className="chatbot-dashboard__health-item">
+            <div className="chatbot-dashboard__health-label">
+              <FiClock
+                className={`chatbot-dashboard__health-icon ${claseLatencia(
+                  metrics?.saludServidores?.latencyMs
+                )}`}
+              />
               Latencia Base de Datos PostgreSQL
-            </HealthLabel>
+            </div>
             <span
-              style={{
-                fontSize: '0.9rem',
-                color: colorLatencia(metrics?.saludServidores?.latencyMs),
-                fontWeight: 600
-              }}
+              className={`chatbot-dashboard__latency ${claseLatencia(
+                metrics?.saludServidores?.latencyMs
+              )}`}
             >
               {metrics?.saludServidores?.latencyMs || '0 ms'}
             </span>
-          </HealthItem>
-        </Panel>
-      </SectionGrid>
-    </Container>
+          </div>
+        </article>
+      </section>
+    </main>
   )
 }
 

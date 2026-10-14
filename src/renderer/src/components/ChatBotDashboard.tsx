@@ -331,7 +331,11 @@ const PageButton = styled.button<{ active?: boolean }>`
   }
 `
 
-const ChatBotDashboard: React.FC = () => {
+interface ChatBotDashboardProps {
+  onBack?: () => void
+}
+
+const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
   const navigate = useNavigate()
   const [metrics, setMetrics] = useState<ChatbotMetrics>({
     totalConveniosBancos: 0,
@@ -380,7 +384,7 @@ const ChatBotDashboard: React.FC = () => {
     <Container>
       <Header>
         <TitleArea>
-          <BackButton onClick={() => navigate('/supermenu')}>
+          <BackButton onClick={onBack ?? (() => navigate('/supermenu'))}>
             <FiArrowLeft /> Volver
           </BackButton>
           <Title>Centro de Operaciones - Chatbot SuperAsistente</Title>

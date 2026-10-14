@@ -1,13 +1,13 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/InicioView.css'
-import { FaUsers, FaGift, FaHandshake, FaFileInvoice, FaWhatsapp } from 'react-icons/fa'
+import { FaUsers, FaGift, FaHandshake, FaFileInvoice, FaRobot, FaWhatsapp } from 'react-icons/fa'
 
 interface Opcion {
   nombre: string
   descripcion: string
   icono: React.ReactNode
-  view: 'usuarios' | 'convenios' | 'requisicion' | 'logistica'
+  onClick: () => void
 }
 
 interface InicioViewProps {
@@ -15,34 +15,39 @@ interface InicioViewProps {
 }
 
 export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
+  const navigate = useNavigate()
   const opciones: Opcion[] = [
     {
       nombre: 'Usuarios',
       descripcion: 'Gestión de usuarios',
       icono: <FaUsers size={50} />,
-      view: 'usuarios'
+      onClick: () => onNavigate('usuarios')
     },
     {
       nombre: 'Convenios',
       descripcion: 'Gestión de convenios',
       icono: <FaHandshake size={50} />,
-      view: 'convenios'
+      onClick: () => onNavigate('convenios')
     },
     {
       nombre: 'Requisición',
       descripcion: 'Solicitudes de compras',
       icono: <FaFileInvoice size={50} />,
-      view: 'requisicion'
+      onClick: () => onNavigate('requisicion')
     },
     {
       nombre: 'Logistica',
-      descripcion: 'Entrega de pedidos',
+      descripcion: 'Entrega de requisiciones',
       icono: <FaGift size={50} />,
-      view: 'logistica'
+      onClick: () => onNavigate('logistica')
+    },
+    {
+      nombre: 'SuperAsistente',
+      descripcion: 'Métricas y actividad del asistente',
+      icono: <FaRobot size={50} />,
+      onClick: () => navigate('/chatbot-metrics')
     }
   ]
-
-  const navigate = useNavigate()
 
   return (
     <div className="inicio-container">
@@ -65,15 +70,20 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
           {/* Primera fila: 2 hexágonos (Usuarios y Convenios) */}
           <div className="honeycomb-row">
             {opciones.slice(0, 2).map((op, idx) => (
-              <HexagonItem key={idx} opcion={op} onNavigate={onNavigate} />
+              <HexagonItem key={idx} opcion={op} />
             ))}
           </div>
 
-          {/* Segunda fila: 2 hexágonos (Requisición y Logística) */}
+          {/* Segunda fila: Requisición y Logística */}
           <div className="honeycomb-row honeycomb-row-offset">
             {opciones.slice(2, 4).map((op, idx) => (
-              <HexagonItem key={idx + 2} opcion={op} onNavigate={onNavigate} />
+              <HexagonItem key={idx + 2} opcion={op} />
             ))}
+          </div>
+
+          {/* Hexágono final: acceso al panel de SuperAsistente */}
+          <div className="honeycomb-row honeycomb-row-final">
+            <HexagonItem opcion={opciones[4]} />
           </div>
         </div>
       </div>
@@ -91,18 +101,27 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
 }
 
 // Componente Hexágono reutilizable
-const HexagonItem: React.FC<{ opcion: Opcion; onNavigate: InicioViewProps['onNavigate'] }> = ({
-  opcion,
-  onNavigate
-}) => {
+const HexagonItem: React.FC<{ opcion: Opcion }> = ({ opcion }) => {
   return (
-    <div className="honeycomb-cell" onClick={() => onNavigate(opcion.view)}>
+    <div
+      className="honeycomb-cell"
+      onClick={opcion.onClick}
+      onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          opcion.onClick()
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Abrir módulo ${opcion.nombre}`}
+    >
       <div className="honeycomb-hex">
         <div className="honeycomb-icon">{opcion.icono}</div>
         <div className="honeycomb-hex-content">
           <h3>{opcion.nombre}</h3>
           <p>{opcion.descripcion}</p>
-          <button>Ver más</button>
+          <span className="honeycomb-action">Ver más</span>
         </div>
       </div>
     </div>

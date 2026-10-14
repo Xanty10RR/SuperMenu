@@ -74,16 +74,11 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
             ))}
           </div>
 
-          {/* Segunda fila: Requisición y Logística */}
+          {/* Segunda fila: tres módulos centrados */}
           <div className="honeycomb-row honeycomb-row-offset">
-            {opciones.slice(2, 4).map((op, idx) => (
+            {opciones.slice(2).map((op, idx) => (
               <HexagonItem key={idx + 2} opcion={op} />
             ))}
-          </div>
-
-          {/* Hexágono final: acceso al panel de SuperAsistente */}
-          <div className="honeycomb-row honeycomb-row-final">
-            <HexagonItem opcion={opciones[4]} />
           </div>
         </div>
       </div>

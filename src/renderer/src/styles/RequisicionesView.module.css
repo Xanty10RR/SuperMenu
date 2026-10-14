@@ -1,6 +1,6 @@
 /* RequisicionesView.module.css */
 .container {
-  background: linear-gradient(135deg, #f0f8ff 0%, #e6f0ff 100%);
+  background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

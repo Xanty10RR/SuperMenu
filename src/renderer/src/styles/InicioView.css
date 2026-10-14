@@ -2,10 +2,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  
   background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
-  padding: 2rem 1rem;
-  position: relative;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(100vh - 80px); /* Centra verticalmente en la pantalla */
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
 /* Header styles */
@@ -44,19 +47,25 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  align-items: center;
+  margin: 1.5rem 0;
 }
 
 .honeycomb {
   display: flex;
   flex-direction: column;
   align-items: center;
+  transform: translateX(-56px);
 }
 
 .honeycomb-row {
   display: flex;
   justify-content: center;
-  margin-bottom: -26px;
+}
+
+.honeycomb-row-offset {
+  margin-top: -56px;
+  transform: translateX(113px);
 }
 
 .honeycomb-row-centered {
@@ -68,9 +77,14 @@
 .honeycomb-cell {
   width: 220px;
   height: 250px;
-  margin: 0 6px;
+  margin: 0 3px;
   position: relative;
   transition: all 0.3s ease;
+}
+
+/* z-index alto al hacer hover para que el efecto resalte por encima de los demás */
+.honeycomb-cell:hover {
+  z-index: 10;
 }
 
 .honeycomb-hex {
@@ -89,8 +103,8 @@
 }
 
 .honeycomb-cell:hover .honeycomb-hex {
-  transform: scale(1.1) translateY(-8px);
-  box-shadow: 0 20px 40px rgba(255, 165, 0, 0.3);
+  transform: scale(1.05); /* Escala más suave para que no empuje las otras celdas */
+  box-shadow: 0 15px 30px rgba(74, 107, 175, 0.25);
 }
 
 .honeycomb-icon {

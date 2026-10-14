@@ -156,113 +156,115 @@ const Usuarios: React.FC = () => {
   }
 
   return (
-    <div className="usuarios-container">
-      <h1 className="usuarios-header">Gestión de Jefes y Usuarios</h1>
+    <div className="usuarios-page">
+      <div className="usuarios-container">
+        <h1 className="usuarios-header">Gestión de Jefes y Usuarios</h1>
 
-      {/* Solo el admin puede ver el formulario de crear / editar */}
-      {esAdmin && (
-        <div className="usuarios-card usuarios-form-card">
-          <h2>{editingUser ? 'Editar usuario' : 'Añadir usuario'}</h2>
-          <form onSubmit={handleFormSubmit} className="usuarios-form">
-            <input
-              type="text"
-              name="usuario"
-              placeholder="Nombre de usuario (ej: jefelogistica)"
-              value={formData.usuario}
-              onChange={handleInputChange}
-              className="usuarios-input"
-              required
-            />
-            <input
-              type="password"
-              name="clave"
-              placeholder={editingUser ? 'Nueva contraseña (opcional)' : 'Contraseña'}
-              value={formData.clave}
-              onChange={handleInputChange}
-              className="usuarios-input"
-              {...(!editingUser ? { required: true } : {})}
-            />
-            <select
-              name="departamento"
-              value={formData.departamento}
-              onChange={handleInputChange}
-              className="usuarios-input"
-            >
-              <option value="IT/Sistemas">IT/Sistemas</option>
-              <option value="Logística">Logística</option>
-              <option value="RRHH">RRHH</option>
-              <option value="Comercial">Comercial</option>
-              <option value="Otros">Otros</option>
-            </select>
+        {/* Solo el admin puede ver el formulario de crear / editar */}
+        {esAdmin && (
+          <div className="usuarios-card usuarios-form-card">
+            <h2>{editingUser ? 'Editar usuario' : 'Añadir usuario'}</h2>
+            <form onSubmit={handleFormSubmit} className="usuarios-form">
+              <input
+                type="text"
+                name="usuario"
+                placeholder="Nombre de usuario (ej: jefelogistica)"
+                value={formData.usuario}
+                onChange={handleInputChange}
+                className="usuarios-input"
+                required
+              />
+              <input
+                type="password"
+                name="clave"
+                placeholder={editingUser ? 'Nueva contraseña (opcional)' : 'Contraseña'}
+                value={formData.clave}
+                onChange={handleInputChange}
+                className="usuarios-input"
+                {...(!editingUser ? { required: true } : {})}
+              />
+              <select
+                name="departamento"
+                value={formData.departamento}
+                onChange={handleInputChange}
+                className="usuarios-input"
+              >
+                <option value="IT/Sistemas">IT/Sistemas</option>
+                <option value="Logística">Logística</option>
+                <option value="RRHH">RRHH</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Otros">Otros</option>
+              </select>
 
-            <div className="usuarios-button-group">
-              <button type="submit" className="usuarios-button usuarios-button-primary">
-                {editingUser ? <FiEdit2 aria-hidden="true" /> : <FiPlus aria-hidden="true" />}
-                {editingUser ? 'Actualizar' : 'Añadir'}
-              </button>
-              {editingUser && (
-                <button
-                  type="button"
-                  onClick={cancelEdit}
-                  className="usuarios-button usuarios-button-secondary"
-                >
-                  Cancelar
+              <div className="usuarios-button-group">
+                <button type="submit" className="usuarios-button usuarios-button-primary">
+                  {editingUser ? <FiEdit2 aria-hidden="true" /> : <FiPlus aria-hidden="true" />}
+                  {editingUser ? 'Actualizar' : 'Añadir'}
                 </button>
-              )}
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Lista de usuarios registrados */}
-      <div className="usuarios-card usuarios-list-card">
-        <h2>Lista de usuarios registrados ({users.length})</h2>
-        <div className="usuarios-searchContainer">
-          <FiSearch className="usuarios-searchIcon" aria-hidden="true" />
-          <input
-            type="search"
-            className="usuarios-searchInput"
-            placeholder="Buscar por nombre o departamento"
-            aria-label="Buscar usuarios por nombre o departamento"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <ul className="usuarios-list">
-          {filteredUsers.map((user) => (
-            <li key={user.id} className="usuarios-item">
-              <div className="usuarios-info">
-                <strong>{user.usuario}</strong>
-                <span>Departamento: {user.departamento}</span>
+                {editingUser && (
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    className="usuarios-button usuarios-button-secondary"
+                  >
+                    Cancelar
+                  </button>
+                )}
               </div>
+            </form>
+          </div>
+        )}
 
-              {/* Solo mostrar botones de editar y eliminar si es admin */}
-              {esAdmin && (
-                <div className="usuarios-button-group">
-                  <button
-                    onClick={() => handleEdit(user)}
-                    className="usuarios-button usuarios-button-edit"
-                    aria-label={`Editar usuario ${user.usuario}`}
-                  >
-                    <FiEdit2 aria-hidden="true" />
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    className="usuarios-button usuarios-button-delete"
-                    aria-label={`Eliminar usuario ${user.usuario}`}
-                  >
-                    <FiTrash2 aria-hidden="true" />
-                    Eliminar
-                  </button>
+        {/* Lista de usuarios registrados */}
+        <div className="usuarios-card usuarios-list-card">
+          <h2>Lista de usuarios registrados ({users.length})</h2>
+          <div className="usuarios-searchContainer">
+            <FiSearch className="usuarios-searchIcon" aria-hidden="true" />
+            <input
+              type="search"
+              className="usuarios-searchInput"
+              placeholder="Buscar por nombre o departamento"
+              aria-label="Buscar usuarios por nombre o departamento"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <ul className="usuarios-list">
+            {filteredUsers.map((user) => (
+              <li key={user.id} className="usuarios-item">
+                <div className="usuarios-info">
+                  <strong>{user.usuario}</strong>
+                  <span>Departamento: {user.departamento}</span>
                 </div>
-              )}
-            </li>
-          ))}
-          {filteredUsers.length === 0 && (
-            <li className="usuarios-empty">No se encontraron usuarios.</li>
-          )}
-        </ul>
+
+                {/* Solo mostrar botones de editar y eliminar si es admin */}
+                {esAdmin && (
+                  <div className="usuarios-button-group">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="usuarios-button usuarios-button-edit"
+                      aria-label={`Editar usuario ${user.usuario}`}
+                    >
+                      <FiEdit2 aria-hidden="true" />
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      className="usuarios-button usuarios-button-delete"
+                      aria-label={`Eliminar usuario ${user.usuario}`}
+                    >
+                      <FiTrash2 aria-hidden="true" />
+                      Eliminar
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+            {filteredUsers.length === 0 && (
+              <li className="usuarios-empty">No se encontraron usuarios.</li>
+            )}
+          </ul>
+        </div>
       </div>
     </div>
   )

@@ -9,7 +9,8 @@ import {
   FaUser,
   FaFileExport,
   FaCog,
-  FaFileAlt
+  FaFileAlt,
+  FaRobot
 } from 'react-icons/fa'
 import { LogOut } from 'lucide-react'
 import { InicioView } from './InicioView'
@@ -110,6 +111,22 @@ const SuperMenu: React.FC<Props> = () => {
           >
             <FaGift className="menu-icon" />
             {!sidebarCollapsed && <span>Logistica</span>}
+          </li>
+          <li
+            onClick={() => navigate('/chatbot-metrics')}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                navigate('/chatbot-metrics')
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Abrir módulo SuperAsistente"
+            title="SuperAsistente"
+          >
+            <FaRobot className="menu-icon" />
+            {!sidebarCollapsed && <span>SuperAsistente</span>}
           </li>
         </ul>
       </aside>

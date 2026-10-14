@@ -86,13 +86,13 @@
 
 .usuarios-button-primary {
     border: none;
-    background: #1d4ed8;
+    background: #2563eb;
     color: #fff;
     box-shadow: 0 2px 4px rgba(30, 58, 138, 0.2);
 }
 
 .usuarios-button-primary:hover {
-    background: #1e3a8a;
+    background: #1d4ed8;
     box-shadow: 0 4px 8px rgba(30, 58, 138, 0.3);
 }
 

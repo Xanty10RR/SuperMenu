@@ -903,7 +903,7 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
       } else if (diffHoras < 24) {
         tiempoRelativo = `hace ${diffHoras} h`;
       } else {
-        tiempoRelativo = `hace más de 1 día`;
+        tiempoRelativo = `hace ${diffHoras} dias`;
       }
 
       metaConectado = diffSegundos < 86400; // Activo si hubo movimiento en 24h

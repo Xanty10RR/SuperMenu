@@ -109,7 +109,7 @@ app.post("/api/login", async (req, res) => {
   }
 
   try {
-    // Consulta a la tabla real usuarios_aprobadores Mapea los campos 'usuario' y 'clave' de Supabase
+    // Consulta a la tabla usuarios_aprobadores Mapea los campos 'usuario' y 'clave' de Supabase
     const userQuery = await pool.query(
       "SELECT id, usuario, clave, departamento FROM usuarios_aprobadores WHERE usuario = $1",
       [username],
@@ -165,7 +165,6 @@ app.post("/api/logout", async (req, res) => {
 });
 
 // Endpoint de Usuarios para obtener todos los usuarios
-
 // Obtener todos los usuarios
 app.get("/api/usuarios", async (req, res) => {
   try {
@@ -175,11 +174,12 @@ app.get("/api/usuarios", async (req, res) => {
     res.json(result.rows);
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
+    await registrarErrorServidor(error, "/api/usuarios");
     res.status(500).send("Error al obtener usuarios");
   }
 });
 
-// Crear un nuevo usuario aprobador
+// Crear un nuevo usuario
 app.post("/api/usuarios", async (req, res) => {
   try {
     const { usuario, clave, departamento, tabla_asignada } = req.body;
@@ -193,11 +193,12 @@ app.post("/api/usuarios", async (req, res) => {
     res.status(201).send("Usuario creado con éxito");
   } catch (error) {
     console.error("Error al crear usuario:", error);
+    await registrarErrorServidor(error, "/api/usuarios");
     res.status(500).send("Error al crear usuario");
   }
 });
 
-// Actualizar un usuario existente (¡Este era el que faltaba para que funcione el botón de editar!)
+// Actualizar un usuario existente
 app.put("/api/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -222,6 +223,7 @@ app.put("/api/usuarios/:id", async (req, res) => {
     res.send("Usuario actualizado con éxito");
   } catch (error) {
     console.error("Error al actualizar usuario:", error);
+    await registrarErrorServidor(error, "/api/usuarios/:id");
     res.status(500).send("Error al actualizar usuario");
   }
 });
@@ -234,11 +236,12 @@ app.delete("/api/usuarios/:id", async (req, res) => {
     res.send("Usuario eliminado");
   } catch (error) {
     console.error("Error al eliminar usuario:", error);
+    await registrarErrorServidor(error, "/api/usuarios/:id");
     res.status(500).send("Error al eliminar usuario");
   }
 });
 
-// Endpoint Logística para el Historial de Solicitudes Aprobadas/Rechazadas/Entregadas (registro_aprobaciones)
+// Endpoint Logística para el Historial de Solicitudes Aprobadas/Rechazadas/Entregadas de la tabla (registro_aprobaciones)
 app.get("/api/registro-aprobaciones", async (req, res) => {
   try {
     const { usuario, esAdmin } = req.query;
@@ -269,6 +272,7 @@ app.get("/api/aprobaciones", async (req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener las aprobaciones:", error);
+    await registrarErrorServidor(error, "/api/aprobaciones");
     res.status(500).send("Error al obtener las aprobaciones");
   }
 });
@@ -322,6 +326,7 @@ app.post("/api/aprobaciones", async (req, res) => {
     });
   } catch (error) {
     console.error("Error al registrar la aprobación/rechazo:", error);
+    await registrarErrorServidor(error, "/api/aprobaciones");
     res.status(500).send("Error al procesar la aprobación");
   }
 });
@@ -331,7 +336,7 @@ app.get("/api/requisiciones/filtro", async (req, res) => {
   try {
     const { usuario, esAdmin } = req.query;
 
-    // Si es admin, traemos todo de la tabla única 'requisiciones'
+    // Si es admin, trae todo de la tabla 'requisiciones'
     if (esAdmin === "true" || usuario === "admin") {
       const result = await pool.query(
         "SELECT * FROM requisiciones ORDER BY id DESC",
@@ -339,20 +344,37 @@ app.get("/api/requisiciones/filtro", async (req, res) => {
       return res.json(normalizarEstado(result.rows));
     }
 
-    // Si es un jefe de área, filtramos por su departamento correspondiente
-    let deptoFiltro = "IT/Sistemas";
-    if (usuario === "jefelogistica") deptoFiltro = "Logística";
-    else if (usuario === "jefecomercial") deptoFiltro = "Comercial";
-    else if (usuario === "jeferrhh") deptoFiltro = "RRHH";
+    let deptoFiltro = null;
 
-    // Asumiendo que tu tabla 'requisiciones' tiene una columna llamada 'departamento' o 'area'
+    if (usuario === "jefesistemas") {
+      deptoFiltro = "IT/Sistemas";
+    } else if (usuario === "jefelogistica") {
+      deptoFiltro = "Logística";
+    } else if (usuario === "jefecomercial") {
+      deptoFiltro = "Comercial";
+    } else if (usuario === "jeferrhh") {
+      deptoFiltro = "RRHH";
+    } else if (usuario === "jefeotros") {
+      deptoFiltro = "Otros"; // O el nombre exacto del departamento en tu BD
+    }
+
+    // Si el usuario no coincide con ningún rol válido, se niega el acceso
+    if (!deptoFiltro) {
+      return res.status(403).json({
+        error: "Acceso denegado: Usuario sin departamento válido asignado.",
+      });
+    }
+
+    // Consulta filtrando por el departamento correspondiente
     const result = await pool.query(
       "SELECT * FROM requisiciones WHERE departamento = $1 OR area = $1 ORDER BY id DESC",
       [deptoFiltro],
     );
+
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener requisiciones filtradas:", error);
+    await registrarErrorServidor(error, "/api/requisiciones/filtro");
     res.status(500).json({ error: "Error al cargar las requisiciones" });
   }
 });
@@ -369,6 +391,7 @@ app.get("/api/requisiciones/todas", async (_req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener todas las requisiciones:", error);
+    await registrarErrorServidor(error, "/api/requisiciones/todas");
     res.status(500).send("Error al obtener todas las requisiciones");
   }
 });
@@ -385,6 +408,7 @@ app.get("/api/requisiciones/tic", async (_req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener requisiciones IT/Sistemas:", error);
+    await registrarErrorServidor(error, "/api/requisiciones/tic");
     res.status(500).send("Error al obtener requisiciones IT/Sistemas");
   }
 });
@@ -401,6 +425,7 @@ app.get("/api/requisiciones/logistica", async (_req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener requisiciones de Logística:", error);
+    await registrarErrorServidor(error, "/api/requisiciones/logistica");
     res.status(500).send("Error al obtener requisiciones de Logística");
   }
 });
@@ -417,6 +442,7 @@ app.get("/api/requisiciones/rrhh", async (_req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener requisiciones de RRHH:", error);
+    await registrarErrorServidor(error, "/api/requisiciones/rrhh");
     res.status(500).send("Error al obtener requisiciones de RRHH");
   }
 });
@@ -433,11 +459,12 @@ app.get("/api/requisiciones/comercial", async (_req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener requisiciones de Comercial:", error);
+    await registrarErrorServidor(error, "/api/requisiciones/comercial");
     res.status(500).send("Error al obtener requisiciones de Comercial");
   }
 });
 
-// Endpoint para requisiciones de Otros departamentos pendientes
+// Endpoint para requisiciones del departamento Otros pendientes
 app.get("/api/requisiciones/otros", async (_req, res) => {
   try {
     const result = await pool.query(`
@@ -452,6 +479,7 @@ app.get("/api/requisiciones/otros", async (_req, res) => {
       "Error al obtener requisiciones de otros departamentos:",
       error,
     );
+    await registrarErrorServidor(error, "/api/requisiciones/otros");
     res
       .status(500)
       .send("Error al obtener requisiciones de otros departamentos");
@@ -516,6 +544,7 @@ app.patch("/api/aprobaciones/:id/entregar", async (req, res) => {
     res.json({ message: "Entrega registrada con éxito" });
   } catch (error) {
     console.error("Error al registrar entrega:", error);
+    await registrarErrorServidor(error, "/api/aprobaciones/:id/entregar");
     res.status(500).send("Error al registrar la entrega");
   }
 });
@@ -529,7 +558,7 @@ app.get("/api/aprobaciones/entregadas", async (_req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener entregas:", error);
-    await registrarErrorServidor(error, "/api/chatbot/metrics");
+    await registrarErrorServidor(error, "/api/aprobaciones/entregadas");
     res.status(500).send("Error al obtener entregas");
   }
 });
@@ -577,6 +606,7 @@ app.patch("/api/aprobaciones/:id/rechazar", async (req, res) => {
     res.json({ message: "Solicitud rechazada con éxito" });
   } catch (error) {
     console.error("Error al rechazar solicitud:", error);
+    await registrarErrorServidor(error, "/api/aprobaciones/:id/rechazar");
     res.status(500).send("Error al rechazar la solicitud");
   }
 });
@@ -590,7 +620,7 @@ app.get("/api/aprobaciones/rechazadas", async (_req, res) => {
     res.json(normalizarEstado(result.rows));
   } catch (error) {
     console.error("Error al obtener rechazadas:", error);
-    await registrarErrorServidor(error, "/api/chatbot/metrics");
+    await registrarErrorServidor(error, "/api/aprobaciones/rechazadas");
     res.status(500).send("Error al obtener rechazadas");
   }
 });
@@ -663,6 +693,7 @@ app.post(["/api/convenios", "/api/convenios/crear"], async (req, res) => {
     });
   } catch (error: unknown) {
     console.error("Error al crear convenio:", error);
+    await registrarErrorServidor(error, "/api/convenios/crear");
     const err = error as Partial<{
       code?: string;
       message?: string;
@@ -731,6 +762,7 @@ app.put("/api/convenios/:id", async (req, res) => {
     });
   } catch (error) {
     console.error("Error al actualizar convenio:", error);
+    await registrarErrorServidor(error, "/api/convenios/:id");
     res.status(500).json({ error: "Error al actualizar el convenio" });
   }
 });
@@ -762,6 +794,7 @@ app.delete("/api/convenios/:id", async (req, res) => {
     });
   } catch (error) {
     console.error("Error al eliminar convenio:", error);
+    await registrarErrorServidor(error, "/api/convenios/:id");
     res.status(500).json({ error: "Error al eliminar el convenio" });
   }
 });
@@ -929,29 +962,6 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
   }
 });
 
-// Endpoint para que el bot registre errores de API o de ejecución
-app.post("/api/chatbot/log-error", async (req, res) => {
-  try {
-    const { mensaje, origen, telefono } = req.body;
-
-    await pool.query(
-      `INSERT INTO errores_api (mensaje, origen, telefono, resuelto, fecha) 
-       VALUES ($1, $2, $3, false, NOW())`,
-      [mensaje || "Error desconocido", origen || "Bot", telefono || null],
-    );
-
-    res
-      .status(201)
-      .json({ status: "ok", message: "Error registrado correctamente" });
-  } catch (error) {
-    console.error(
-      "Error al guardar log de error en /api/chatbot/log-error:",
-      error,
-    );
-    res.status(500).json({ error: "No se pudo registrar el error" });
-  }
-});
-
 // Endpoint de Actividad Reciente en Vivo
 app.get("/api/chatbot/activity", async (_req, res) => {
   try {
@@ -981,5 +991,28 @@ app.get("/api/chatbot/activity", async (_req, res) => {
     console.error("Error al obtener actividad en vivo:", error);
     await registrarErrorServidor(error, "/api/chatbot/activity");
     res.json([]);
+  }
+});
+
+// Endpoint para que el bot registre errores de API o de ejecución
+app.post("/api/chatbot/log-error", async (req, res) => {
+  try {
+    const { mensaje, origen, telefono } = req.body;
+
+    await pool.query(
+      `INSERT INTO errores_api (mensaje, origen, telefono, resuelto, fecha) 
+       VALUES ($1, $2, $3, false, NOW())`,
+      [mensaje || "Error desconocido", origen || "Bot", telefono || null],
+    );
+
+    res
+      .status(201)
+      .json({ status: "ok", message: "Error registrado correctamente" });
+  } catch (error) {
+    console.error(
+      "Error al guardar log de error en /api/chatbot/log-error:",
+      error,
+    );
+    res.status(500).json({ error: "No se pudo registrar el error" });
   }
 });

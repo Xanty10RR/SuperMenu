@@ -633,6 +633,7 @@ app.get("/api/convenios/buscar", async (req, res) => {
     res.json(resultados);
   } catch (error) {
     console.error("Error al buscar convenios:", error);
+    await registrarErrorServidor(error, "/api/convenios/buscar");
     res.status(500).json({ error: "Error interno al buscar convenios" });
   }
 });
@@ -645,6 +646,7 @@ app.get("/api/convenios/sugerir", async (req, res) => {
     res.json(sugerencia);
   } catch (error) {
     console.error("Error al buscar sugerencia:", error);
+    await registrarErrorServidor(error, "/api/convenios/sugerir");
     res.status(500).json({ error: "Error interno al sugerir convenio" });
   }
 });
@@ -663,6 +665,7 @@ app.get("/api/convenios/:banco/:id", async (req, res) => {
     res.json(resultado);
   } catch (error) {
     console.error("Error al obtener el convenio:", error);
+    await registrarErrorServidor(error, "/api/convenios/:banco/:id");
     res.status(500).json({ error: "Error interno al obtener el convenio" });
   }
 });

@@ -1,6 +1,10 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react'
-import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from 'react-icons/fi'
+import { FiArrowLeft, FiEdit2, FiPlus, FiSearch, FiTrash2 } from 'react-icons/fi'
 import '../styles/Usuarios.css'
+
+interface UsuariosProps {
+  onBack: () => void
+}
 
 interface User {
   id: number
@@ -9,7 +13,7 @@ interface User {
   tabla_asignada: string
 }
 
-const Usuarios: React.FC = () => {
+const Usuarios: React.FC<UsuariosProps> = ({ onBack }) => {
   const [users, setUsers] = useState<User[]>([])
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -157,6 +161,9 @@ const Usuarios: React.FC = () => {
 
   return (
     <div className="usuarios-page">
+      <button type="button" className="chatbot-dashboard__back-button" onClick={onBack}>
+        <FiArrowLeft /> Volver
+      </button>
       <div className="usuarios-container">
         <h1 className="usuarios-header">Gestión de Jefes y Usuarios</h1>
 

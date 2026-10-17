@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
+  FiArrowLeft,
   FiEye,
   FiCheckCircle,
   FiXCircle,
@@ -11,6 +12,10 @@ import {
   FiSearch
 } from 'react-icons/fi'
 import styles from '../styles/RequisicionesView.module.css'
+
+interface RequisicionesViewProps {
+  onBack: () => void
+}
 
 interface Requisicion {
   id: number
@@ -26,7 +31,7 @@ interface Requisicion {
   [key: string]: unknown
 }
 
-export const RequisicionesView: React.FC = () => {
+export const RequisicionesView: React.FC<RequisicionesViewProps> = ({ onBack }) => {
   const [requisiciones, setRequisiciones] = useState<Requisicion[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -260,6 +265,9 @@ export const RequisicionesView: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      <button type="button" className="chatbot-dashboard__back-button" onClick={onBack}>
+        <FiArrowLeft /> Volver
+      </button>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

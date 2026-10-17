@@ -4,13 +4,13 @@ import { AuthService } from './Logout'
 import '../styles/SuperMenu.css'
 import {
   FaChevronDown,
-  FaGift,
   FaChevronRight,
-  FaUser,
-  FaFileExport,
-  FaCog,
+  FaUsers,
   FaFileAlt,
-  FaRobot
+  FaRobot,
+  FaHandshake,
+  FaTruck,
+  FaHome
 } from 'react-icons/fa'
 import { LogOut } from 'lucide-react'
 import { InicioView } from './InicioView'
@@ -84,7 +84,7 @@ const SuperMenu: React.FC<Props> = () => {
             onClick={handleInicioClick}
             aria-current={activeView === 'inicio' ? 'page' : undefined}
           >
-            <FaCog className="menu-icon" />
+            <FaHome className="menu-icon" />
             {!sidebarCollapsed && <span>Inicio</span>}
           </li>
           <li
@@ -92,7 +92,7 @@ const SuperMenu: React.FC<Props> = () => {
             onClick={handleUsuariosClick}
             aria-current={activeView === 'usuarios' ? 'page' : undefined}
           >
-            <FaUser className="menu-icon" />
+            <FaUsers className="menu-icon" />
             {!sidebarCollapsed && <span>Usuarios</span>}
           </li>
           <li
@@ -100,7 +100,7 @@ const SuperMenu: React.FC<Props> = () => {
             onClick={handleConveniosClick}
             aria-current={activeView === 'convenios' ? 'page' : undefined}
           >
-            <FaFileExport className="menu-icon" />
+            <FaHandshake className="menu-icon" />
             {!sidebarCollapsed && <span>Convenios</span>}
           </li>
           <li
@@ -116,7 +116,7 @@ const SuperMenu: React.FC<Props> = () => {
             onClick={handleLogisticaClick}
             aria-current={activeView === 'logistica' ? 'page' : undefined}
           >
-            <FaGift className="menu-icon" />
+            <FaTruck className="menu-icon" />
             {!sidebarCollapsed && <span>Logistica</span>}
           </li>
           <li

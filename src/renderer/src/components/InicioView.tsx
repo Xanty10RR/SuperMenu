@@ -1,6 +1,6 @@
 import React from 'react'
 import '../styles/InicioView.css'
-import { FaUsers, FaGift, FaHandshake, FaFileInvoice, FaRobot } from 'react-icons/fa'
+import { FaUsers, FaTruck, FaHandshake, FaFileInvoice, FaRobot } from 'react-icons/fa'
 
 interface Opcion {
   nombre: string
@@ -37,13 +37,13 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
     },
     {
       nombre: 'Logistica',
-      descripcion: 'Entrega de requisiciones',
-      icono: <FaGift size={50} />,
+      descripcion: 'Aprobación y entrega de requisiciones',
+      icono: <FaTruck size={50} />,
       onClick: () => onNavigate('logistica')
     },
     {
       nombre: 'SuperAsistente',
-      descripcion: 'Métricas y actividad del asistente',
+      descripcion: 'Métricas, actividad y estado del bot',
       icono: <FaRobot size={50} />,
       onClick: () => onNavigate('superasistente')
     }

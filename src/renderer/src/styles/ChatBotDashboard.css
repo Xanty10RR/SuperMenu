@@ -83,7 +83,7 @@
 }
 
 .chatbot-dashboard__kpi-card--total-convenios {
-  border-top: 3px solid #1e3a8a;
+  border-top: 3px solid #6c9cf0;
 }
 
 .chatbot-dashboard__kpi-card--usuarios {
@@ -91,11 +91,11 @@
 }
 
 .chatbot-dashboard__kpi-card--flujos {
-  border-top: 3px solid #2563eb;
+  border-top: 3px solid #2366f6;
 }
 
 .chatbot-dashboard__kpi-card--chats {
-  border-top: 3px solid #34d399;
+  border-top: 3px solid #3ad59c;
 }
 
 .chatbot-dashboard__kpi-card--automatizacion {

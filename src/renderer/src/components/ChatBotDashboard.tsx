@@ -19,6 +19,11 @@ import {
 // Interfaz para recibir todas las métricas del backend
 interface ChatbotMetrics {
   totalConveniosBancos: number
+  desgloseBancos: {
+    agrario: number
+    aval: number
+    bbva: number
+  }
   totalHistoricoUsuarios: number
   messagesToday: number
   activeChats: number
@@ -58,6 +63,11 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
   const navigate = useNavigate()
   const [metrics, setMetrics] = useState<ChatbotMetrics>({
     totalConveniosBancos: 0,
+    desgloseBancos: {
+      agrario: 0,
+      aval: 0,
+      bbva: 0
+    },
     totalHistoricoUsuarios: 0,
     messagesToday: 0,
     activeChats: 0,
@@ -126,6 +136,42 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
               {metrics.totalConveniosBancos?.toLocaleString() || 0}
             </span>
             <span className="chatbot-dashboard__kpi-label">Convenios Bancarios Totales</span>
+          </div>
+        </article>
+
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--agrario">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--green">
+            <FiBriefcase />
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.desgloseBancos.agrario.toLocaleString()}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">Convenios Banco Agrario</span>
+          </div>
+        </article>
+
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--aval">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--purple">
+            <FiBriefcase />
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.desgloseBancos.aval.toLocaleString()}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">Convenios Aval</span>
+          </div>
+        </article>
+
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--bbva">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
+            <FiBriefcase />
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.desgloseBancos.bbva.toLocaleString()}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">Convenios BBVA</span>
           </div>
         </article>
 

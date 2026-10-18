@@ -249,7 +249,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           <table className="chatbot-dashboard__table">
             <thead>
               <tr>
-                <th>Usuario / Remitente</th>
+                <th>Nombre usuario</th>
                 <th>Intención / Flujo</th>
                 <th>Hora</th>
                 <th>Estado</th>

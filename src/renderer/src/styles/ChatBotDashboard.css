@@ -67,6 +67,18 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.chatbot-dashboard__kpi-card--agrario {
+  border-top: 3px solid #10b981;
+}
+
+.chatbot-dashboard__kpi-card--aval {
+  border-top: 3px solid #9b59b6;
+}
+
+.chatbot-dashboard__kpi-card--bbva {
+  border-top: 3px solid #2f6db2;
+}
+
 .chatbot-dashboard__kpi-icon {
   display: flex;
   width: 50px;

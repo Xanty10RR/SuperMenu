@@ -163,7 +163,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           </div>
         </article>
 
-        <article className="chatbot-dashboard__kpi-card">
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--total-convenios">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
             <FiBriefcase />
           </div>
@@ -175,7 +175,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           </div>
         </article>
 
-        <article className="chatbot-dashboard__kpi-card">
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--usuarios">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
             <FiUsers />
           </div>
@@ -187,7 +187,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           </div>
         </article>
 
-        <article className="chatbot-dashboard__kpi-card">
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--flujos">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
             <FiMessageSquare />
           </div>
@@ -201,7 +201,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           </div>
         </article>
 
-        <article className="chatbot-dashboard__kpi-card">
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--chats">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--green">
             <FiMessageCircle />
           </div>
@@ -213,7 +213,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           </div>
         </article>
 
-        <article className="chatbot-dashboard__kpi-card">
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--automatizacion">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--purple">
             <FiActivity />
           </div>
@@ -223,7 +223,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
           </div>
         </article>
 
-        <article className="chatbot-dashboard__kpi-card">
+        <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--fallas">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--orange">
             <FiAlertTriangle />
           </div>

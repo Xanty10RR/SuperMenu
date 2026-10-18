@@ -68,15 +68,39 @@
 }
 
 .chatbot-dashboard__kpi-card--agrario {
-  border-top: 3px solid #10b981;
+  border-top: 3px solid #10B981;
 }
 
 .chatbot-dashboard__kpi-card--aval {
-  border-top: 3px solid #9b59b6;
+  border-top: 3px solid #8B5CF6;
 }
 
 .chatbot-dashboard__kpi-card--bbva {
-  border-top: 3px solid #2f6db2;
+  border-top: 3px solid #001391;
+}
+
+.chatbot-dashboard__kpi-card--total-convenios {
+  border-top: 3px solid #1e3a8a;
+}
+
+.chatbot-dashboard__kpi-card--usuarios {
+  border-top: 3px solid #5b8db8;
+}
+
+.chatbot-dashboard__kpi-card--flujos {
+  border-top: 3px solid #2563eb;
+}
+
+.chatbot-dashboard__kpi-card--chats {
+  border-top: 3px solid #34d399;
+}
+
+.chatbot-dashboard__kpi-card--automatizacion {
+  border-top: 3px solid #d946ef;
+}
+
+.chatbot-dashboard__kpi-card--fallas {
+  border-top: 3px solid #f59e0b;
 }
 
 .chatbot-dashboard__kpi-icon {

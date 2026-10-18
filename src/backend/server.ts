@@ -855,6 +855,38 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
       automationRate = Math.max(0, Number(rate.toFixed(1)));
     }
 
+    // Endpoint de Actividad Reciente en Vivo
+    app.get("/api/chatbot/activity", async (_req, res) => {
+      try {
+        // Trae las últimas interacciones convirtiendo el timestamp a la zona horaria de Bogotá
+        const resultadoActividad = await pool.query(
+          `SELECT id, telefono, nombre, ultima_accion, 
+              (ultimo_mensaje AT TIME ZONE 'America/Bogota') as ultimo_mensaje 
+       FROM sesiones_chat 
+       ORDER BY ultimo_mensaje DESC LIMIT 10`,
+        );
+
+        const listaActividad = resultadoActividad.rows.map((fila, indice) => ({
+          id: fila.id || indice + 1,
+          user: fila.nombre || fila.telefono || "Usuario WhatsApp",
+          intent: fila.ultima_accion || "Interacción con el Bot",
+          time: fila.ultimo_mensaje
+            ? new Date(fila.ultimo_mensaje).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "Reciente",
+          status: "success",
+        }));
+
+        res.json(listaActividad);
+      } catch (error) {
+        console.error("Error al obtener actividad en vivo:", error);
+        await registrarErrorServidor(error, "/api/chatbot/activity");
+        res.json([]);
+      }
+    });
+
     // Estado del Servidor y API
     // Función para formatear el tiempo activo (uptime) del servidor en Render
     function formatUptime(seconds: number): string {
@@ -962,38 +994,6 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
     console.error("Error al obtener métricas del chatbot:", error);
     await registrarErrorServidor(error, "/api/chatbot/metrics");
     res.status(500).json({ error: "No se pudieron obtener las métricas" });
-  }
-});
-
-// Endpoint de Actividad Reciente en Vivo
-app.get("/api/chatbot/activity", async (_req, res) => {
-  try {
-    // Trae las últimas interacciones convirtiendo el timestamp a la zona horaria de Bogotá
-    const resultadoActividad = await pool.query(
-      `SELECT id, telefono, nombre, ultima_accion, 
-              (ultimo_mensaje AT TIME ZONE 'America/Bogota') as ultimo_mensaje 
-       FROM sesiones_chat 
-       ORDER BY ultimo_mensaje DESC LIMIT 10`,
-    );
-
-    const listaActividad = resultadoActividad.rows.map((fila, indice) => ({
-      id: fila.id || indice + 1,
-      user: fila.nombre || fila.telefono || "Usuario WhatsApp",
-      intent: fila.ultima_accion || "Interacción con el Bot",
-      time: fila.ultimo_mensaje
-        ? new Date(fila.ultimo_mensaje).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        : "Reciente",
-      status: "success",
-    }));
-
-    res.json(listaActividad);
-  } catch (error) {
-    console.error("Error al obtener actividad en vivo:", error);
-    await registrarErrorServidor(error, "/api/chatbot/activity");
-    res.json([]);
   }
 });
 

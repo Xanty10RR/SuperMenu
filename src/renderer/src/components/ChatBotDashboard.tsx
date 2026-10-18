@@ -127,18 +127,6 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
 
       {/* Tarjetas de Métricas KPI Dinámicas */}
       <section className="chatbot-dashboard__kpi-grid">
-        <article className="chatbot-dashboard__kpi-card">
-          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
-            <FiBriefcase />
-          </div>
-          <div className="chatbot-dashboard__kpi-info">
-            <span className="chatbot-dashboard__kpi-value">
-              {metrics.totalConveniosBancos?.toLocaleString() || 0}
-            </span>
-            <span className="chatbot-dashboard__kpi-label">Convenios Bancarios Totales</span>
-          </div>
-        </article>
-
         <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--agrario">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--green">
             <FiBriefcase />
@@ -147,7 +135,7 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
             <span className="chatbot-dashboard__kpi-value">
               {metrics.desgloseBancos.agrario.toLocaleString()}
             </span>
-            <span className="chatbot-dashboard__kpi-label">Convenios Banco Agrario</span>
+            <span className="chatbot-dashboard__kpi-label">Convenios Agrario</span>
           </div>
         </article>
 
@@ -172,6 +160,18 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
               {metrics.desgloseBancos.bbva.toLocaleString()}
             </span>
             <span className="chatbot-dashboard__kpi-label">Convenios BBVA</span>
+          </div>
+        </article>
+
+        <article className="chatbot-dashboard__kpi-card">
+          <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--blue">
+            <FiBriefcase />
+          </div>
+          <div className="chatbot-dashboard__kpi-info">
+            <span className="chatbot-dashboard__kpi-value">
+              {metrics.totalConveniosBancos?.toLocaleString() || 0}
+            </span>
+            <span className="chatbot-dashboard__kpi-label">Convenios Bancarios Totales</span>
           </div>
         </article>
 

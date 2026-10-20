@@ -8,12 +8,7 @@ import {
   FaChevronRight,
   FaDownload
 } from 'react-icons/fa'
-import { FiArrowLeft } from 'react-icons/fi'
 import '../styles/Convenios.css'
-
-interface ConveniosProps {
-  onBack: () => void
-}
 
 interface Convenio {
   id?: number | string
@@ -58,7 +53,7 @@ interface DatosBancos {
   aval: Convenio[]
 }
 
-export const Convenios: React.FC<ConveniosProps> = ({ onBack }) => {
+export const Convenios: React.FC = () => {
   const usuarioRaw = localStorage.getItem('userData') || localStorage.getItem('usuario') || ''
   let usuario: Record<string, unknown> = {}
 
@@ -578,9 +573,6 @@ export const Convenios: React.FC<ConveniosProps> = ({ onBack }) => {
 
   return (
     <div className="convenios-page convenios-container">
-      <button type="button" className="chatbot-dashboard__back-button" onClick={onBack}>
-        <FiArrowLeft /> Volver
-      </button>
       <div className="convenios-header">
         <h2>Gestión de Convenios Bancarios</h2>
 

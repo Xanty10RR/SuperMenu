@@ -1,5 +1,7 @@
 .usuarios-page {
     min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
     background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
 }
 

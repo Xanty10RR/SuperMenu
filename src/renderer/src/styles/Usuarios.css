@@ -3,10 +3,6 @@
     background: linear-gradient(to bottom, #f5f7fa, #eef2f5);
 }
 
-.usuarios-page > .chatbot-dashboard__back-button {
-    margin: 30px 20px 0;
-}
-
 .usuarios-container {
     max-width: 800px;
     margin: 0 auto;

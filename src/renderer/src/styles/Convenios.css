@@ -12,10 +12,9 @@
 /* Cabecera superior: Título y Botón Nuevo Convenio */
 .convenios-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   margin-bottom: 24px;
-  flex-wrap: wrap;
   gap: 16px;
 }
 
@@ -44,6 +43,7 @@
 }
 
 .convenios-button--new {
+  align-self: flex-end;
   background-color: #059669;
   color: #ffffff;
 }

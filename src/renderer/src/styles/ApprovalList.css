@@ -26,16 +26,6 @@
   padding-bottom: 10px;
 }
 
-.list-title::after {
-  content: '';
-  display: block;
-  width: 100px;
-  height: 4px;
-  background: linear-gradient(to right, #3b82f6, #1e293b);
-  margin: 10px auto 0;
-  border-radius: 2px;
-}
-
 /* Carga y estados de error */
 .loading-container {
   display: flex;

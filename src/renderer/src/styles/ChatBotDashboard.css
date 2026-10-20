@@ -31,6 +31,7 @@
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.025em;
+  padding: 0;
 }
 
 .chatbot-dashboard__kpi-grid {

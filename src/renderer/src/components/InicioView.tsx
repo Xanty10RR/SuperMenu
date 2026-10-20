@@ -51,6 +51,10 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
 
   return (
     <div className="inicio-container">
+      <div className="inicio-intro">
+        <h1>Sistema de Gestión Operativa</h1>
+        <p>Selecciona un módulo para gestionar las operaciones de tu departamento</p>
+      </div>
       <div className="honeycomb-container">
         <div className="honeycomb">
           {/* Primera fila 2 hexágonos centrados */}

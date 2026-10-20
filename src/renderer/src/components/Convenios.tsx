@@ -574,7 +574,7 @@ export const Convenios: React.FC = () => {
   return (
     <div className="convenios-page convenios-container">
       <div className="convenios-header">
-        <h2>Gestión de Convenios Bancarios</h2>
+        <h1>Gestión de Convenios Bancarios</h1>
 
         {/* Solo se muestra si es comercial o jefecomercial */}
         {tienePermisoEscritura && (

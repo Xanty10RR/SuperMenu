@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
 import '../styles/ChatBotDashboard.css'
 import {
-  FiArrowLeft,
   FiMessageSquare,
   FiUsers,
   FiActivity,
@@ -55,12 +53,7 @@ const claseLatencia = (latencyStr?: string): string => {
   return 'latency--error'
 }
 
-interface ChatBotDashboardProps {
-  onBack?: () => void
-}
-
-const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
-  const navigate = useNavigate()
+const ChatBotDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<ChatbotMetrics>({
     totalConveniosBancos: 0,
     desgloseBancos: {
@@ -113,12 +106,6 @@ const ChatBotDashboard: React.FC<ChatBotDashboardProps> = ({ onBack }) => {
     <main className="chatbot-dashboard">
       <header className="chatbot-dashboard__header">
         <div className="chatbot-dashboard__title-area">
-          <button
-            className="chatbot-dashboard__back-button"
-            onClick={onBack ?? (() => navigate('/supermenu'))}
-          >
-            <FiArrowLeft /> Volver
-          </button>
           <h1 className="chatbot-dashboard__title">
             Centro de Operaciones - Chatbot SuperAsistente
           </h1>

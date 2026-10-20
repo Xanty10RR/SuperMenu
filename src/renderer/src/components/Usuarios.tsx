@@ -157,9 +157,8 @@ const Usuarios: React.FC = () => {
 
   return (
     <div className="usuarios-page">
+      <h1 className="usuarios-header">Gestión de Jefes y Usuarios</h1>
       <div className="usuarios-container">
-        <h1 className="usuarios-header">Gestión de Jefes y Usuarios</h1>
-
         {/* Solo el admin puede ver el formulario de crear / editar */}
         {esAdmin && (
           <div className="usuarios-card usuarios-form-card">

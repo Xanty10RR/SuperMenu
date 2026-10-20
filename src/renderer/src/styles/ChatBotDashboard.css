@@ -24,24 +24,6 @@
   gap: 15px;
 }
 
-.chatbot-dashboard__back-button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border: 0;
-  border-radius: 6px;
-  background: #2f6db2;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.chatbot-dashboard__back-button:hover {
-  background: #1d2f4a;
-}
-
 .chatbot-dashboard__title {
   margin: 0;
   color: #23395d;

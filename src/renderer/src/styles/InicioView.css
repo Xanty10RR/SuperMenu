@@ -10,6 +10,38 @@
   box-sizing: border-box;
 }
 
+.inicio-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1.4rem 2rem;
+  box-sizing: border-box;
+}
+
+.inicio-intro {
+  width: 100%;
+  text-align: left;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.inicio-intro h1 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.025em;
+  text-align: left;
+}
+
+.inicio-intro p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.90rem;
+  text-align: left;
+}
+
 /* Honeycomb styles */
 .honeycomb-container {
   width: 100%;
@@ -75,7 +107,8 @@
 }
 
 .honeycomb-cell:hover .honeycomb-hex {
-  transform: scale(1.05); /* Escala más suave para que no empuje las otras celdas */
+  transform: scale(1.05);
+  /* Escala más suave para que no empuje las otras celdas */
   box-shadow: 0 15px 30px rgba(74, 107, 175, 0.25);
 }
 
@@ -173,14 +206,16 @@
 }
 
 .slogan-content h2 {
-  font-size: 2rem; /* Reducido de 2.5rem */
+  font-size: 2rem;
+  /* Reducido de 2.5rem */
   color: #2c3e50;
   margin-bottom: 0.1rem;
   font-weight: 700;
 }
 
 .slogan-content p {
-  font-size: 1.2rem; /* Reducido de 1.5rem */
+  font-size: 1.2rem;
+  /* Reducido de 1.5rem */
   color: #4a6baf;
   margin-bottom: 0.5rem;
   font-weight: 500;

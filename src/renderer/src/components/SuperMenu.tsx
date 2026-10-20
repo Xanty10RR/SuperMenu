@@ -156,15 +156,15 @@ const SuperMenu: React.FC<Props> = () => {
           {activeView === 'inicio' ? (
             <InicioView onNavigate={setActiveView} />
           ) : activeView === 'usuarios' ? (
-            <Usuarios onBack={handleInicioClick} />
+            <Usuarios />
           ) : activeView === 'convenios' ? (
-            <Convenios onBack={handleInicioClick} />
+            <Convenios />
           ) : activeView === 'logistica' ? (
-            <ApprovalList onBack={handleInicioClick} />
+            <ApprovalList />
           ) : activeView === 'superasistente' ? (
-            <ChatBotDashboard onBack={() => setActiveView('inicio')} />
+            <ChatBotDashboard />
           ) : (
-            <RequisicionesView onBack={handleInicioClick} />
+            <RequisicionesView />
           )}
         </div>
       </div>

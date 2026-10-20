@@ -8,13 +8,9 @@ import {
   faBoxOpen
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { FiArrowLeft, FiSearch } from 'react-icons/fi'
+import { FiSearch } from 'react-icons/fi'
 import axios from 'axios'
 import '../styles/ApprovalList.css'
-
-interface ApprovalListProps {
-  onBack: () => void
-}
 
 interface ApprovalItem {
   id: number
@@ -37,7 +33,7 @@ interface ApprovalItem {
 
 type TabType = 'approved' | 'rejected' | 'delivered'
 
-export const ApprovalList: React.FC<ApprovalListProps> = ({ onBack }) => {
+export const ApprovalList: React.FC = () => {
   const [approvals, setApprovals] = useState<ApprovalItem[]>([])
   const [rejected, setRejected] = useState<ApprovalItem[]>([])
   const [delivered, setDelivered] = useState<ApprovalItem[]>([])
@@ -545,9 +541,6 @@ export const ApprovalList: React.FC<ApprovalListProps> = ({ onBack }) => {
 
   return (
     <div className="approval-list-container">
-      <button type="button" className="chatbot-dashboard__back-button" onClick={onBack}>
-        <FiArrowLeft /> Volver
-      </button>
       <h2 className="list-title">
         {activeTab === 'approved' && 'Solicitudes Aprobadas'}
         {activeTab === 'rejected' && 'Solicitudes Rechazadas'}

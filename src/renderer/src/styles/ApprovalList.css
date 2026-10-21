@@ -258,6 +258,7 @@
 .approval-item:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
+  background-color: #fdffee;
 }
 
 /* Encabezado de las cards */
@@ -267,12 +268,12 @@
   align-items: center;
   padding: 20px;
   cursor: pointer;
-  background: linear-gradient(to right, #f8fafc, #ffffff);
+  background: white;
   transition: background 0.3s ease;
 }
 
 .item-header:hover {
-  background: linear-gradient(to right, #f0f7fd, #ffffff);
+  background: #F3F6F9;
 }
 
 .header-info {

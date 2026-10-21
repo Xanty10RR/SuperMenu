@@ -23,6 +23,7 @@ interface ChatbotMetrics {
     bbva: number
   }
   totalHistoricoUsuarios: number
+  avgMessagesPerUser?: number
   messagesToday: number
   activeChats: number
   automationRate: number
@@ -180,11 +181,9 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">
-              {metrics.messagesToday?.toLocaleString() || 0}
+              {metrics.avgMessagesPerUser !== undefined ? metrics.avgMessagesPerUser : 0}
             </span>
-            <span className="chatbot-dashboard__kpi-label">
-              Flujos Conversacionales Ejecutados Hoy
-            </span>
+            <span className="chatbot-dashboard__kpi-label">Promedio Mensajes / Usuario</span>
           </div>
         </article>
 

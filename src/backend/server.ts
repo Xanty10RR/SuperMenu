@@ -825,7 +825,7 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
     const consultaPromedioMensajes = await pool.query(
       "SELECT COALESCE(ROUND(AVG(total_mensajes), 1), 0) as promedio FROM sesiones_chat",
     );
-    // Lo parseamos a flotante para conservar el decimal (ejemplo: 3.5 o 12.4)
+    // Lo parseamos a flotante para conservar el decimal
     const promedioMensajesPorUsuario = parseFloat(
       consultaPromedioMensajes.rows[0].promedio || 0,
     );

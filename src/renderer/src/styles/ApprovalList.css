@@ -8,13 +8,6 @@
   animation: module-entry 0.5s ease-out both;
 }
 
-.content-container {
-  background-color: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
 .list-title {
   color: #1e293b;
   text-align: left;

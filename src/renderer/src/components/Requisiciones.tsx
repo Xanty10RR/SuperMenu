@@ -307,7 +307,7 @@ export const RequisicionesView: React.FC = () => {
             <FiSearch className={styles.searchIcon} size={18} />
             <input
               type="text"
-              placeholder="Buscar requisiciones..."
+              placeholder="Buscar por id o nombre..."
               className={styles.searchInput}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

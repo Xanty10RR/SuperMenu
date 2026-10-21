@@ -610,12 +610,16 @@ export const ApprovalList: React.FC = () => {
         {canManageDeliveries && (
           <div className="department-tabs" aria-label="Filtrar por departamento">
             {departmentTabs.map(({ id, label }) => {
+              const itemsForActiveTab =
+                activeTab === 'approved'
+                  ? approvals
+                  : activeTab === 'rejected'
+                    ? rejected
+                    : delivered
               const count =
                 id === 'todas'
-                  ? approvals.length + rejected.length + delivered.length
-                  : [...approvals, ...rejected, ...delivered].filter(
-                      (item) => getDepartmentTab(item) === id
-                    ).length
+                  ? itemsForActiveTab.length
+                  : itemsForActiveTab.filter((item) => getDepartmentTab(item) === id).length
 
               return (
                 <button
@@ -638,8 +642,8 @@ export const ApprovalList: React.FC = () => {
           <FiSearch className="barraBusqueda-icon" aria-hidden="true" />
           <input
             type="search"
-            aria-label="Buscar solicitudes por ID o nombre"
-            placeholder="Buscar por ID o nombre..."
+            aria-label="Buscar solicitudes por id o nombre"
+            placeholder="Buscar por id o nombre..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />

@@ -77,6 +77,16 @@
   margin: 20px 0;
 }
 
+/* Secciones Aprobadas, Rechazadas y Entregadas */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e6ed;
+  background-color: white;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
 .department-tabs {
   display: flex;
   gap: 10px;

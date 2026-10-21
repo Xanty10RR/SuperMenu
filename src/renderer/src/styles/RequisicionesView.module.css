@@ -34,11 +34,21 @@
 
 .tab {
   padding: 10px 20px;
+  border: 0;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
+}
+
+.tab:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #3182ce;
+  outline-offset: 2px;
 }
 
 .tabActive {

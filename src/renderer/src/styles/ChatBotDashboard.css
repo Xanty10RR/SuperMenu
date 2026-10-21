@@ -399,16 +399,18 @@
   }
 }
 
+@media (max-width: 960px) {
+  .chatbot-dashboard__section-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 640px) {
   .chatbot-dashboard {
     padding: 20px 14px;
   }
 
   .chatbot-dashboard__kpi-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chatbot-dashboard__section-grid {
     grid-template-columns: 1fr;
   }
 

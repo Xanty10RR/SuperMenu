@@ -64,12 +64,13 @@ const normalizarEstado = (
 const registrarErrorServidor = async (
   error: unknown,
   origen: string,
+  telefono: string | null = null,
 ): Promise<void> => {
   try {
     await pool.query(
       `INSERT INTO errores_api (mensaje, origen, telefono, resuelto, fecha) 
        VALUES ($1, $2, $3, false, NOW())`,
-      [(error as Error)?.message || "Error desconocido", origen, null],
+      [(error as Error)?.message || "Error desconocido", origen, telefono],
     );
   } catch (dbErr) {
     console.error("No se pudo guardar el error en Supabase:", dbErr);

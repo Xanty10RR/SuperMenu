@@ -55,42 +55,6 @@
     box-shadow 0.25s ease;
 }
 
-.chatbot-dashboard__kpi-card--agrario {
-  border-top: 3px solid #10B981;
-}
-
-.chatbot-dashboard__kpi-card--aval {
-  border-top: 3px solid #8B5CF6;
-}
-
-.chatbot-dashboard__kpi-card--bbva {
-  border-top: 3px solid #001391;
-}
-
-.chatbot-dashboard__kpi-card--total-convenios {
-  border-top: 3px solid #6c9cf0;
-}
-
-.chatbot-dashboard__kpi-card--usuarios {
-  border-top: 3px solid #5b8db8;
-}
-
-.chatbot-dashboard__kpi-card--flujos {
-  border-top: 3px solid #2366f6;
-}
-
-.chatbot-dashboard__kpi-card--chats {
-  border-top: 3px solid #3ad59c;
-}
-
-.chatbot-dashboard__kpi-card--automatizacion {
-  border-top: 3px solid #d946ef;
-}
-
-.chatbot-dashboard__kpi-card--fallas {
-  border-top: 3px solid #f59e0b;
-}
-
 .chatbot-dashboard__kpi-icon {
   display: flex;
   width: 50px;
@@ -146,7 +110,7 @@
 }
 
 .chatbot-dashboard__panel {
-  padding: 20px;
+  padding: 18px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: #fff;
@@ -189,7 +153,7 @@
   overflow: hidden;
   border-collapse: collapse;
   border-radius: 6px;
-  text-align: left;
+  text-align: center;
 }
 
 .chatbot-dashboard__table thead {
@@ -199,7 +163,7 @@
 
 .chatbot-dashboard__table th,
 .chatbot-dashboard__table td {
-  padding: 12px 14px;
+  padding: 12px 6px;
   font-size: 0.88rem;
 }
 

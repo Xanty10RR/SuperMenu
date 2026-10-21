@@ -32,6 +32,16 @@ interface ApprovalItem {
 }
 
 type TabType = 'approved' | 'rejected' | 'delivered'
+type DepartmentTabType = 'todas' | 'tic' | 'logistica' | 'rrhh' | 'comercial' | 'otros'
+
+const departmentTabs: { id: DepartmentTabType; label: string }[] = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'tic', label: 'IT/Sistemas' },
+  { id: 'logistica', label: 'Logística' },
+  { id: 'rrhh', label: 'RRHH' },
+  { id: 'comercial', label: 'Comercial' },
+  { id: 'otros', label: 'Otros' }
+]
 
 export const ApprovalList: React.FC = () => {
   const [approvals, setApprovals] = useState<ApprovalItem[]>([])
@@ -41,6 +51,7 @@ export const ApprovalList: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState<TabType>('approved')
+  const [activeDepartmentTab, setActiveDepartmentTab] = useState<DepartmentTabType>('todas')
   const [searchTerm, setSearchTerm] = useState('')
   const [deliveryData, setDeliveryData] = useState({
     entregado_por: '',
@@ -87,6 +98,28 @@ export const ApprovalList: React.FC = () => {
     userDept.includes('logistica') ||
     username === 'jefelogistica' ||
     username === 'admin'
+
+  const getDepartmentTab = (item: ApprovalItem): DepartmentTabType => {
+    const department = (item.datos_completos?.departamento || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+    const departmentWords = department.split(/[\s/]+/)
+
+    if (
+      departmentWords.includes('it') ||
+      department.includes('sistemas') ||
+      department === 'tic' ||
+      departmentWords.includes('tic')
+    ) {
+      return 'tic'
+    }
+    if (department.includes('logistica')) return 'logistica'
+    if (department.includes('rrhh') || department.includes('recursos')) return 'rrhh'
+    if (department.includes('comercial')) return 'comercial'
+    return 'otros'
+  }
 
   // El useEffect solo para cargar los datos al iniciar la vista
   useEffect(() => {
@@ -151,9 +184,14 @@ export const ApprovalList: React.FC = () => {
   const renderTabContent = (): React.ReactNode | null => {
     const filterItems = (items: ApprovalItem[]): ApprovalItem[] => {
       const term = searchTerm.trim().toLocaleLowerCase()
-      if (!term) return items
-
       return items.filter((item) => {
+        const matchesDepartment =
+          !canManageDeliveries ||
+          activeDepartmentTab === 'todas' ||
+          getDepartmentTab(item) === activeDepartmentTab
+        if (!matchesDepartment) return false
+        if (!term) return true
+
         const requestId = String(item.datos_completos?.id ?? item.id).toLocaleLowerCase()
         const approvalId = String(item.id).toLocaleLowerCase()
         const requesterName = String(
@@ -569,14 +607,43 @@ export const ApprovalList: React.FC = () => {
       </div>
 
       <div className="barraBusqueda">
-        <FiSearch className="barraBusqueda-icon" aria-hidden="true" />
-        <input
-          type="search"
-          aria-label="Buscar solicitudes por ID o nombre"
-          placeholder="Buscar por ID o nombre..."
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-        />
+        {canManageDeliveries && (
+          <div className="department-tabs" aria-label="Filtrar por departamento">
+            {departmentTabs.map(({ id, label }) => {
+              const count =
+                id === 'todas'
+                  ? approvals.length + rejected.length + delivered.length
+                  : [...approvals, ...rejected, ...delivered].filter(
+                      (item) => getDepartmentTab(item) === id
+                    ).length
+
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={activeDepartmentTab === id}
+                  onClick={() => setActiveDepartmentTab(id)}
+                  className={`department-tab ${
+                    activeDepartmentTab === id ? 'department-tab-active' : 'department-tab-inactive'
+                  }`}
+                >
+                  {label} ({count})
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        <div className="barraBusqueda-campo">
+          <FiSearch className="barraBusqueda-icon" aria-hidden="true" />
+          <input
+            type="search"
+            aria-label="Buscar solicitudes por ID o nombre"
+            placeholder="Buscar por ID o nombre..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}

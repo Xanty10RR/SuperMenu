@@ -139,7 +139,7 @@
 }
 
 .requisicionItem:hover {
-  background: #f7fafc;
+  background: #F3F6F9;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
 }

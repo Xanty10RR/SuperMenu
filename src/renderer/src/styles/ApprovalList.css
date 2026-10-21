@@ -87,8 +87,43 @@
   overflow: hidden;
 }
 
+.department-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.department-tab {
+  flex: 0 0 auto;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.department-tab-active {
+  background: #3182ce;
+  color: white;
+  box-shadow: 0 2px 5px rgba(49, 130, 206, 0.3);
+}
+
+.department-tab-inactive {
+  background: white;
+  color: #3182ce;
+  border-color: #bee3f8;
+}
+
+.department-tab-inactive:hover {
+  background: #ebf8ff;
+}
+
 .barraBusqueda {
-  position: relative;
   background: white;
   border-radius: 15px;
   padding: 20px;
@@ -96,9 +131,13 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
+.barraBusqueda-campo {
+  position: relative;
+}
+
 .barraBusqueda-icon {
   position: absolute;
-  left: 32px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: #718096;

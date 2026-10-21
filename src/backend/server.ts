@@ -820,11 +820,15 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
     );
     const totalHistoricoUsuarios = parseInt(historicoQuery.rows[0].count || 0);
 
-    // Flujos Conversacionales Ejecutados Hoy
-    const consultaMensajesHoy = await pool.query(
-      "SELECT SUM(total_mensajes) as total FROM sesiones_chat WHERE ultimo_mensaje >= NOW() - INTERVAL '24 hours'",
+    // Promedio de Mensajes por Usuario
+    const consultaPromedioMensajes = await pool.query(
+      "SELECT COALESCE(ROUND(AVG(total_mensajes), 1), 0) as promedio FROM sesiones_chat",
     );
-    const totalMensajesHoy = parseInt(consultaMensajesHoy.rows[0].total || 0);
+
+    // Lo parseamos a flotante para conservar el decimal (ejemplo: 3.5 o 12.4)
+    const promedioMensajesPorUsuario = parseFloat(
+      consultaPromedioMensajes.rows[0].promedio || 0,
+    );
 
     // Chats Únicos Últimas 24h tabla (sesiones_chat)
     const consultaChats24h = await pool.query(
@@ -844,7 +848,13 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
     );
     const errors24h = parseInt(errors24hRes.rows[0].count || 0);
 
-    // Cálculo % dinámico de la tasa de automatización del bot
+    // Consulta el volumen total de mensajes de hoy (necesario por detrás para la automatización)
+    const consultaMensajesHoy = await pool.query(
+      "SELECT COALESCE(SUM(total_mensajes), 0) as total FROM sesiones_chat WHERE ultimo_mensaje >= CURRENT_DATE",
+    );
+    const totalMensajesHoy = parseInt(consultaMensajesHoy.rows[0].total || 0);
+
+    // Cálculo del % dinámico de la tasa de automatización del bot
     let automationRate = 100;
     if (totalMensajesHoy > 0) {
       // Usamos el máximo entre los errores de 24h y los errores pendientes totales (resuelto = false) para que se refleje el estado real del bot
@@ -973,6 +983,7 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
     res.json({
       messagesToday: totalMensajesHoy,
       activeChats: totalChatsActivos,
+      promedioMensajesPorUsuario: promedioMensajesPorUsuario,
       totalConveniosBancos: totalConveniosBancos,
       totalHistoricoUsuarios: totalHistoricoUsuarios,
       desgloseBancos: {

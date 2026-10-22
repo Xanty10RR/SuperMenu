@@ -7,9 +7,8 @@
 }
 
 .usuarios-container {
-    max-width: 800px;
     margin: 0 auto;
-    padding: 0 20px 30px;
+    padding: 0 0px 30px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #1e293b;
 }

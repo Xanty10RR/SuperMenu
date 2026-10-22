@@ -7,22 +7,29 @@ interface ErrorApi {
   origen: string
   resuelto: boolean
   fecha: string
-  telefono: string | null
+  telefono?: string | null
 }
 
 const esObjeto = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
 
+const normalizarRol = (rol: string): string =>
+  rol
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+
 const esRegistroError = (value: unknown): value is ErrorApi => {
   if (!esObjeto(value)) return false
 
   return (
-    typeof value.id === 'number' &&
+    (typeof value.id === 'number' || (typeof value.id === 'string' && /^\d+$/.test(value.id))) &&
     typeof value.mensaje === 'string' &&
     typeof value.origen === 'string' &&
     typeof value.resuelto === 'boolean' &&
     typeof value.fecha === 'string' &&
-    (typeof value.telefono === 'string' || value.telefono === null)
+    (typeof value.telefono === 'string' || value.telefono === null || value.telefono === undefined)
   )
 }
 
@@ -36,22 +43,36 @@ export const PanelErrores: React.FC = () => {
 
   const obtenerRolUsuario = (): string => {
     try {
-      const userData: unknown = JSON.parse(localStorage.getItem('userData') || '{}')
-      if (!esObjeto(userData)) return ''
+      const rawData = localStorage.getItem('userData') || localStorage.getItem('usuario') || '{}'
+      const userData: unknown = JSON.parse(rawData)
 
-      const usuario = userData
-      return (
-        [usuario.departamento, usuario.rol, usuario.role, usuario.cargo]
-          .filter((rol): rol is string => typeof rol === 'string')
-          .map((rol) =>
-            rol
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .toLowerCase()
-              .replace(/[^a-z0-9]/g, '')
-          )
-          .find((rol) => rol === 'admin' || rol === 'jefesistemas') || ''
+      // Se comprueba si es un objeto válido
+      if (!esObjeto(userData)) {
+        // Si es un string directo en localStorage
+        const rolDirecto = localStorage.getItem('userRole') || localStorage.getItem('rol') || ''
+        return rolDirecto.toLowerCase()
+      }
+
+      const departamento = typeof userData.departamento === 'string' ? userData.departamento : ''
+      const rol = typeof userData.rol === 'string' ? userData.rol : ''
+      const role = typeof userData.role === 'string' ? userData.role : ''
+      const cargo = typeof userData.cargo === 'string' ? userData.cargo : ''
+
+      const rolesEncontrados = [departamento, rol, role, cargo]
+        .filter((r) => r.length > 0)
+        .map(normalizarRol)
+
+      const rolValido = rolesEncontrados.find(
+        (r) =>
+          r === 'admin' ||
+          r === 'jefesistemas' ||
+          r === 'jefesistema' ||
+          r === 'jefedesistemas' ||
+          r === 'jefedesistema' ||
+          r === 'sistemas'
       )
+
+      return rolValido || ''
     } catch (error) {
       console.error('No se pudo leer el rol del usuario:', error)
       return ''
@@ -59,18 +80,33 @@ export const PanelErrores: React.FC = () => {
   }
 
   const rolUsuario = obtenerRolUsuario()
-  const puedeResolverErrores = rolUsuario === 'admin' || rolUsuario === 'jefesistemas'
+  const puedeResolverErrores = [
+    'admin',
+    'jefesistemas',
+    'jefesistema',
+    'jefedesistemas',
+    'jefedesistema',
+    'sistemas'
+  ].includes(rolUsuario)
 
   const obtenerErrores = useCallback(async (): Promise<void> => {
     try {
       setCargando(true)
       setErrorCarga('')
+
+      const rolActual = rolUsuario
+      const nombreUsuario =
+        localStorage.getItem('userName') || localStorage.getItem('usuario') || 'admin'
+
       const response = await fetch('http://localhost:3003/api/errores', {
         headers: {
-          rol: rolUsuario,
-          'x-user-role': rolUsuario
+          'Content-Type': 'application/json',
+          rol: rolActual,
+          'x-user-role': rolActual,
+          'x-user-name': nombreUsuario
         }
       })
+
       if (!response.ok) {
         throw new Error(`No se pudieron cargar los errores (HTTP ${response.status})`)
       }
@@ -80,7 +116,12 @@ export const PanelErrores: React.FC = () => {
         throw new Error('La respuesta del servidor no tiene el formato esperado')
       }
 
-      setErrores(data)
+      setErrores(
+        data.map((registro) => ({
+          ...registro,
+          id: Number(registro.id)
+        }))
+      )
     } catch (error) {
       console.error('Error de red al cargar errores:', error)
       setErrorCarga(
@@ -99,11 +140,18 @@ export const PanelErrores: React.FC = () => {
     try {
       setResolviendoId(id)
       setErrorResolucion('')
+
+      const nombreUsuario =
+        localStorage.getItem('userName') || localStorage.getItem('usuario') || 'admin'
+
       const response = await fetch(`http://localhost:3003/api/errores/${id}/resolver`, {
         method: 'PATCH',
         headers: {
+          'Content-Type': 'application/json',
           rol: rolUsuario,
-          'x-user-role': rolUsuario
+          'x-user-role': rolUsuario,
+          'x-user-name': nombreUsuario,
+          usuario: nombreUsuario
         }
       })
 

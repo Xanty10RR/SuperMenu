@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import {
-  FaPlus,
-  FaSearch,
-  FaEdit,
-  FaTrash,
-  FaChevronLeft,
-  FaChevronRight,
-  FaDownload
-} from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight, FaDownload } from 'react-icons/fa'
+import { FiSearch } from 'react-icons/fi'
 import '../styles/Convenios.css'
 
 interface Convenio {
@@ -615,7 +608,7 @@ export const Convenios: React.FC = () => {
 
         {/* Buscador */}
         <div className="searchContainer">
-          <FaSearch className="searchIcon" />
+          <FiSearch className="searchIcon" aria-hidden="true" />
           <input
             className="searchInput"
             type="text"

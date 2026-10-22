@@ -1030,3 +1030,20 @@ app.post("/api/chatbot/log-error", async (req, res) => {
     res.status(500).json({ error: "No se pudo registrar el error" });
   }
 });
+
+// Endpoint para marcar un error en la tabla errores_api como resuelto
+app.patch("/api/errores/:id/resolver", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Actualiza el estado a true en la base de datos
+    await pool.query("UPDATE errores_api SET resuelto = TRUE WHERE id = $1", [
+      id,
+    ]);
+
+    res.json({ success: true, message: "Error marcado como resuelto" });
+  } catch (error) {
+    console.error("Error al resolver el error:", error);
+    res.status(500).json({ error: "Error interno al actualizar el error" });
+  }
+});

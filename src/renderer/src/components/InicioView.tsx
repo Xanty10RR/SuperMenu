@@ -57,17 +57,14 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
       </div>
       <div className="honeycomb-container">
         <div className="honeycomb">
-          {/* Primera fila 2 hexágonos centrados */}
           <div className="honeycomb-row">
-            {opciones.slice(0, 2).map((op, idx) => (
-              <HexagonItem key={idx} opcion={op} />
+            {opciones.slice(0, 2).map((op) => (
+              <HexagonItem key={op.nombre} opcion={op} />
             ))}
           </div>
-
-          {/* Segunda fila 3 hexágonos centrados */}
           <div className="honeycomb-row honeycomb-row-offset">
-            {opciones.slice(2).map((op, idx) => (
-              <HexagonItem key={idx + 2} opcion={op} />
+            {opciones.slice(2).map((op) => (
+              <HexagonItem key={op.nombre} opcion={op} />
             ))}
           </div>
         </div>

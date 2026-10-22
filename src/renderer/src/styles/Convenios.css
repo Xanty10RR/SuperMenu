@@ -15,8 +15,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  margin-bottom: 24px;
-  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .convenios-header h1 {
@@ -44,16 +43,21 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+.convenios-button:focus-visible {
+  outline: 3px solid rgba(30, 64, 175, 0.35);
+  outline-offset: 2px;
+}
+
 .convenios-button--new {
-  align-self: flex-end;
   background-color: #059669;
   color: #ffffff;
+  box-shadow: 0 2px 5px rgba(5, 150, 105, 0.18);
 }
 
 .convenios-button--new:hover {
   background-color: #047857;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.24);
 }
 
 /* Barra de Pestañas y Exportación (Diseño tipo tarjeta contenedora) */
@@ -75,6 +79,14 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.convenios-tabs__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: auto;
 }
 
 .convenios-tab {
@@ -99,15 +111,16 @@
 }
 
 .convenios-button--export {
-  background-color: #059669;
-  color: #ffffff;
-  margin-left: auto;
+  border: 1px solid #a7f3d0;
+  background-color: #ecfdf5;
+  color: #047857;
+  box-shadow: none;
 }
 
 .convenios-button--export:hover {
-  background-color: #047857;
+  border-color: #6ee7b7;
+  background-color: #d1fae5;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
 }
 
 /* Ajuste responsive para pantallas pequeñas */
@@ -117,8 +130,23 @@
     align-items: stretch;
   }
 
-  .convenios-tabs__controls .convenios-button--export {
+  .convenios-tabs__actions {
+    width: 100%;
     margin-left: 0;
+  }
+
+  .convenios-tabs__actions .convenios-button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .convenios-tabs__actions {
+    flex-direction: column;
+  }
+
+  .convenios-tabs__actions .convenios-button {
+    width: 100%;
   }
 }
 

@@ -1031,12 +1031,52 @@ app.post("/api/chatbot/log-error", async (req, res) => {
   }
 });
 
+// Endpoint para consultar errores registrados en la API
+app.get("/api/errores", async (_req, res) => {
+  try {
+    const rolUsuario = String(
+      _req.headers["x-user-role"] ?? _req.headers.rol ?? "",
+    ).toLowerCase();
+
+    if (rolUsuario !== "admin" && rolUsuario !== "jefesistemas") {
+      return res.status(403).json({
+        error: "No tienes permisos para consultar los errores del sistema",
+      });
+    }
+
+    const resultado = await pool.query(
+      `SELECT id, mensaje, origen, resuelto, fecha, telefono
+       FROM errores_api
+       ORDER BY fecha DESC`,
+    );
+
+    res.json(resultado.rows);
+  } catch (error) {
+    console.error("Error al consultar errores de API:", error);
+    await registrarErrorServidor(error, "/api/errores");
+    res.status(500).json({ error: "No se pudieron obtener los errores" });
+  }
+});
+
 // Endpoint para marcar un error en la tabla errores_api como resuelto
 app.patch("/api/errores/:id/resolver", async (req, res) => {
   try {
-    const { id } = req.params;
+    // Validar si el usuario es admin o jefe de sistemas
+    const rolUsuario = String(
+      req.headers["x-user-role"] ??
+        req.headers["x-role"] ??
+        req.headers["rol"] ??
+        req.body?.rol ??
+        "",
+    ).toLowerCase();
 
-    // Actualiza el estado a true en la base de datos
+    if (rolUsuario !== "admin" && rolUsuario !== "jefesistemas") {
+      return res.status(403).json({
+        error: "No tienes permisos para resolver errores del sistema",
+      });
+    }
+
+    const { id } = req.params;
     await pool.query("UPDATE errores_api SET resuelto = TRUE WHERE id = $1", [
       id,
     ]);
@@ -1044,6 +1084,7 @@ app.patch("/api/errores/:id/resolver", async (req, res) => {
     res.json({ success: true, message: "Error marcado como resuelto" });
   } catch (error) {
     console.error("Error al resolver el error:", error);
+    await registrarErrorServidor(error, "/api/errores/:id/resolver");
     res.status(500).json({ error: "Error interno al actualizar el error" });
   }
 });

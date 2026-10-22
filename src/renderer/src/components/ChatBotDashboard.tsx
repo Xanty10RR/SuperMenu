@@ -16,16 +16,16 @@ import {
 
 // Interfaz para recibir todas las métricas del backend
 interface ChatbotMetrics {
-  totalConveniosBancos: number
+  totalConveniosBancos: number | string
   desgloseBancos: {
-    agrario: number
-    aval: number
-    bbva: number
+    agrario: number | string
+    aval: number | string
+    bbva: number | string
   }
-  totalHistoricoUsuarios: number
+  totalHistoricoUsuarios: number | string
   promedioMensajesPorUsuario?: number
   messagesToday: number
-  activeChats: number
+  activeChats: number | string
   automationRate: number
   pendingErrors: number
   saludServidores?: {
@@ -53,6 +53,9 @@ const claseLatencia = (latencyStr?: string): string => {
   if (milliseconds <= 300) return 'latency--warning'
   return 'latency--error'
 }
+
+const formatearConteo = (valor: number | string): string =>
+  new Intl.NumberFormat('es-CO').format(Number(valor))
 
 const ChatBotDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<ChatbotMetrics>({
@@ -121,7 +124,7 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">
-              {metrics.desgloseBancos.agrario.toLocaleString()}
+              {formatearConteo(metrics.desgloseBancos.agrario)}
             </span>
             <span className="chatbot-dashboard__kpi-label">Convenios Agrario</span>
           </div>
@@ -133,7 +136,7 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">
-              {metrics.desgloseBancos.aval.toLocaleString()}
+              {formatearConteo(metrics.desgloseBancos.aval)}
             </span>
             <span className="chatbot-dashboard__kpi-label">Convenios Aval</span>
           </div>
@@ -145,7 +148,7 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">
-              {metrics.desgloseBancos.bbva.toLocaleString()}
+              {formatearConteo(metrics.desgloseBancos.bbva)}
             </span>
             <span className="chatbot-dashboard__kpi-label">Convenios BBVA</span>
           </div>
@@ -157,7 +160,7 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">
-              {metrics.totalConveniosBancos?.toLocaleString() || 0}
+              {formatearConteo(metrics.totalConveniosBancos)}
             </span>
             <span className="chatbot-dashboard__kpi-label">Convenios Bancarios Totales</span>
           </div>
@@ -169,7 +172,7 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">
-              {metrics.totalHistoricoUsuarios?.toLocaleString() || 0}
+              {formatearConteo(metrics.totalHistoricoUsuarios)}
             </span>
             <span className="chatbot-dashboard__kpi-label">Total Histórico de Usuarios</span>
           </div>
@@ -195,7 +198,7 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">
-              {metrics.activeChats?.toLocaleString() || 0}
+              {formatearConteo(metrics.activeChats)}
             </span>
             <span className="chatbot-dashboard__kpi-label">Chats Únicos (Últimas 24h)</span>
           </div>

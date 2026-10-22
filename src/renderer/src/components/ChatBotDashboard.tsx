@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../styles/ChatBotDashboard.css'
+import PanelErrores from './PanelErrores'
+
 import {
   FiMessageSquare,
   FiUsers,
@@ -11,7 +13,8 @@ import {
   FiCpu,
   FiBriefcase,
   FiMessageCircle,
-  FiAlertTriangle
+  FiAlertTriangle,
+  FiBarChart
 } from 'react-icons/fi'
 
 // Interfaz para recibir todas las métricas del backend
@@ -58,6 +61,7 @@ const formatearConteo = (valor: number | string): string =>
   new Intl.NumberFormat('es-CO').format(Number(valor))
 
 const ChatBotDashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'metrics' | 'errors'>('metrics')
   const [metrics, setMetrics] = useState<ChatbotMetrics>({
     totalConveniosBancos: 0,
     desgloseBancos: {
@@ -116,8 +120,31 @@ const ChatBotDashboard: React.FC = () => {
         </div>
       </header>
 
+      <div className="chatbot-dashboard__tabs" role="group" aria-label="Secciones del dashboard">
+        <button
+          type="button"
+          onClick={() => setActiveTab('metrics')}
+          aria-pressed={activeTab === 'metrics'}
+          className={`chatbot-dashboard__tab${activeTab === 'metrics' ? ' chatbot-dashboard__tab--active' : ''}`}
+        >
+          <FiBarChart className="chatbot-dashboard__tab-icon" aria-hidden="true" />
+          <span>Métricas y Actividad</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('errors')}
+          aria-pressed={activeTab === 'errors'}
+          className={`chatbot-dashboard__tab${activeTab === 'errors' ? ' chatbot-dashboard__tab--active' : ''}`}
+        >
+          <FiAlertTriangle className="chatbot-dashboard__tab-icon" aria-hidden="true" />
+          <span>Panel de Errores</span>
+        </button>
+      </div>
+
+      {activeTab === 'errors' && <PanelErrores />}
+
       {/* Tarjetas de Métricas KPI Dinámicas */}
-      <section className="chatbot-dashboard__kpi-grid">
+      <section className="chatbot-dashboard__kpi-grid" hidden={activeTab === 'errors'}>
         <article className="chatbot-dashboard__kpi-card chatbot-dashboard__kpi-card--agrario">
           <div className="chatbot-dashboard__kpi-icon chatbot-dashboard__kpi-icon--green">
             <FiBriefcase />
@@ -225,7 +252,7 @@ const ChatBotDashboard: React.FC = () => {
         </article>
       </section>
 
-      <section className="chatbot-dashboard__section-grid">
+      <section className="chatbot-dashboard__section-grid" hidden={activeTab === 'errors'}>
         <article className="chatbot-dashboard__panel">
           <div className="chatbot-dashboard__panel-header">
             <h3 className="chatbot-dashboard__panel-title chatbot-dashboard__panel-title--compact">

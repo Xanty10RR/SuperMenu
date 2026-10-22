@@ -1,0 +1,160 @@
+/* Contenedor Principal */
+.panel-errores-container {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: inherit;
+}
+
+/* Título de la Sección */
+.panel-errores-header {
+  margin-bottom: 1.5rem;
+}
+
+.panel-errores-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.panel-errores-header p {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* Tarjeta de Contenido */
+.panel-errores-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+/* Pestañas / Filtros */
+.panel-errores-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.panel-errores-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #3b82f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel-errores-tab:hover {
+  background-color: #f1f5f9;
+}
+
+.panel-errores-tab.active {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* Mensaje cuando está vacío */
+.panel-errores-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+}
+
+.panel-errores-error {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.875rem;
+}
+
+/* Tabla de Errores */
+.panel-errores-table-wrapper {
+  overflow-x: auto;
+}
+
+.panel-errores-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.panel-errores-table th {
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.panel-errores-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.panel-errores-action {
+  text-align: center;
+}
+
+.panel-errores-table tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Insignias de Estado (Badges) */
+.badge-status {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-status.pendiente {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.badge-status.resuelto {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+/* Botón de Resolver */
+.btn-resolver {
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-resolver:hover {
+  background-color: #059669;
+}
+
+.btn-resolver:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}

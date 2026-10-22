@@ -568,19 +568,6 @@ export const Convenios: React.FC = () => {
     <div className="convenios-page convenios-container">
       <div className="convenios-header">
         <h1>Gestión de Convenios Bancarios</h1>
-
-        {/* Solo se muestra si es comercial o jefecomercial */}
-        {tienePermisoEscritura && (
-          <button
-            className="convenios-button convenios-button--new"
-            onClick={() => {
-              resetFormulario()
-              setModalCrearAbierto(true)
-            }}
-          >
-            <FaPlus /> Nuevo Convenio
-          </button>
-        )}
       </div>
 
       {/* Pestañas de Bancos */}
@@ -595,15 +582,34 @@ export const Convenios: React.FC = () => {
               {banco} ({datosConvenios[banco]?.length || 0})
             </button>
           ))}
-          <button
-            type="button"
-            className="convenios-button convenios-button--export"
-            onClick={() =>
-              exportarBancoExcel(bancoSeleccionado.toUpperCase(), datosConvenios[bancoSeleccionado])
-            }
-          >
-            <FaDownload /> Exportar convenios {bancoSeleccionado.toUpperCase()} a Excel
-          </button>
+          <div className="convenios-tabs__actions">
+            {/* Solo se muestra si es comercial o jefecomercial */}
+            {tienePermisoEscritura && (
+              <button
+                type="button"
+                className="convenios-button convenios-button--new"
+                onClick={() => {
+                  resetFormulario()
+                  setModalCrearAbierto(true)
+                }}
+              >
+                <FaPlus aria-hidden="true" /> Nuevo convenio
+              </button>
+            )}
+            <button
+              type="button"
+              className="convenios-button convenios-button--export"
+              onClick={() =>
+                exportarBancoExcel(
+                  bancoSeleccionado.toUpperCase(),
+                  datosConvenios[bancoSeleccionado]
+                )
+              }
+            >
+              <FaDownload aria-hidden="true" /> Exportar convenios {bancoSeleccionado.toUpperCase()}{' '}
+              a Excel
+            </button>
+          </div>
         </div>
 
         {/* Buscador */}

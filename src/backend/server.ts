@@ -37,6 +37,8 @@ const tienePermisosEscritura = (req: express.Request): boolean => {
     rolUsuario.includes("admin") ||
     rolUsuario.includes("comercial") ||
     rolUsuario.includes("jefecomercial") ||
+    rolUsuario.includes("jefesistemas") ||
+    rolUsuario.includes("sistemas") ||
     usuarioHeader === "admin"
   );
 };
@@ -1032,13 +1034,30 @@ app.post("/api/chatbot/log-error", async (req, res) => {
 });
 
 // Endpoint para consultar errores registrados en la API
+const normalizarRolPanelErrores = (rol: string): string =>
+  rol
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+const puedeGestionarErrores = (rol: string): boolean =>
+  [
+    "admin",
+    "jefesistemas",
+    "jefesistema",
+    "jefedesistemas",
+    "jefedesistema",
+    "sistemas",
+  ].includes(normalizarRolPanelErrores(rol));
+
 app.get("/api/errores", async (_req, res) => {
   try {
     const rolUsuario = String(
       _req.headers["x-user-role"] ?? _req.headers.rol ?? "",
-    ).toLowerCase();
+    );
 
-    if (rolUsuario !== "admin" && rolUsuario !== "jefesistemas") {
+    if (!puedeGestionarErrores(rolUsuario)) {
       return res.status(403).json({
         error: "No tienes permisos para consultar los errores del sistema",
       });
@@ -1068,9 +1087,9 @@ app.patch("/api/errores/:id/resolver", async (req, res) => {
         req.headers["rol"] ??
         req.body?.rol ??
         "",
-    ).toLowerCase();
+    );
 
-    if (rolUsuario !== "admin" && rolUsuario !== "jefesistemas") {
+    if (!puedeGestionarErrores(rolUsuario)) {
       return res.status(403).json({
         error: "No tienes permisos para resolver errores del sistema",
       });

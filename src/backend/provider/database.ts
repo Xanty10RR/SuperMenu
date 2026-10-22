@@ -15,4 +15,16 @@ export const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
+  // Cierra conexiones inactivas tras 30 segundos de forma limpia para que la tabla errores_api no registre error
+  idleTimeoutMillis: 30000,
+  // Tiempo máximo de espera (5s) al intentar conectar si la red parpadea
+  connectionTimeoutMillis: 5000,
+});
+
+// Maneja errores globales para el pool de PostgreSQL
+pool.on("error", (err) => {
+  console.error(
+    "⚠️ Error inesperado en un cliente inactivo de PostgreSQL:",
+    err.message,
+  );
 });

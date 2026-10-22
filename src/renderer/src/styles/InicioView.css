@@ -38,7 +38,7 @@
 .inicio-intro p {
   margin: 0;
   color: #64748b;
-  font-size: 0.90rem;
+  font-size: 0.9rem;
   text-align: left;
 }
 
@@ -64,13 +64,6 @@
 
 .honeycomb-row-offset {
   margin-top: -56px;
-  transform: none;
-}
-
-.honeycomb-row-centered {
-  margin-left: 0;
-  transform: translateX(-50%);
-  transform: translateY(-10px);
 }
 
 .honeycomb-cell {

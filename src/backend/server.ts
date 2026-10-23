@@ -1144,3 +1144,31 @@ const verificarYResolverErroresDeRed = async (): Promise<void> => {
 
 // Programado para que revise cada 30 segundos (30000 ms)
 setInterval(verificarYResolverErroresDeRed, 30000);
+
+// Archiva - limpia masivamente todos los fallos de API resueltos
+app.patch("/api/errores/archivar-resueltos", async (req, res) => {
+  try {
+    const rolUsuario = String(
+      req.headers["x-user-role"] ??
+        req.headers["x-role"] ??
+        req.headers["rol"] ??
+        req.body?.rol ??
+        "",
+    );
+
+    if (!puedeGestionarErrores(rolUsuario)) {
+      return res.status(403).json({
+        error: "No tienes permisos para limpiar el historial del sistema",
+      });
+    }
+
+    await pool.query(
+      "UPDATE errores_api SET archivado = TRUE WHERE resuelto = TRUE",
+    );
+    res.json({ success: true, message: "Historial limpiado correctamente" });
+  } catch (error) {
+    console.error("Error al limpiar historial:", error);
+    await registrarErrorServidor(error, "/api/errores/archivar-resueltos");
+    res.status(500).json({ error: "No se pudo limpiar el historial" });
+  }
+});

@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { FiTrash, FiClock, FiAlertCircle, FiCheckCircle } from 'react-icons/fi'
+import {
+  FiTrash,
+  FiClock,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiCalendar,
+  FiChevronDown
+} from 'react-icons/fi'
 import '../styles/PanelErrores.css'
 
 interface ErrorApi {
@@ -38,6 +45,9 @@ export const PanelErrores: React.FC = () => {
   const [errores, setErrores] = useState<ErrorApi[]>([])
   const [cargando, setCargando] = useState<boolean>(true)
   const [filtro, setFiltro] = useState<'pendientes' | 'resueltos'>('pendientes')
+  const [periodo, setPeriodo] = useState<
+    'todos' | '24h' | '7dias' | '14dias' | '21dias' | '1mes' | '2meses'
+  >('todos')
   const [errorCarga, setErrorCarga] = useState('')
   const [errorResolucion, setErrorResolucion] = useState('')
   const [resolviendoId, setResolviendoId] = useState<number | null>(null)
@@ -190,10 +200,47 @@ export const PanelErrores: React.FC = () => {
     }
   }
 
+  const ahora = new Date()
+  let limitePeriodo: Date | null = null
+  switch (periodo) {
+    case '24h':
+      limitePeriodo = new Date(ahora.getTime() - 24 * 60 * 60 * 1000)
+      break
+    case '7dias':
+      limitePeriodo = new Date(ahora)
+      limitePeriodo.setDate(limitePeriodo.getDate() - 7)
+      break
+    case '14dias':
+      limitePeriodo = new Date(ahora)
+      limitePeriodo.setDate(limitePeriodo.getDate() - 14)
+      break
+    case '21dias':
+      limitePeriodo = new Date(ahora)
+      limitePeriodo.setDate(limitePeriodo.getDate() - 21)
+      break
+    case '1mes':
+    case '2meses': {
+      const meses = periodo === '1mes' ? 1 : 2
+      const dia = ahora.getDate()
+      limitePeriodo = new Date(ahora)
+      limitePeriodo.setDate(1)
+      limitePeriodo.setMonth(limitePeriodo.getMonth() - meses)
+      const ultimoDiaDelMes = new Date(
+        limitePeriodo.getFullYear(),
+        limitePeriodo.getMonth() + 1,
+        0
+      ).getDate()
+      limitePeriodo.setDate(Math.min(dia, ultimoDiaDelMes))
+      break
+    }
+  }
   const erroresFiltrados = errores.filter((err) => {
-    if (filtro === 'pendientes') return !err.resuelto // Muestra solo los errores no resueltos
-    if (filtro === 'resueltos') return err.resuelto // Muestra solo los errores resueltos
-    return true
+    const coincideEstado = filtro === 'pendientes' ? !err.resuelto : err.resuelto
+    if (!coincideEstado) return false
+    if (limitePeriodo === null) return true
+
+    const fechaError = new Date(err.fecha).getTime()
+    return fechaError >= limitePeriodo.getTime() && fechaError <= ahora.getTime()
   })
   const pendientesCount = errores.filter((err) => !err.resuelto).length
   const historialCount = errores.filter((err) => err.resuelto).length
@@ -224,9 +271,41 @@ export const PanelErrores: React.FC = () => {
             Historial
             <span className="panel-errores-tab-count">{historialCount}</span>
           </button>
+          <label className="panel-errores-period-label" htmlFor="panel-errores-period">
+            <FiCalendar aria-hidden="true" />
+            Período
+          </label>
+          <div className="panel-errores-period-select">
+            <select
+              id="panel-errores-period"
+              value={periodo}
+              onChange={(event) => {
+                const value = event.currentTarget.value
+                setPeriodo(
+                  value === '24h' ||
+                    value === '7dias' ||
+                    value === '14dias' ||
+                    value === '21dias' ||
+                    value === '1mes' ||
+                    value === '2meses'
+                    ? value
+                    : 'todos'
+                )
+              }}
+            >
+              <option value="todos">Todo el historial</option>
+              <option value="24h">Últimas 24 horas</option>
+              <option value="7dias">Última semana</option>
+              <option value="14dias">Hace 2 semanas</option>
+              <option value="21dias">Hace 3 semanas</option>
+              <option value="1mes">Último mes</option>
+              <option value="2meses">Últimos 2 meses</option>
+            </select>
+            <FiChevronDown aria-hidden="true" />
+          </div>
         </div>
 
-        {filtro === 'resueltos' && erroresFiltrados.length > 0 && (
+        {filtro === 'resueltos' && historialCount > 0 && (
           <div className="panel-errores-toolbar">
             <button onClick={handleLimpiarHistorial} className="btn-limpiar-historial">
               <FiTrash />

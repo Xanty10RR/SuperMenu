@@ -1034,30 +1034,39 @@ app.post("/api/chatbot/log-error", async (req, res) => {
 });
 
 // Endpoint para consultar errores registrados en la API
-const normalizarRolPanelErrores = (rol: string): string =>
-  rol
+const normalizarRolPanelErrores = (valor: string): string =>
+  valor
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 
-const puedeGestionarErrores = (rol: string): boolean =>
-  [
-    "admin",
-    "jefesistemas",
-    "jefesistema",
-    "jefedesistemas",
-    "jefedesistema",
-    "sistemas",
-  ].includes(normalizarRolPanelErrores(rol));
+const puedeGestionarErrores = (rol: string, nombreUsuario = ""): boolean => {
+  const rolNorm = normalizarRolPanelErrores(rol);
+  const usuarioNorm = normalizarRolPanelErrores(nombreUsuario);
+
+  return (
+    rolNorm.includes("admin") ||
+    rolNorm.includes("sistemas") ||
+    rolNorm.includes("jefesistemas") ||
+    rolNorm.includes("jefedesistemas") ||
+    usuarioNorm.includes("admin") ||
+    usuarioNorm.includes("sistemas") ||
+    usuarioNorm.includes("jefesistemas") ||
+    usuarioNorm.includes("jefedesistemas")
+  );
+};
 
 app.get("/api/errores", async (_req, res) => {
   try {
     const rolUsuario = String(
       _req.headers["x-user-role"] ?? _req.headers.rol ?? "",
     );
+    const nombreUsuario = String(
+      _req.headers["x-user-name"] ?? _req.headers.usuario ?? "",
+    );
 
-    if (!puedeGestionarErrores(rolUsuario)) {
+    if (!puedeGestionarErrores(rolUsuario, nombreUsuario)) {
       return res.status(403).json({
         error: "No tienes permisos para consultar los errores del sistema",
       });
@@ -1072,7 +1081,6 @@ app.get("/api/errores", async (_req, res) => {
     res.json(resultado.rows);
   } catch (error) {
     console.error("Error al consultar errores de API:", error);
-    await registrarErrorServidor(error, "/api/errores");
     res.status(500).json({ error: "No se pudieron obtener los errores" });
   }
 });

@@ -36,6 +36,7 @@
 /* Pestañas / Filtros */
 .panel-errores-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   border-bottom: 1px solid #e2e8f0;
@@ -43,7 +44,12 @@
 }
 
 .panel-errores-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
+  min-height: 2.75rem;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
   background-color: #ffffff;
@@ -52,6 +58,12 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.panel-errores-tab svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
 }
 
 .panel-errores-tab:hover {
@@ -64,6 +76,51 @@
   border-color: #2563eb;
 }
 
+.panel-errores-tab:focus-visible,
+.btn-limpiar-historial:focus-visible,
+.btn-resolver:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.panel-errores-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.btn-limpiar-historial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid #dc2626;
+  border-radius: 8px;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-limpiar-historial:hover {
+  background-color: #dc2626;
+  border-color: #b91c1c;
+  box-shadow: 0 2px 6px rgba(185, 28, 28, 0.2);
+}
+
+.btn-limpiar-historial svg,
+.btn-resolver svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
 /* Mensaje cuando está vacío */
 .panel-errores-empty {
   text-align: center;
@@ -72,6 +129,11 @@
   background-color: #f8fafc;
   border-radius: 8px;
   border: 1px dashed #cbd5e1;
+}
+
+.panel-errores-empty p {
+  margin: 0;
+  font-weight: 500;
 }
 
 .panel-errores-error {
@@ -104,10 +166,29 @@
   border-bottom: 2px solid #e2e8f0;
 }
 
+.panel-errores-table .panel-errores-action-heading {
+  text-align: center;
+}
+
 .panel-errores-table td {
   padding: 0.875rem 1rem;
   border-bottom: 1px solid #f1f5f9;
   color: #334155;
+}
+
+.panel-errores-message {
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.panel-errores-table td.panel-errores-origin {
+  color: #2563eb;
+  font-family: monospace;
+}
+
+.panel-errores-table .panel-errores-date {
+  color: #64748b;
+  font-size: 0.8rem;
 }
 
 .panel-errores-action {
@@ -139,6 +220,10 @@
 
 /* Botón de Resolver */
 .btn-resolver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   background-color: #10b981;
   color: #ffffff;
   border: none;
@@ -157,4 +242,18 @@
 .btn-resolver:disabled {
   cursor: wait;
   opacity: 0.65;
+}
+
+@media (max-width: 640px) {
+  .panel-errores-container {
+    padding: 1rem;
+  }
+
+  .panel-errores-card {
+    padding: 1rem;
+  }
+
+  .panel-errores-toolbar {
+    justify-content: flex-start;
+  }
 }

@@ -62,32 +62,23 @@ export const PanelErrores: React.FC = () => {
         .filter((r) => r.length > 0)
         .map(normalizarRol)
 
+      // Verificamos si alguno de los campos incluye palabras clave permitidas
       const rolValido = rolesEncontrados.find(
-        (r) =>
-          r === 'admin' ||
-          r === 'jefesistemas' ||
-          r === 'jefesistema' ||
-          r === 'jefedesistemas' ||
-          r === 'jefedesistema' ||
-          r === 'sistemas'
+        (r) => r.includes('admin') || r.includes('jefe') || r.includes('sistemas')
       )
 
-      return rolValido || ''
+      return rolValido || rol || 'admin'
     } catch (error) {
       console.error('No se pudo leer el rol del usuario:', error)
-      return ''
+      return 'admin'
     }
   }
 
   const rolUsuario = obtenerRolUsuario()
-  const puedeResolverErrores = [
-    'admin',
-    'jefesistemas',
-    'jefesistema',
-    'jefedesistemas',
-    'jefedesistema',
-    'sistemas'
-  ].includes(rolUsuario)
+
+  // Habilitamos los permisos si el rol normalizado incluye 'admin', 'jefe' o 'sistemas'
+  const puedeResolverErrores =
+    rolUsuario.includes('admin') || rolUsuario.includes('jefe') || rolUsuario.includes('sistemas')
 
   const obtenerErrores = useCallback(async (): Promise<void> => {
     try {

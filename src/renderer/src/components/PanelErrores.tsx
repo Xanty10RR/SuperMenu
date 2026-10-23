@@ -195,6 +195,8 @@ export const PanelErrores: React.FC = () => {
     if (filtro === 'resueltos') return err.resuelto // Muestra solo los errores resueltos
     return true
   })
+  const pendientesCount = errores.filter((err) => !err.resuelto).length
+  const historialCount = errores.filter((err) => err.resuelto).length
 
   return (
     <div className="panel-errores-container">
@@ -212,6 +214,7 @@ export const PanelErrores: React.FC = () => {
           >
             <FiAlertCircle />
             Pendientes
+            <span className="panel-errores-tab-count">{pendientesCount}</span>
           </button>
           <button
             onClick={() => setFiltro('resueltos')}
@@ -219,6 +222,7 @@ export const PanelErrores: React.FC = () => {
           >
             <FiClock />
             Historial
+            <span className="panel-errores-tab-count">{historialCount}</span>
           </button>
         </div>
 

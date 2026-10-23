@@ -159,8 +159,8 @@
 }
 
 .panel-errores-table th {
-  background-color: #f8fafc;
-  color: #1e293b;
+  background-color: #1e40af;
+  color: #fff;
   font-weight: 600;
   padding: 0.75rem 1rem;
   border-bottom: 2px solid #e2e8f0;
@@ -196,7 +196,7 @@
 }
 
 .panel-errores-table tr:hover {
-  background-color: #f8fafc;
+  background-color: #F3F6F9;
 }
 
 /* Insignias de Estado (Badges) */

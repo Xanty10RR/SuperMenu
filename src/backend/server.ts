@@ -1041,19 +1041,13 @@ const normalizarRolPanelErrores = (valor: string): string =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 
-const puedeGestionarErrores = (rol: string, nombreUsuario = ""): boolean => {
+const puedeGestionarErrores = (rol: string): boolean => {
   const rolNorm = normalizarRolPanelErrores(rol);
-  const usuarioNorm = normalizarRolPanelErrores(nombreUsuario);
-
   return (
     rolNorm.includes("admin") ||
+    rolNorm.includes("jefe") ||
     rolNorm.includes("sistemas") ||
-    rolNorm.includes("jefesistemas") ||
-    rolNorm.includes("jefedesistemas") ||
-    usuarioNorm.includes("admin") ||
-    usuarioNorm.includes("sistemas") ||
-    usuarioNorm.includes("jefesistemas") ||
-    usuarioNorm.includes("jefedesistemas")
+    rolNorm.includes("jefesistemas")
   );
 };
 
@@ -1062,11 +1056,8 @@ app.get("/api/errores", async (_req, res) => {
     const rolUsuario = String(
       _req.headers["x-user-role"] ?? _req.headers.rol ?? "",
     );
-    const nombreUsuario = String(
-      _req.headers["x-user-name"] ?? _req.headers.usuario ?? "",
-    );
 
-    if (!puedeGestionarErrores(rolUsuario, nombreUsuario)) {
+    if (!puedeGestionarErrores(rolUsuario)) {
       return res.status(403).json({
         error: "No tienes permisos para consultar los errores del sistema",
       });

@@ -1066,6 +1066,7 @@ app.get("/api/errores", async (_req, res) => {
     const resultado = await pool.query(
       `SELECT id, mensaje, origen, resuelto, fecha, telefono
        FROM errores_api
+       WHERE archivado IS NOT TRUE
        ORDER BY fecha DESC`,
     );
 

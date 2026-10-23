@@ -255,53 +255,57 @@ export const PanelErrores: React.FC = () => {
       <div className="panel-errores-card">
         {/* Filtros */}
         <div className="panel-errores-tabs">
-          <button
-            onClick={() => setFiltro('pendientes')}
-            className={`panel-errores-tab ${filtro === 'pendientes' ? 'active' : ''}`}
-          >
-            <FiAlertCircle />
-            Pendientes
-            <span className="panel-errores-tab-count">{pendientesCount}</span>
-          </button>
-          <button
-            onClick={() => setFiltro('resueltos')}
-            className={`panel-errores-tab ${filtro === 'resueltos' ? 'active' : ''}`}
-          >
-            <FiClock />
-            Historial
-            <span className="panel-errores-tab-count">{historialCount}</span>
-          </button>
-          <label className="panel-errores-period-label" htmlFor="panel-errores-period">
-            <FiCalendar aria-hidden="true" />
-            Período
-          </label>
-          <div className="panel-errores-period-select">
-            <select
-              id="panel-errores-period"
-              value={periodo}
-              onChange={(event) => {
-                const value = event.currentTarget.value
-                setPeriodo(
-                  value === '24h' ||
-                    value === '7dias' ||
-                    value === '14dias' ||
-                    value === '21dias' ||
-                    value === '1mes' ||
-                    value === '2meses'
-                    ? value
-                    : 'todos'
-                )
-              }}
+          <div className="panel-errores-tabs-group">
+            <button
+              onClick={() => setFiltro('pendientes')}
+              className={`panel-errores-tab ${filtro === 'pendientes' ? 'active' : ''}`}
             >
-              <option value="todos">Todo el historial</option>
-              <option value="24h">Últimas 24 horas</option>
-              <option value="7dias">Última semana</option>
-              <option value="14dias">Hace 2 semanas</option>
-              <option value="21dias">Hace 3 semanas</option>
-              <option value="1mes">Último mes</option>
-              <option value="2meses">Últimos 2 meses</option>
-            </select>
-            <FiChevronDown aria-hidden="true" />
+              <FiAlertCircle />
+              Pendientes
+              <span className="panel-errores-tab-count">{pendientesCount}</span>
+            </button>
+            <button
+              onClick={() => setFiltro('resueltos')}
+              className={`panel-errores-tab ${filtro === 'resueltos' ? 'active' : ''}`}
+            >
+              <FiClock />
+              Historial
+              <span className="panel-errores-tab-count">{historialCount}</span>
+            </button>
+          </div>
+          <div className="panel-errores-period-group">
+            <label className="panel-errores-period-label" htmlFor="panel-errores-period">
+              <FiCalendar aria-hidden="true" />
+              Período
+            </label>
+            <div className="panel-errores-period-select">
+              <select
+                id="panel-errores-period"
+                value={periodo}
+                onChange={(event) => {
+                  const value = event.currentTarget.value
+                  setPeriodo(
+                    value === '24h' ||
+                      value === '7dias' ||
+                      value === '14dias' ||
+                      value === '21dias' ||
+                      value === '1mes' ||
+                      value === '2meses'
+                      ? value
+                      : 'todos'
+                  )
+                }}
+              >
+                <option value="todos">Todo el historial</option>
+                <option value="24h">Últimas 24 horas</option>
+                <option value="7dias">Última semana</option>
+                <option value="14dias">Hace 2 semanas</option>
+                <option value="21dias">Hace 3 semanas</option>
+                <option value="1mes">Último mes</option>
+                <option value="2meses">Últimos 2 meses</option>
+              </select>
+              <FiChevronDown aria-hidden="true" />
+            </div>
           </div>
         </div>
 

@@ -38,8 +38,22 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 1.25rem;
   margin-bottom: 1rem;
+}
+
+.panel-errores-tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-errores-period-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-left: 1.25rem;
+  border-left: 1px solid #C1C6CD;
 }
 
 .panel-errores-tab {
@@ -335,5 +349,31 @@
 
   .panel-errores-toolbar {
     justify-content: flex-start;
+  }
+
+  .panel-errores-tabs {
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .panel-errores-tabs-group {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .panel-errores-period-group {
+    width: 100%;
+    padding-top: 1rem;
+    padding-left: 0;
+    border-top: 1px solid #e2e8f0;
+    border-left: 0;
+  }
+
+  .panel-errores-period-select {
+    flex: 1;
+  }
+
+  .panel-errores-period-select select {
+    width: 100%;
   }
 }

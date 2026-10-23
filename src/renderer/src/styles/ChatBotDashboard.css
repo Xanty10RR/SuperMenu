@@ -65,7 +65,7 @@
 }
 
 .chatbot-dashboard__tab:hover:not(.chatbot-dashboard__tab--active) {
-  background: #d7e0ec;
+  background: #D7E2EC;
 }
 
 .chatbot-dashboard__tab--active {

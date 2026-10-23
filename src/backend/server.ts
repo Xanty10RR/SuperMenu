@@ -1106,3 +1106,41 @@ app.patch("/api/errores/:id/resolver", async (req, res) => {
     res.status(500).json({ error: "Error interno al actualizar el error" });
   }
 });
+
+// DAEMON / Vigila la conexión a internet y resuelve los fallos de api de conectividad automáticamente
+const verificarYResolverErroresDeRed = async (): Promise<void> => {
+  try {
+    // Verifica si hay internet haciendo un fetch rápido a un sitio público (con timeout de 5s)
+    const respuestaInternet = await fetch("https://www.google.com", {
+      method: "HEAD",
+      signal: AbortSignal.timeout(5000),
+    }).catch(() => null);
+
+    if (respuestaInternet && respuestaInternet.ok) {
+      // Si hay internet, se actualizan automáticamente en Supabase los errores de red pendientes
+      const resultado = await pool.query(
+        `UPDATE errores_api 
+         SET resuelto = TRUE 
+         WHERE resuelto = FALSE 
+           AND (
+             mensaje ILIKE '%timeout%' OR 
+             mensaje ILIKE '%connection%' OR 
+             mensaje ILIKE '%network%' OR
+             mensaje ILIKE '%terminated%'
+           )`,
+      );
+
+      // Si actualizó al menos un registro, lo registramos en la consola del servidor
+      if (resultado.rowCount && resultado.rowCount > 0) {
+        console.log(
+          `[Auto-Resuelto by DAEMON] Se resolvieron automáticamente ${resultado.rowCount} error(es) de red al restablecerse el internet.`,
+        );
+      }
+    }
+  } catch {
+    // Si sigue sin internet o falla la prueba, simplemente se ignora y se intenta en el siguiente ciclo
+  }
+};
+
+// Programado para que revise cada 30 segundos (30000 ms)
+setInterval(verificarYResolverErroresDeRed, 30000);

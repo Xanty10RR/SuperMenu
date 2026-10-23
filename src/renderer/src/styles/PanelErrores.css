@@ -36,10 +36,10 @@
 /* Pestañas / Filtros */
 .panel-errores-tabs {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 15px;
-  overflow-x: auto;
-  padding-bottom: 10px;
+  margin-bottom: 1rem;
 }
 
 .panel-errores-tab {
@@ -111,6 +111,62 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1rem;
+}
+
+.panel-errores-period-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.panel-errores-period-label svg {
+  width: 1rem;
+  height: 1rem;
+  color: #3182ce;
+}
+
+.panel-errores-period-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.panel-errores-period-select select {
+  min-width: 11.5rem;
+  appearance: none;
+  padding: 0.6rem 2.25rem 0.6rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.panel-errores-period-select select:hover {
+  border-color: #93c5fd;
+}
+
+.panel-errores-period-select select:focus-visible {
+  outline: 2px solid #3182ce;
+  outline-offset: 2px;
+}
+
+.panel-errores-period-select > svg {
+  position: absolute;
+  right: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+  color: #64748b;
+  pointer-events: none;
 }
 
 .btn-limpiar-historial {
@@ -220,7 +276,7 @@
 }
 
 .panel-errores-table tr:hover {
-  background-color: #F3F6F9;
+  background-color: #f3f6f9;
 }
 
 /* Insignias de Estado (Badges) */

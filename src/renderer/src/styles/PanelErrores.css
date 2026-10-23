@@ -36,11 +36,10 @@
 /* Pestañas / Filtros */
 .panel-errores-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 0.5rem;
+  gap: 10px;
+  margin-bottom: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .panel-errores-tab {
@@ -48,16 +47,15 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  min-height: 2.75rem;
+  padding: 10px 20px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background-color: #ffffff;
-  color: #3b82f6;
-  font-size: 0.875rem;
-  font-weight: 500;
+  border: 0;
+  background: #ffffff;
+  color: #3182ce;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .panel-errores-tab svg {
@@ -66,21 +64,47 @@
   flex-shrink: 0;
 }
 
-.panel-errores-tab:hover {
-  background-color: #f1f5f9;
+.panel-errores-tab:focus:not(:focus-visible) {
+  outline: none;
 }
 
-.panel-errores-tab.active {
-  background-color: #2563eb;
-  color: #ffffff;
-  border-color: #2563eb;
+.panel-errores-tab:focus-visible {
+  outline: 2px solid #3182ce;
+  outline-offset: 2px;
 }
 
-.panel-errores-tab:focus-visible,
 .btn-limpiar-historial:focus-visible,
 .btn-resolver:focus-visible {
   outline: 3px solid #93c5fd;
   outline-offset: 2px;
+}
+
+.panel-errores-tab.active {
+  background: #3182ce;
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(49, 130, 206, 0.3);
+}
+
+.panel-errores-tab:not(.active) {
+  border: 1px solid #bee3f8;
+}
+
+.panel-errores-tab:not(.active):hover {
+  background: #ebf8ff;
+}
+
+.panel-errores-tab-count {
+  min-width: 1.25rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  background: rgba(49, 130, 206, 0.12);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  text-align: center;
+}
+
+.panel-errores-tab.active .panel-errores-tab-count {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .panel-errores-toolbar {

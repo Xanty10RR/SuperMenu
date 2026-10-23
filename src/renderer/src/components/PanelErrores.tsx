@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { FiTrash, FiClock, FiAlertCircle, FiCheckCircle } from 'react-icons/fi'
 import '../styles/PanelErrores.css'
 
 interface ErrorApi {
@@ -209,35 +210,23 @@ export const PanelErrores: React.FC = () => {
             onClick={() => setFiltro('pendientes')}
             className={`panel-errores-tab ${filtro === 'pendientes' ? 'active' : ''}`}
           >
+            <FiAlertCircle />
             Pendientes
           </button>
           <button
             onClick={() => setFiltro('resueltos')}
             className={`panel-errores-tab ${filtro === 'resueltos' ? 'active' : ''}`}
           >
+            <FiClock />
             Historial
           </button>
         </div>
 
         {filtro === 'resueltos' && erroresFiltrados.length > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-            <button
-              onClick={handleLimpiarHistorial}
-              className="btn-limpiar-historial"
-              style={{
-                backgroundColor: '#ef4444',
-                color: '#fff',
-                border: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 500,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-            >
-              🗑️ Limpiar historial
+          <div className="panel-errores-toolbar">
+            <button onClick={handleLimpiarHistorial} className="btn-limpiar-historial">
+              <FiTrash />
+              Limpiar historial
             </button>
           </div>
         )}
@@ -257,7 +246,7 @@ export const PanelErrores: React.FC = () => {
           <div className="panel-errores-empty">Cargando registros de errores...</div>
         ) : errorCarga ? null : erroresFiltrados.length === 0 ? (
           <div className="panel-errores-empty">
-            <p style={{ margin: 0, fontWeight: 500 }}>No hay elementos para mostrar</p>
+            <p>No hay elementos para mostrar</p>
           </div>
         ) : (
           /* Tabla */
@@ -271,17 +260,19 @@ export const PanelErrores: React.FC = () => {
                   <th>Teléfono</th>
                   <th>Fecha</th>
                   <th>Estado</th>
-                  <th style={{ textAlign: 'center' }}>Acción</th>
+                  {filtro === 'pendientes' && (
+                    <th className="panel-errores-action-heading">Acción</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {erroresFiltrados.map((error) => (
                   <tr key={error.id}>
                     <td>#{error.id}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{error.mensaje}</td>
-                    <td style={{ color: '#2563eb', fontFamily: 'monospace' }}>{error.origen}</td>
+                    <td className="panel-errores-message">{error.mensaje}</td>
+                    <td className="panel-errores-origin">{error.origen}</td>
                     <td>{error.telefono || 'N/A'}</td>
-                    <td style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                    <td className="panel-errores-date">
                       {new Date(error.fecha).toLocaleString('es-CO')}
                     </td>
                     <td>
@@ -289,17 +280,20 @@ export const PanelErrores: React.FC = () => {
                         {error.resuelto ? 'Resuelto' : 'Pendiente'}
                       </span>
                     </td>
-                    <td className="panel-errores-action">
-                      {!error.resuelto && puedeResolverErrores && (
-                        <button
-                          onClick={() => handleResolverError(error.id)}
-                          className="btn-resolver"
-                          disabled={resolviendoId === error.id}
-                        >
-                          {resolviendoId === error.id ? 'Resolviendo...' : '✔ Resolver'}
-                        </button>
-                      )}
-                    </td>
+                    {filtro === 'pendientes' && (
+                      <td className="panel-errores-action">
+                        {!error.resuelto && puedeResolverErrores && (
+                          <button
+                            onClick={() => handleResolverError(error.id)}
+                            className="btn-resolver"
+                            disabled={resolviendoId === error.id}
+                          >
+                            <FiCheckCircle />
+                            {resolviendoId === error.id ? 'Resolviendo...' : 'Resolver'}
+                          </button>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

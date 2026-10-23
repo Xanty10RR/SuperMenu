@@ -161,6 +161,34 @@ export const PanelErrores: React.FC = () => {
     }
   }
 
+  const handleLimpiarHistorial = async (): Promise<void> => {
+    try {
+      const nombreUsuario =
+        localStorage.getItem('userName') || localStorage.getItem('usuario') || 'admin'
+      const response = await fetch('http://localhost:3003/api/errores/archivar-resueltos', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          rol: rolUsuario,
+          'x-user-role': rolUsuario,
+          'x-user-name': nombreUsuario
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('No se pudo limpiar el historial')
+      }
+
+      // Filtra la vista local para dejar solo los pendientes
+      setErrores((prev) => prev.filter((err) => !err.resuelto))
+    } catch (error) {
+      console.error('Error al limpiar historial:', error)
+      setErrorResolucion(
+        error instanceof Error ? error.message : 'Ocurrió un error al limpiar el historial.'
+      )
+    }
+  }
+
   const erroresFiltrados = errores.filter((err) => {
     if (filtro === 'pendientes') return !err.resuelto // Muestra solo los errores no resueltos
     if (filtro === 'resueltos') return err.resuelto // Muestra solo los errores resueltos
@@ -190,6 +218,29 @@ export const PanelErrores: React.FC = () => {
             Historial
           </button>
         </div>
+
+        {filtro === 'resueltos' && erroresFiltrados.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+            <button
+              onClick={handleLimpiarHistorial}
+              className="btn-limpiar-historial"
+              style={{
+                backgroundColor: '#ef4444',
+                color: '#fff',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              🗑️ Limpiar historial
+            </button>
+          </div>
+        )}
 
         {/* Carga o Estado Vacío */}
         {errorCarga && (

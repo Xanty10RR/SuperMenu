@@ -36,7 +36,7 @@ const esRegistroError = (value: unknown): value is ErrorApi => {
 export const PanelErrores: React.FC = () => {
   const [errores, setErrores] = useState<ErrorApi[]>([])
   const [cargando, setCargando] = useState<boolean>(true)
-  const [filtro, setFiltro] = useState<'todos' | 'pendientes'>('pendientes')
+  const [filtro, setFiltro] = useState<'pendientes' | 'resueltos'>('pendientes')
   const [errorCarga, setErrorCarga] = useState('')
   const [errorResolucion, setErrorResolucion] = useState('')
   const [resolviendoId, setResolviendoId] = useState<number | null>(null)
@@ -162,19 +162,18 @@ export const PanelErrores: React.FC = () => {
   }
 
   const erroresFiltrados = errores.filter((err) => {
-    if (filtro === 'pendientes') return !err.resuelto
+    if (filtro === 'pendientes') return !err.resuelto // Muestra solo los errores no resueltos
+    if (filtro === 'resueltos') return err.resuelto // Muestra solo los errores resueltos
     return true
   })
 
   return (
     <div className="panel-errores-container">
-      {/* Encabezado */}
       <div className="panel-errores-header">
         <h1>Centro de Control - Errores de API</h1>
         <p>Monitoreo de incidencias y fallas en el Chatbot SuperAsistente</p>
       </div>
 
-      {/* Contenido Principal */}
       <div className="panel-errores-card">
         {/* Filtros */}
         <div className="panel-errores-tabs">
@@ -185,10 +184,10 @@ export const PanelErrores: React.FC = () => {
             Pendientes
           </button>
           <button
-            onClick={() => setFiltro('todos')}
-            className={`panel-errores-tab ${filtro === 'todos' ? 'active' : ''}`}
+            onClick={() => setFiltro('resueltos')}
+            className={`panel-errores-tab ${filtro === 'resueltos' ? 'active' : ''}`}
           >
-            Historial Completo
+            Historial
           </button>
         </div>
 

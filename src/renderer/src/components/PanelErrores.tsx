@@ -309,7 +309,7 @@ export const PanelErrores: React.FC = () => {
           </div>
         </div>
 
-        {filtro === 'resueltos' && historialCount > 0 && (
+        {filtro === 'resueltos' && historialCount > 0 && puedeResolverErrores && (
           <div className="panel-errores-toolbar">
             <button onClick={handleLimpiarHistorial} className="btn-limpiar-historial">
               <FiTrash />

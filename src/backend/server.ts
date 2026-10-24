@@ -1053,26 +1053,17 @@ const puedeGestionarErrores = (rol: string): boolean => {
 
 app.get("/api/errores", async (_req, res) => {
   try {
-    const rolUsuario = String(
-      _req.headers["x-user-role"] ?? _req.headers.rol ?? "",
-    );
-
-    if (!puedeGestionarErrores(rolUsuario)) {
-      return res.status(403).json({
-        error: "No tienes permisos para consultar los errores del sistema",
-      });
-    }
-
     const resultado = await pool.query(
       `SELECT id, mensaje, origen, resuelto, fecha, telefono
        FROM errores_api
-       WHERE archivado IS NOT TRUE
+       WHERE archivado = FALSE
        ORDER BY fecha DESC`,
     );
 
     res.json(resultado.rows);
   } catch (error) {
     console.error("Error al consultar errores de API:", error);
+    await registrarErrorServidor(error, "/api/errores");
     res.status(500).json({ error: "No se pudieron obtener los errores" });
   }
 });

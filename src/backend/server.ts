@@ -844,28 +844,14 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
     );
     const pendingErrors = parseInt(conteoErroresApi.rows[0].count || 0);
 
-    // Errores en las últimas 24h para referencia
-    const errors24hRes = await pool.query(
-      "SELECT COUNT(*) FROM errores_api WHERE fecha >= NOW() - INTERVAL '24 hours'",
-    );
-    const errors24h = parseInt(errors24hRes.rows[0].count || 0);
-
     // Consulta el volumen total de mensajes de hoy (necesario por detrás para la automatización)
     const consultaMensajesHoy = await pool.query(
       "SELECT COALESCE(SUM(total_mensajes), 0) as total FROM sesiones_chat WHERE ultimo_mensaje >= CURRENT_DATE",
     );
     const totalMensajesHoy = parseInt(consultaMensajesHoy.rows[0].total || 0);
 
-    // Cálculo del % dinámico de la tasa de automatización del bot
-    let automationRate = 100;
-    if (totalMensajesHoy > 0) {
-      // Usamos el máximo entre los errores de 24h y los errores pendientes totales (resuelto = false) para que se refleje el estado real del bot
-      const erroresTotales = Math.max(errors24h, pendingErrors);
-
-      const rate =
-        ((totalMensajesHoy - erroresTotales) / totalMensajesHoy) * 100;
-      automationRate = Math.max(0, Number(rate.toFixed(1)));
-    }
+    // Valor predeterminado hasta que se registren resultados de automatización por chat.
+    const automationRate = 100;
 
     // Endpoint de Actividad Reciente en Vivo
     app.get("/api/chatbot/activity", async (_req, res) => {

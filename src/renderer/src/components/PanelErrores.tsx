@@ -347,7 +347,7 @@ export const PanelErrores: React.FC = () => {
                   <th>Teléfono</th>
                   <th>Fecha</th>
                   <th>Estado</th>
-                  {filtro === 'pendientes' && (
+                  {filtro === 'pendientes' && puedeResolverErrores && (
                     <th className="panel-errores-action-heading">Acción</th>
                   )}
                 </tr>
@@ -358,7 +358,7 @@ export const PanelErrores: React.FC = () => {
                     <td>#{error.id}</td>
                     <td className="panel-errores-message">{error.mensaje}</td>
                     <td className="panel-errores-origin">{error.origen}</td>
-                    <td>{error.telefono || 'N/A'}</td>
+                    <td>{error.telefono || 'Sistema'}</td>
                     <td className="panel-errores-date">
                       {new Date(error.fecha).toLocaleString('es-CO')}
                     </td>
@@ -367,7 +367,7 @@ export const PanelErrores: React.FC = () => {
                         {error.resuelto ? 'Resuelto' : 'Pendiente'}
                       </span>
                     </td>
-                    {filtro === 'pendientes' && (
+                    {filtro === 'pendientes' && puedeResolverErrores && (
                       <td className="panel-errores-action">
                         {!error.resuelto && puedeResolverErrores && (
                           <button

@@ -72,7 +72,7 @@ const ChatBotDashboard: React.FC = () => {
     totalHistoricoUsuarios: 0,
     messagesToday: 0,
     activeChats: 0,
-    automationRate: 0,
+    automationRate: 100,
     pendingErrors: 0
   })
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])

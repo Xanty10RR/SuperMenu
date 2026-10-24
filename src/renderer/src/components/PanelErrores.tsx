@@ -57,9 +57,7 @@ export const PanelErrores: React.FC = () => {
       const rawData = localStorage.getItem('userData') || localStorage.getItem('usuario') || '{}'
       const userData: unknown = JSON.parse(rawData)
 
-      // Se comprueba si es un objeto válido
       if (!esObjeto(userData)) {
-        // Si es un string directo en localStorage
         const rolDirecto = localStorage.getItem('userRole') || localStorage.getItem('rol') || ''
         return rolDirecto.toLowerCase()
       }
@@ -69,16 +67,8 @@ export const PanelErrores: React.FC = () => {
       const role = typeof userData.role === 'string' ? userData.role : ''
       const cargo = typeof userData.cargo === 'string' ? userData.cargo : ''
 
-      const rolesEncontrados = [departamento, rol, role, cargo]
-        .filter((r) => r.length > 0)
-        .map(normalizarRol)
-
-      // Verificamos si alguno de los campos incluye palabras clave permitidas
-      const rolValido = rolesEncontrados.find(
-        (r) => r.includes('admin') || r.includes('jefe') || r.includes('sistemas')
-      )
-
-      return rolValido || rol || 'admin'
+      // Devolvemos el rol más específico encontrado para normalizarlo correctamente
+      return normalizarRol(departamento || rol || role || cargo || 'admin')
     } catch (error) {
       console.error('No se pudo leer el rol del usuario:', error)
       return 'admin'
@@ -87,9 +77,12 @@ export const PanelErrores: React.FC = () => {
 
   const rolUsuario = obtenerRolUsuario()
 
-  // Habilitamos los permisos si el rol normalizado incluye 'admin', 'jefe' o 'sistemas'
+  // Validación estricta idéntica al backend: Solo Admin, Sistemas o Jefe de Sistemas
   const puedeResolverErrores =
-    rolUsuario.includes('admin') || rolUsuario.includes('jefe') || rolUsuario.includes('sistemas')
+    rolUsuario.includes('admin') ||
+    rolUsuario.includes('sistemas') ||
+    rolUsuario.includes('jefesistemas') ||
+    rolUsuario.includes('jefedesistemas')
 
   const obtenerErrores = useCallback(async (): Promise<void> => {
     try {

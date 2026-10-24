@@ -72,7 +72,7 @@ const ChatBotDashboard: React.FC = () => {
     totalHistoricoUsuarios: 0,
     messagesToday: 0,
     activeChats: 0,
-    automationRate: 100,
+    automationRate: 0,
     pendingErrors: 0
   })
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
@@ -237,7 +237,9 @@ const ChatBotDashboard: React.FC = () => {
           </div>
           <div className="chatbot-dashboard__kpi-info">
             <span className="chatbot-dashboard__kpi-value">{metrics.automationRate}%</span>
-            <span className="chatbot-dashboard__kpi-label">Tasa de Automatización Chatbot</span>
+            <span className="chatbot-dashboard__kpi-label">
+              Tasa de Automatización del Bot (Últimas 24h)
+            </span>
           </div>
         </article>
 

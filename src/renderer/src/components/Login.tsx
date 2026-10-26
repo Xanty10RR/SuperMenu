@@ -102,6 +102,10 @@ const Label = styled.label`
   letter-spacing: 0.5px;
 `
 
+const InputWrapper = styled.div`
+  position: relative;
+`
+
 const Input = styled.input`
   width: 100%;
   padding: 0.9rem 1rem 0.9rem 2.8rem;
@@ -272,29 +276,33 @@ const Login: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <InputGroup>
             <Label>Usuario</Label>
-            <InputIcon>
-              <FiUser />
-            </InputIcon>
-            <Input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Ingrese su usuario"
-              required
-            />
+            <InputWrapper>
+              <InputIcon>
+                <FiUser />
+              </InputIcon>
+              <Input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Ingrese su usuario"
+                required
+              />
+            </InputWrapper>
           </InputGroup>
           <InputGroup>
             <Label>Contraseña</Label>
-            <InputIcon>
-              <FiLock />
-            </InputIcon>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
+            <InputWrapper>
+              <InputIcon>
+                <FiLock />
+              </InputIcon>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </InputWrapper>
           </InputGroup>
           <Button type="submit" disabled={loading}>
             {loading ? 'Verificando...' : 'Ingresar'}

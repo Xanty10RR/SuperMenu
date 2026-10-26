@@ -898,7 +898,10 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
           user: fila.nombre || fila.telefono || "Usuario WhatsApp",
           intent: fila.ultima_accion || "Interacción con el Bot",
           time: fila.ultimo_mensaje
-            ? new Date(fila.ultimo_mensaje).toLocaleTimeString([], {
+            ? new Date(fila.ultimo_mensaje).toLocaleString("es-CO", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
                 hour: "2-digit",
                 minute: "2-digit",
               })

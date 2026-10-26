@@ -242,7 +242,10 @@ export const PanelErrores: React.FC = () => {
     <div className="panel-errores-container">
       <div className="panel-errores-header">
         <h1>Centro de Control - Errores de API</h1>
-        <p>Monitoreo de incidencias y fallas en el Chatbot SuperAsistente</p>
+        <p>
+          Monitoreo de incidencias y fallas en el Chatbot SuperAsistente y en los endpoints de la
+          plataforma SuperMenú
+        </p>
       </div>
 
       <div className="panel-errores-card">

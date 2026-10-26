@@ -489,6 +489,77 @@ app.get("/api/requisiciones/otros", async (_req, res) => {
   }
 });
 
+const actualizarEstadoLogistica = async (
+  id: string,
+  estado: "Entregado" | "rechazado",
+  campoFecha: "fecha_entrega" | "fecha_decision",
+  responsable: string | undefined,
+  observaciones: string | undefined,
+): Promise<boolean> => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const resultado = await client.query(
+      `UPDATE registro_aprobaciones
+       SET estado = $1,
+           ${campoFecha} = $2,
+           entregado_por = $3,
+           observaciones = $4
+       WHERE id = $5 AND LOWER(estado) = 'aprobado'
+       RETURNING datos_completos`,
+      [estado, new Date().toISOString(), responsable, observaciones, id],
+    );
+
+    if (resultado.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+
+    let datosCompletos: unknown = resultado.rows[0].datos_completos;
+    if (typeof datosCompletos === "string") {
+      try {
+        datosCompletos = JSON.parse(datosCompletos);
+      } catch {
+        throw new Error(
+          "Los datos de la requisición no contienen JSON válido.",
+        );
+      }
+    }
+
+    if (
+      !datosCompletos ||
+      typeof datosCompletos !== "object" ||
+      !("id" in datosCompletos) ||
+      datosCompletos.id === null ||
+      datosCompletos.id === undefined ||
+      String(datosCompletos.id).trim() === ""
+    ) {
+      throw new Error("No se encontró el ID de la requisición asociada.");
+    }
+
+    const actualizacionRequisicion = await client.query(
+      "UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2",
+      [estado, datosCompletos.id],
+    );
+
+    if (actualizacionRequisicion.rowCount === 0) {
+      throw new Error(
+        `No se encontró la requisición ${String(datosCompletos.id)} para actualizar su estado logístico.`,
+      );
+    }
+
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 // Endpoint para registrar la entrega completa (con PATCH) y evitar que se pueda procesar 2 veces la misma requisición
 app.patch("/api/aprobaciones/:id/entregar", async (req, res) => {
   try {
@@ -510,38 +581,17 @@ app.patch("/api/aprobaciones/:id/entregar", async (req, res) => {
         .json({ error: "No tienes permisos para registrar entregas." });
     }
 
-    const fechaActual = new Date().toISOString();
-
-    const resultado = await pool.query(
-      `UPDATE registro_aprobaciones 
-       SET estado = 'Entregado',
-           fecha_entrega = $1, 
-           entregado_por = $2, 
-           observaciones = $3 
-       WHERE id = $4 AND LOWER(estado) = 'aprobado'`,
-      [fechaActual, entregado_por, observaciones, id],
+    const actualizada = await actualizarEstadoLogistica(
+      id,
+      "Entregado",
+      "fecha_entrega",
+      entregado_por,
+      observaciones,
     );
-
-    if (resultado.rowCount === 0) {
+    if (!actualizada) {
       return res.status(400).json({
         error: "La solicitud no existe o no está en estado aprobado.",
       });
-    }
-
-    // Actualiza la tabla principal 'requisiciones' con el estado final de logística (entregado) en (estado_final_logistica)
-    const regRes = await pool.query(
-      "SELECT datos_completos FROM registro_aprobaciones WHERE id = $1",
-      [id],
-    );
-    if (regRes.rows.length > 0) {
-      const datosCompletos = regRes.rows[0].datos_completos;
-      const idRequisicion = datosCompletos?.id;
-      if (idRequisicion) {
-        await pool.query(
-          "UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2",
-          ["Entregado", idRequisicion],
-        );
-      }
     }
 
     res.json({ message: "Entrega registrada con éxito" });
@@ -572,38 +622,17 @@ app.patch("/api/aprobaciones/:id/rechazar", async (req, res) => {
     const { id } = req.params;
     const { rechazado_por, observaciones } = req.body;
 
-    const fechaActual = new Date().toISOString();
-
-    const resultado = await pool.query(
-      `UPDATE registro_aprobaciones 
-       SET estado = 'rechazado',
-           fecha_decision = $1, 
-           entregado_por = $2, 
-           observaciones = $3 
-       WHERE id = $4 AND LOWER(estado) = 'aprobado'`,
-      [fechaActual, rechazado_por || "Dpto. logistica", observaciones, id],
+    const actualizada = await actualizarEstadoLogistica(
+      id,
+      "rechazado",
+      "fecha_decision",
+      rechazado_por || "Dpto. logistica",
+      observaciones,
     );
-
-    if (resultado.rowCount === 0) {
+    if (!actualizada) {
       return res.status(400).json({
         error: "La solicitud no existe o no está en estado aprobado.",
       });
-    }
-
-    // Actualiza la tabla principal 'requisiciones' con el estado final de logística (rechazado) en (estado_final_logistica)
-    const regRes = await pool.query(
-      "SELECT datos_completos FROM registro_aprobaciones WHERE id = $1",
-      [id],
-    );
-    if (regRes.rows.length > 0) {
-      const datosCompletos = regRes.rows[0].datos_completos;
-      const idRequisicion = datosCompletos?.id;
-      if (idRequisicion) {
-        await pool.query(
-          "UPDATE requisiciones SET estado_final_logistica = $1 WHERE id = $2",
-          ["rechazado", idRequisicion],
-        );
-      }
     }
 
     res.json({ message: "Solicitud rechazada con éxito" });

@@ -269,7 +269,7 @@ const ChatBotDashboard: React.FC = () => {
           <table className="chatbot-dashboard__table">
             <thead>
               <tr>
-                <th>Nombre Usuario</th>
+                <th>Usuario</th>
                 <th>Intención / Flujo</th>
                 <th>Día/Hora</th>
                 <th>Estado</th>

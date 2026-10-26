@@ -72,7 +72,7 @@ const SuperMenu: React.FC<Props> = () => {
     <div className={`admin-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h2>SuperMenu</h2>
+          <h2>SuperMenú</h2>
           <button className="toggle-sidebar" onClick={toggleSidebar}>
             {sidebarCollapsed ? <FaChevronRight /> : <FaChevronDown />}
           </button>

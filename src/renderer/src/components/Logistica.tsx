@@ -116,7 +116,7 @@ export const ApprovalList: React.FC = () => {
       return 'tic'
     }
     if (department.includes('logistica')) return 'logistica'
-    if (department.includes('rrhh') || department.includes('recursos')) return 'rrhh'
+    if (department.includes('rrhh') || department.includes('recursos humanos')) return 'rrhh'
     if (department.includes('comercial')) return 'comercial'
     return 'otros'
   }

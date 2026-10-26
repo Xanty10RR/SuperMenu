@@ -429,6 +429,7 @@ export const ApprovalList: React.FC = () => {
                           key !== 'nombre_solicitante' &&
                           key !== 'departamento' &&
                           key !== 'descripcion' &&
+                          key !== 'estado_final_logistica' &&
                           key.toLowerCase() !== 'fecha_solicitud' &&
                           key.toLowerCase() !== 'fecha_creacion' &&
                           key.toLowerCase() !== 'fecha creacion' && (

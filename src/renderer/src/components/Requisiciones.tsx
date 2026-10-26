@@ -458,7 +458,8 @@ export const RequisicionesView: React.FC = () => {
                                     'descripcion',
                                     'fecha_creacion',
                                     'tipo',
-                                    'estado'
+                                    'estado',
+                                    'estado_final_logistica'
                                   ].includes(key)
                               )
                               .map(([key, value]) => (

@@ -36,7 +36,7 @@ export const InicioView: React.FC<InicioViewProps> = ({ onNavigate }) => {
       onClick: () => onNavigate('requisicion')
     },
     {
-      nombre: 'Logistica',
+      nombre: 'Logística',
       descripcion: 'Aprobación y entrega de requisiciones',
       icono: <FaTruck size={50} />,
       onClick: () => onNavigate('logistica')

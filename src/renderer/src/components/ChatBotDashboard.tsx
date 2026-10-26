@@ -271,7 +271,7 @@ const ChatBotDashboard: React.FC = () => {
               <tr>
                 <th>Nombre usuario</th>
                 <th>Intención / Flujo</th>
-                <th>Hora</th>
+                <th>Día/Hora</th>
                 <th>Estado</th>
               </tr>
             </thead>

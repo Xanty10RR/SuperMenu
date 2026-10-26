@@ -904,6 +904,7 @@ app.get("/api/chatbot/metrics", async (_req, res) => {
                 year: "2-digit",
                 hour: "2-digit",
                 minute: "2-digit",
+                hourCycle: "h23",
               })
             : "Reciente",
           status: "success",

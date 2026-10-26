@@ -85,7 +85,7 @@ const SuperMenu: React.FC<Props> = () => {
             aria-current={activeView === 'inicio' ? 'page' : undefined}
           >
             <FaHome className="menu-icon" />
-            {!sidebarCollapsed && <span>Inicio</span>}
+            <span>Inicio</span>
           </li>
           <li
             className={activeView === 'usuarios' ? 'active' : ''}
@@ -93,7 +93,7 @@ const SuperMenu: React.FC<Props> = () => {
             aria-current={activeView === 'usuarios' ? 'page' : undefined}
           >
             <FaUsers className="menu-icon" />
-            {!sidebarCollapsed && <span>Usuarios</span>}
+            <span>Usuarios</span>
           </li>
           <li
             className={activeView === 'convenios' ? 'active' : ''}
@@ -101,7 +101,7 @@ const SuperMenu: React.FC<Props> = () => {
             aria-current={activeView === 'convenios' ? 'page' : undefined}
           >
             <FaHandshake className="menu-icon" />
-            {!sidebarCollapsed && <span>Convenios</span>}
+            <span>Convenios</span>
           </li>
           <li
             className={activeView === 'requisicion' ? 'active' : ''}
@@ -109,7 +109,7 @@ const SuperMenu: React.FC<Props> = () => {
             aria-current={activeView === 'requisicion' ? 'page' : undefined}
           >
             <FaFileAlt className="menu-icon" />
-            {!sidebarCollapsed && <span>Requisición</span>}
+            <span>Requisición</span>
           </li>
           <li
             className={activeView === 'logistica' ? 'active' : ''}
@@ -117,7 +117,7 @@ const SuperMenu: React.FC<Props> = () => {
             aria-current={activeView === 'logistica' ? 'page' : undefined}
           >
             <FaTruck className="menu-icon" />
-            {!sidebarCollapsed && <span>Logística</span>}
+            <span>Logística</span>
           </li>
           <li
             className={activeView === 'superasistente' ? 'active' : ''}
@@ -135,7 +135,7 @@ const SuperMenu: React.FC<Props> = () => {
             title="SuperAsistente"
           >
             <FaRobot className="menu-icon" />
-            {!sidebarCollapsed && <span>SuperAsistente</span>}
+            <span>SuperAsistente</span>
           </li>
         </ul>
       </aside>

@@ -117,7 +117,7 @@ const SuperMenu: React.FC<Props> = () => {
             aria-current={activeView === 'logistica' ? 'page' : undefined}
           >
             <FaTruck className="menu-icon" />
-            {!sidebarCollapsed && <span>Logistica</span>}
+            {!sidebarCollapsed && <span>Logística</span>}
           </li>
           <li
             className={activeView === 'superasistente' ? 'active' : ''}

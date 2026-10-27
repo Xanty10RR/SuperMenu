@@ -372,6 +372,8 @@ export const ApprovalList: React.FC = () => {
         {items.map((item) => {
           // Obtenemos la clase de estado en minúsculas para el borde (aprobado, rechazado, entregado)
           const estadoClase = item.estado.toLowerCase()
+          const isApproved = estadoClase === 'aprobado'
+          const observaciones = isApproved ? item.datos_completos.observaciones : item.observaciones
 
           return (
             <div
@@ -429,6 +431,7 @@ export const ApprovalList: React.FC = () => {
                           key !== 'nombre_solicitante' &&
                           key !== 'departamento' &&
                           key !== 'descripcion' &&
+                          key !== 'observaciones' &&
                           key !== 'estado_final_logistica' &&
                           key.toLowerCase() !== 'fecha_solicitud' &&
                           key.toLowerCase() !== 'fecha_creacion' &&
@@ -489,18 +492,22 @@ export const ApprovalList: React.FC = () => {
                     )}
                   </div>
 
-                  {item.observaciones && (
-                    <div
-                      className={`delivery-observations ${estadoClase === 'rechazado' ? 'rejected-observations' : ''}`}
-                    >
-                      <h4>
-                        {estadoClase === 'rechazado'
-                          ? 'Observaciones de rechazo:'
-                          : 'Observaciones de entrega:'}
-                      </h4>
-                      <p>{mayusculaPrimeraletra(item.observaciones)}</p>
-                    </div>
-                  )}
+                  {observaciones !== null &&
+                    observaciones !== undefined &&
+                    String(observaciones).trim() !== '' && (
+                      <div
+                        className={`delivery-observations ${isApproved ? 'approved-observations' : estadoClase === 'rechazado' ? 'rejected-observations' : ''}`}
+                      >
+                        <h4>
+                          {isApproved
+                            ? 'Observaciones de solicitud:'
+                            : estadoClase === 'rechazado'
+                              ? 'Observaciones de rechazo:'
+                              : 'Observaciones de entrega:'}
+                        </h4>
+                        <p>{mayusculaPrimeraletra(String(observaciones))}</p>
+                      </div>
+                    )}
 
                   {showDeliveryButton && (
                     <div className="delivery-section">

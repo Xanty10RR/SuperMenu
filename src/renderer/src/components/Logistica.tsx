@@ -9,7 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FiSearch } from 'react-icons/fi'
-import axios from 'axios'
+import { api } from '../services/api'
 import '../styles/ApprovalList.css'
 
 interface ApprovalItem {
@@ -128,7 +128,7 @@ export const ApprovalList: React.FC = () => {
         setLoading(true)
         setError(null)
 
-        const response = await axios.get('http://localhost:3003/api/aprobaciones')
+        const response = await api.get('/api/aprobaciones')
         const allItems = response.data
 
         // Definir si el usuario tiene permiso global (jefelogistica y admin)
@@ -232,8 +232,8 @@ export const ApprovalList: React.FC = () => {
       const rolParaHeader =
         username === 'admin' || username === 'jefelogistica' ? username : userDept
 
-      await axios.patch(
-        `http://localhost:3003/api/aprobaciones/${aprobacionId}/entregar`,
+      await api.patch(
+        `/api/aprobaciones/${aprobacionId}/entregar`,
         {
           entregado_por: deliveryData.entregado_por.trim(),
           observaciones: deliveryData.observaciones.trim()
@@ -290,7 +290,7 @@ export const ApprovalList: React.FC = () => {
       setIsSubmitting('reject')
       setError(null)
 
-      await axios.patch(`http://localhost:3003/api/aprobaciones/${aprobacionId}/rechazar`, {
+      await api.patch(`/api/aprobaciones/${aprobacionId}/rechazar`, {
         rechazado_por: responsableLogistica,
         observaciones: deliveryData.observaciones.trim()
       })

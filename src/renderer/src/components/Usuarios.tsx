@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from 'react-icons/fi'
+import { api } from '../services/api'
 import '../styles/Usuarios.css'
 
 interface User {
@@ -59,11 +60,8 @@ const Usuarios: React.FC = () => {
 
   const fetchUsuarios = async (): Promise<void> => {
     try {
-      const response = await fetch('http://localhost:3003/api/usuarios')
-      if (response.ok) {
-        const data: User[] = await response.json()
-        setUsers(data)
-      }
+      const response = await api.get<User[]>('/api/usuarios')
+      setUsers(response.data)
     } catch (error) {
       console.error('Error al cargar usuarios:', error)
     }
@@ -88,24 +86,12 @@ const Usuarios: React.FC = () => {
 
     try {
       if (editingUser) {
-        const response = await fetch(`http://localhost:3003/api/usuarios/${editingUser.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        })
-        if (response.ok) {
-          setEditingUser(null)
-          await fetchUsuarios()
-        }
+        await api.put(`/api/usuarios/${editingUser.id}`, formData)
+        setEditingUser(null)
+        await fetchUsuarios()
       } else {
-        const response = await fetch('http://localhost:3003/api/usuarios', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        })
-        if (response.ok) {
-          await fetchUsuarios()
-        }
+        await api.post('/api/usuarios', formData)
+        await fetchUsuarios()
       }
 
       setFormData({
@@ -133,12 +119,8 @@ const Usuarios: React.FC = () => {
     if (!esAdmin) return
     if (window.confirm('¿Estás seguro de que quieres eliminar a este usuario?')) {
       try {
-        const response = await fetch(`http://localhost:3003/api/usuarios/${id}`, {
-          method: 'DELETE'
-        })
-        if (response.ok) {
-          await fetchUsuarios()
-        }
+        await api.delete(`/api/usuarios/${id}`)
+        await fetchUsuarios()
       } catch (error) {
         console.error('Error al eliminar usuario:', error)
       }

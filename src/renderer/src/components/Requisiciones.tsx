@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import axios from 'axios'
+import { api } from '../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   FiEye,
@@ -45,7 +45,7 @@ export const RequisicionesView: React.FC = () => {
     setError(null)
     try {
       // Siempre traemos todas para que los contadores y pestañas tengan la información completa
-      const response = await axios.get('http://localhost:3003/api/requisiciones/todas')
+      const response = await api.get('/api/requisiciones/todas')
       setRequisiciones(response.data)
     } catch (err) {
       console.error('Error fetching requisiciones:', err)
@@ -82,7 +82,7 @@ export const RequisicionesView: React.FC = () => {
       // Aprobador en tabla requisiciones_aprobadas (Usa dinámicamente el usuario que inició sesión)
       const nombreAprobador = username || 'sistema'
 
-      const response = await axios.post('http://localhost:3003/api/aprobaciones', {
+      const response = await api.post('/api/aprobaciones', {
         id_requisicion: requisicion.id,
         estado: nuevoEstado,
         aprobador: nombreAprobador,

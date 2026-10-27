@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import axios from 'axios'
 import {
   FiTrash,
   FiClock,
@@ -7,6 +8,7 @@ import {
   FiCalendar,
   FiChevronDown
 } from 'react-icons/fi'
+import { api } from '../services/api'
 import '../styles/PanelErrores.css'
 
 interface ErrorApi {
@@ -93,20 +95,15 @@ export const PanelErrores: React.FC = () => {
       const nombreUsuario =
         localStorage.getItem('userName') || localStorage.getItem('usuario') || 'admin'
 
-      const response = await fetch('http://localhost:3003/api/errores', {
+      const response = await api.get<unknown>('/api/errores', {
         headers: {
-          'Content-Type': 'application/json',
           rol: rolActual,
           'x-user-role': rolActual,
           'x-user-name': nombreUsuario
         }
       })
 
-      if (!response.ok) {
-        throw new Error(`No se pudieron cargar los errores (HTTP ${response.status})`)
-      }
-
-      const data: unknown = await response.json()
+      const data = response.data
       if (!Array.isArray(data) || !data.every(esRegistroError)) {
         throw new Error('La respuesta del servidor no tiene el formato esperado')
       }
@@ -120,7 +117,11 @@ export const PanelErrores: React.FC = () => {
     } catch (error) {
       console.error('Error de red al cargar errores:', error)
       setErrorCarga(
-        error instanceof Error ? error.message : 'Ocurrió un error al cargar los registros.'
+        axios.isAxiosError(error) && error.response
+          ? `No se pudieron cargar los errores (HTTP ${error.response.status})`
+          : error instanceof Error
+            ? error.message
+            : 'Ocurrió un error al cargar los registros.'
       )
     } finally {
       setCargando(false)
@@ -139,10 +140,8 @@ export const PanelErrores: React.FC = () => {
       const nombreUsuario =
         localStorage.getItem('userName') || localStorage.getItem('usuario') || 'admin'
 
-      const response = await fetch(`http://localhost:3003/api/errores/${id}/resolver`, {
-        method: 'PATCH',
+      await api.patch(`/api/errores/${id}/resolver`, null, {
         headers: {
-          'Content-Type': 'application/json',
           rol: rolUsuario,
           'x-user-role': rolUsuario,
           'x-user-name': nombreUsuario,
@@ -150,15 +149,15 @@ export const PanelErrores: React.FC = () => {
         }
       })
 
-      if (!response.ok) {
-        throw new Error(`No se pudo resolver el error (HTTP ${response.status})`)
-      }
-
       setErrores((prev) => prev.map((err) => (err.id === id ? { ...err, resuelto: true } : err)))
     } catch (error) {
       console.error('Error al resolver:', error)
       setErrorResolucion(
-        error instanceof Error ? error.message : 'Ocurrió un error al resolver la incidencia.'
+        axios.isAxiosError(error) && error.response
+          ? `No se pudo resolver el error (HTTP ${error.response.status})`
+          : error instanceof Error
+            ? error.message
+            : 'Ocurrió un error al resolver la incidencia.'
       )
     } finally {
       setResolviendoId(null)
@@ -169,19 +168,13 @@ export const PanelErrores: React.FC = () => {
     try {
       const nombreUsuario =
         localStorage.getItem('userName') || localStorage.getItem('usuario') || 'admin'
-      const response = await fetch('http://localhost:3003/api/errores/archivar-resueltos', {
-        method: 'PATCH',
+      await api.patch('/api/errores/archivar-resueltos', null, {
         headers: {
-          'Content-Type': 'application/json',
           rol: rolUsuario,
           'x-user-role': rolUsuario,
           'x-user-name': nombreUsuario
         }
       })
-
-      if (!response.ok) {
-        throw new Error('No se pudo limpiar el historial')
-      }
 
       // Filtra la vista local para dejar solo los pendientes
       setErrores((prev) => prev.filter((err) => !err.resuelto))

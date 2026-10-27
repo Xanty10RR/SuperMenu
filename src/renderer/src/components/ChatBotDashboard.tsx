@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import '../styles/ChatBotDashboard.css'
 import PanelErrores from './PanelErrores'
+import { api } from '../services/api'
 
 import {
   FiMessageSquare,
@@ -89,15 +89,11 @@ const ChatBotDashboard: React.FC = () => {
     const fetchData = async (): Promise<void> => {
       try {
         // Cargar métricas de KPIs
-        const metricsRes = await axios.get<ChatbotMetrics>(
-          'http://localhost:3003/api/chatbot/metrics'
-        )
+        const metricsRes = await api.get<ChatbotMetrics>('/api/chatbot/metrics')
         setMetrics(metricsRes.data)
 
         // Cargar actividad real en vivo desde Supabase
-        const activityRes = await axios.get<ActivityItem[]>(
-          'http://localhost:3003/api/chatbot/activity'
-        )
+        const activityRes = await api.get<ActivityItem[]>('/api/chatbot/activity')
         setRecentActivity(activityRes.data)
       } catch (error) {
         console.error('Error al cargar datos del dashboard:', error)

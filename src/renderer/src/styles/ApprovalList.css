@@ -760,6 +760,15 @@
   color: #2ecc71;
 }
 
+.delivery-observations.approved-observations {
+  background-color: #eaf4ff;
+  color: #1e3a5f;
+}
+
+.delivery-observations.approved-observations h4 {
+  color: #2196f3;
+}
+
 .delivery-observations.delivered-observations {
   background-color: #fdf2f2;
   color: #ee041b;

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import axios from 'axios'
 import { FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight, FaDownload } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
+import { api } from '../services/api'
 import '../styles/Convenios.css'
 
 interface Convenio {
@@ -232,14 +234,10 @@ export const Convenios: React.FC = () => {
   const cargarDatos = useCallback(async (): Promise<void> => {
     setCargando(true)
     try {
-      const response = await fetch(
-        `http://localhost:3003/api/convenios/buscar?q=${encodeURIComponent(busqueda)}`
+      const response = await api.get<DatosBancos>(
+        `/api/convenios/buscar?q=${encodeURIComponent(busqueda)}`
       )
-      const contentType = response.headers.get('content-type')
-      if (contentType && contentType.includes('application/json')) {
-        const data = await response.json()
-        setDatosConvenios(data)
-      }
+      setDatosConvenios(response.data)
     } catch (error) {
       console.error('Error al cargar convenios:', error)
     } finally {
@@ -265,23 +263,22 @@ export const Convenios: React.FC = () => {
     e.preventDefault()
 
     try {
-      const response = await fetch(`http://localhost:3003/api/convenios`, {
-        method: 'POST',
-        headers: headersPermiso,
-        body: JSON.stringify({ ...formulario, banco: bancoSeleccionado })
-      })
-
-      if (response.ok) {
-        setModalCrearAbierto(false)
-        resetFormulario()
-        cargarDatos()
-      } else {
-        const dataError = await response.json().catch(() => null)
-        alert(dataError?.error || 'Error al guardar el convenio en el servidor.')
-      }
+      await api.post(
+        '/api/convenios',
+        { ...formulario, banco: bancoSeleccionado },
+        {
+          headers: headersPermiso
+        }
+      )
+      setModalCrearAbierto(false)
+      resetFormulario()
+      cargarDatos()
     } catch (error) {
       console.error('Error de red al crear:', error)
-      alert('Error de red al intentar conectar con el servidor.')
+      const errorMessage = axios.isAxiosError<{ error?: string }>(error)
+        ? error.response?.data?.error || 'Error al guardar el convenio en el servidor.'
+        : 'Error de red al intentar conectar con el servidor.'
+      alert(errorMessage)
     }
   }
 
@@ -349,19 +346,15 @@ export const Convenios: React.FC = () => {
     const idConvenio = convenioEnEdicion.id || convenioEnEdicion.codigo_convenio
 
     try {
-      const response = await fetch(`http://localhost:3003/api/convenios/${idConvenio}`, {
-        method: 'PUT',
-        headers: headersPermiso,
-        body: JSON.stringify({ ...formulario, banco: bancoSeleccionado })
-      })
-      if (response.ok) {
-        setModalEditarAbierto(false)
-        setConvenioEnEdicion(null)
-        resetFormulario()
-        cargarDatos()
-      } else {
-        alert('Error al actualizar el convenio.')
-      }
+      await api.put(
+        `/api/convenios/${idConvenio}`,
+        { ...formulario, banco: bancoSeleccionado },
+        { headers: headersPermiso }
+      )
+      setModalEditarAbierto(false)
+      setConvenioEnEdicion(null)
+      resetFormulario()
+      cargarDatos()
     } catch (error) {
       console.error('Error de red al editar:', error)
     }
@@ -378,21 +371,14 @@ export const Convenios: React.FC = () => {
       return
 
     try {
-      const response = await fetch(
-        `http://localhost:3003/api/convenios/${idConvenio}?banco=${bancoSeleccionado}`,
-        {
-          method: 'DELETE',
-          headers: {
-            rol: rolParaPermiso,
-            'x-user-role': rolParaPermiso
-          }
+      await api.delete(`/api/convenios/${idConvenio}`, {
+        params: { banco: bancoSeleccionado },
+        headers: {
+          rol: rolParaPermiso,
+          'x-user-role': rolParaPermiso
         }
-      )
-      if (response.ok) {
-        cargarDatos()
-      } else {
-        alert('Error al eliminar el registro.')
-      }
+      })
+      cargarDatos()
     } catch (error) {
       console.error('Error de red al eliminar:', error)
     }

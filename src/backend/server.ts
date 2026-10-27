@@ -98,8 +98,9 @@ setInterval(
 );
 
 // Iniciar el servidor
-app.listen(3003, () => {
-  console.log("Servidor backend corriendo en http://localhost:3003");
+const PORT = process.env.PORT || 3003;
+app.listen(PORT, () => {
+  console.log(`Servidor backend corriendo en el puerto ${PORT}`);
 });
 
 app.post("/api/login", async (req, res) => {

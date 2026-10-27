@@ -1140,6 +1140,16 @@ const verificarYResolverErroresDeRed = async (): Promise<void> => {
              mensaje ILIKE '%connection%' OR 
              mensaje ILIKE '%network%' OR
              mensaje ILIKE '%terminated%'
+             mensaje ILIKE '%econnreset%' OR
+             mensaje ILIKE '%econnrefused%' OR
+             mensaje ILIKE '%etimedout%' OR
+             mensaje ILIKE '%enotfound%' OR
+             mensaje ILIKE '%ehostunreach%' OR
+             mensaje ILIKE '%enetunreach%' OR
+             mensaje ILIKE '%socket%' OR
+             mensaje ILIKE '%broken pipe%' OR
+             mensaje ILIKE '%closed%' OR
+             mensaje ILIKE '%reset%'
            )`,
       );
 

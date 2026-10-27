@@ -1,8 +1,8 @@
-import axios from 'axios'
+import { api } from '../services/api'
 
 export const AuthService = {
   login: async (username: string, password: string) => {
-    const response = await axios.post('http://localhost:3003/api/login', {
+    const response = await api.post('/api/login', {
       username,
       password
     })
@@ -12,7 +12,7 @@ export const AuthService = {
   logout: async () => {
     // Si tienes un endpoint para logout en el backend
     try {
-      await axios.post('http://localhost:3003/api/logout')
+      await api.post('/api/logout')
     } catch (error) {
       console.error('Logout error:', error)
     }

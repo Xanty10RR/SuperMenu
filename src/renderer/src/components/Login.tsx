@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import styled, { keyframes } from 'styled-components'
 import { FiUser, FiLock, FiArrowRight } from 'react-icons/fi'
+import { api } from '../services/api'
 
 // Animaciones
 const gradientFlow = keyframes`
@@ -251,7 +251,7 @@ const Login: React.FC = () => {
     setError('')
 
     try {
-      const response = await axios.post('http://localhost:3003/api/login', {
+      const response = await api.post('/api/login', {
         username,
         password
       })

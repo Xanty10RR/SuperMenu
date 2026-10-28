@@ -3,7 +3,7 @@ name: Build and Release Electron App
 on:
   push:
     tags:
-      - 'v*' # Se activa automáticamente cada vez que subas un tag que empiece con 'v' (ej: v1.0.0)
+      - 'v*' # Se activa automáticamente cada vez que se suba un tag que empiece con 'v' (ej: v1.0.0)
 
 jobs:
   release:
@@ -24,10 +24,10 @@ jobs:
           cache: 'npm'
 
       - name: Build and Publish Electron App
-        uses: samuelmeuli/action-electron-builder@v5
+        uses: samuelmeuli/action-electron-builder@v1
         with:
           # GitHub provee este token automáticamente por seguridad
           github_token: ${{ secrets.GITHUB_TOKEN }}
           
-          # Esto le dice que cree el Release en GitHub automáticamente
+          # Crea el Release en GitHub automáticamente
           release: true

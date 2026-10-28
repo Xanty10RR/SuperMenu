@@ -15,7 +15,7 @@
 
 ## Overview
 
-Plataforma de escritorio SaaS de tipo **ERP / BOPA (Business Process Automation)** + **Middleware Bancario** + **Conversational AI Dashboard**, desarrollada con arquitectura modular y escalable.
+Plataforma de escritorio SaaS de tipo **ERP (Enterprise Resource Planning) / BOPA (Business Process Automation)** + **Middleware Bancario** + **Conversational AI Dashboard**, desarrollada con arquitectura modular y escalable.
 
 `SuperMenu` es una aplicación de escritorio creada con el framework Electron, con una interfaz de usuario basada en React. Está diseñada para centralizar solicitudes de requisiciones, entregas, convenios bancarios, usuarios y el chatbot de whatsapp (SuperAsistente) en una única aplicación de escritorio, lo que mejora la eficiencia, el control operativo y el seguimiento de los procesos de negocio. Está configurada para empaquetarse en Windows, macOS y Linux mediante `electron-builder`.
 

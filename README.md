@@ -39,10 +39,10 @@ Experiencia nativa con Electron conectada a producción.
 
 El proyecto utiliza una **Arquitectura Modular Monorepo desacoplada**:
 
-**Frontend (Vercel):** React + TypeScript + CSS3. Arquitectura por features, consumo de API vía Axios con interceptores JWT.<br>
-**Backend (Render):** Node.js + Express + TypeScript. Arquitectura en capas: `routes -> controllers -> services -> provider/database`. Despliegue continuo.<br>
-**Base de Datos:** Supabase (PostgreSQL) con RLS, vistas optimizadas y más de 29k registros bancarios operativos.<br>
-**Chatbot Service:** Microservicio BuilderBot + Meta Cloud API (WhatsApp) que funciona como Daemon independiente.<br>
+**- Frontend (Vercel):** React + TypeScript + CSS3. Arquitectura por features, consumo de API vía Axios con interceptores JWT.<br>
+**- Backend (Render):** Node.js + Express + TypeScript. Arquitectura en capas: `routes -> controllers -> services -> provider/database`. Despliegue continuo.<br>
+**- Base de Datos:** Supabase (PostgreSQL) con RLS, vistas optimizadas y más de 29k registros bancarios operativos.<br>
+**- Chatbot Service:** Microservicio BuilderBot + Meta Cloud API (WhatsApp) que funciona como Daemon independiente.<br>
 
 ## 📦 Módulos del Sistema
 

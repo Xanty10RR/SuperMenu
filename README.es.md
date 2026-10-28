@@ -1,6 +1,6 @@
 # SuperMenu
 
-[🇺🇸 Read in English](./README.md)
+[🇺🇸 Leer en Inglés](./README.md)
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Electron](https://img.shields.io/badge/Electron-2B2E3A?style=for-the-badge&logo=electron&logoColor=9FEAF9)
@@ -132,8 +132,6 @@ npm run dev
 cd ../..
 npm run dev
 ```
-
-> Nota: en este proyecto, el comando correcto para ejecutar la aplicación de escritorio es `npm run dev` desde la raíz, no `npm run electron:dev`.
 
 ## 📬 Contáctame
 

@@ -36,6 +36,15 @@ Access the live product without installation.
 2. Download the `SuperMenu-Setup.exe`
 3. Install and run it
 
+## 📸 Screenshots
+
+<img width="1913" height="1057" alt="image" src="https://github.com/user-attachments/assets/d794c80f-198c-4054-aa34-8dc08ea388ad" />
+<img width="1897" height="1040" alt="image" src="https://github.com/user-attachments/assets/b79697fd-9c14-46e2-bd80-c80379960b33" />
+<img width="1905" height="1053" alt="image" src="https://github.com/user-attachments/assets/d7967001-13d6-4fae-851c-6ec9ed68c892" />
+<img width="1915" height="1047" alt="image" src="https://github.com/user-attachments/assets/bed3d0fc-0cbf-425a-8686-9ba9123f924c" />
+<img width="1918" height="1061" alt="image" src="https://github.com/user-attachments/assets/d65795bc-be5e-4db5-81cd-2ea5362b5e68" />
+<img width="1907" height="1055" alt="image" src="https://github.com/user-attachments/assets/d187e1ab-23a1-4c19-a853-79e340269227" />
+
 ## 🏗️ System architecture
 
 The project follows a modular and decoupled monorepo architecture:

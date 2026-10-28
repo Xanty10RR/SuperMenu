@@ -5,10 +5,11 @@
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Electron](https://img.shields.io/badge/Electron-2B2E3A?style=for-the-badge&logo=electron&logoColor=9FEAF9)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 
 ## 🌎 Overview
 
@@ -33,8 +34,23 @@ Access the live product without installation.
 #### 🖥️ 2. Native desktop version (Windows)
 
 1. Go to **[Releases](../../releases)**
-2. Download the `SuperMenu-Setup.exe`
-3. Install and run it
+2. Download `win-unpacked.zip`
+3. Unzip the file
+4. Open the folder and double-click `SuperMenu.exe`
+
+## 📸 Screenshots
+
+| User Management | Banking Agreements |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/d794c80f-198c-4054-aa34-8dc08ea388ad" /> | <img src="https://github.com/user-attachments/assets/b79697fd-9c14-46e2-bd80-c80379960b33" /> |
+
+| Requisitions | Logistics |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/d7967001-13d6-4fae-851c-6ec9ed68c892" /> | <img src="https://github.com/user-attachments/assets/bed3d0fc-0cbf-425a-8686-9ba9123f924c" /> |
+
+| Operations Center - SuperAsistente Chatbot | Operations Center - API Error Dashboard |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/d65795bc-be5e-4db5-81cd-2ea5362b5e68" /> | <img src="https://github.com/user-attachments/assets/d187e1ab-23a1-4c19-a853-79e340269227" /> |
 
 ## 🏗️ System architecture
 

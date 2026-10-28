@@ -67,9 +67,9 @@ Punto de partida de toda solicitud interna.
 
 #### 🚚 4. Módulo de Logística (Despachos y Trazabilidad)
 Transforma la requisición aprobada en una operación real.
-- Trazabilidad en tiempo real con cierre histórico.
+- Control de flujo por estados y cierre histórico con auditoría completa.
 
-**Flujo Completo:** `Creación requisición por el chatbot-> Aprobación por jefe de departamento-> Logística (confirma la aprobación o la rechaza - Empaque/Ruta) -> Entrega y Cierre Histórico`
+**Flujo Completo:** `Creación de requisición por el chatbot-> Aprobación por jefe de departamento-> Logística (confirma la aprobación o la rechaza - Empaque/Ruta) -> Entrega y Cierre Histórico`
 
 #### 🤖 5. Módulo SuperAsistente (Chatbot + Centro de Operaciones)
 

@@ -31,18 +31,6 @@ Acceso inmediato a la aplicación sin instalación.
 
 **👉 [supermenu-rho.vercel.app](https://supermenu-rho.vercel.app/)**
 
-**🔑 Demo Credentials (password is same as user):**
-
-| Role | Username | Password | Access |
-| :--- | :--- | :--- | :--- |
-| **Super Admin** | `admin` | `admin` | Full access to all modules |
-| Sistemas | `jefesistemas` | `jefesistemas` | Chatbot metrics + Error center |
-| Logística | `jefelogistica` | `jefelogistica` | Requisitions + Logistics |
-| Comercial | `jefecomercial` | `jefecomercial` | Banking agreements |
-| RRHH / Otros | `jeferrhh` / `jefeotros` | `jeferrhh` / `jefeotros` | User-specific flows |
-
-> 💡 **Tip:** Use `admin` to see the entire platform without restrictions.
-
 #### 🖥️ 2. Versión nativa de escritorio (Windows)
 
 1. Ve a **[Releases](../../releases)**

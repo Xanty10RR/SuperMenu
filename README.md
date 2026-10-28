@@ -1,4 +1,4 @@
-# SuperMenu
+# SuperMenu - Enterprise Operations Hub | Custom ERP + Banking Middleware + Conversational AI Operations Center
 
 [🇪🇸 Read in Spanish](./README.es.md)
 
@@ -12,9 +12,9 @@
 
 ## 🌎 Overview
 
-SuperMenu is a comprehensive operational management platform designed to centralize and automate internal business processes in a single desktop experience.
+**SuperMenu** is a comprehensive operational management platform designed to centralize and automate internal business processes in a single desktop experience.
 
-It combines a **desktop ERP-style workflow**, **banking agreement management**, **internal logistics**, **user administration**, and a **WhatsApp chatbot dashboard** in one integrated system. The application is built with **Electron + React + TypeScript** and is designed to be modular, scalable, and easy to operate in production environments.
+It combines a **custom desktop ERP workflow**, **banking agreement middleware (BOPA)**, **internal logistics**, **user administration**, and a **conversational WhatsApp chatbot with a real-time operations dashboard** into one integrated system. The application is built with **Electron + React + TypeScript** and is designed to be modular, scalable, and production-ready.
 
 **🔗 Live Demo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/)
 

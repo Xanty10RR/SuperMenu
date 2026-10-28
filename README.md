@@ -111,26 +111,27 @@ Bot desplegado en WhatsApp (Meta API) integrado a PostgreSQL. Atiende consultas 
 ```bash
 # 1. Clonar
 git clone https://github.com/Xanty10RR/SuperMenu
+cd SuperMenu
 
-# 2. Instalar dependencias de la app Electron
+# 2. Instalar dependencias del proyecto principal (Electron + frontend)
 npm install
-# configurar .env con SUPABASE_URL, etc...
+
+# 3. Configurar variables de entorno
+# crear un archivo .env con las variables necesarias, por ejemplo:
+# SUPABASE_URL=...
+# SUPABASE_ANON_KEY=...
+
+# 4. Levantar el backend
+cd src/backend
+npm install
 npm run dev
 
-# 3. Frontend
-npm install
+# 5. Regresar a la raíz y levantar la app Electron
+cd ../..
 npm run dev
 ```
-
-# 4. Electron
-
-npm run electron:dev
-
-```
-
 
 ## Contact me
 
 - 👨🏻‍💻[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/daniel-santiago-rosero-4420a91b0/)
 - 📧 [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:santiagocajamarca.37@gmail.com)
-```

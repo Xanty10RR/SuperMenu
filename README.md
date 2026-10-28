@@ -1,4 +1,4 @@
-# SuperMenu - Enterprise Operations Hub | Custom ERP + Banking Middleware + Conversational AI Operations Center
+# SuperMenu - Enterprise Operations Hub | Custom ERP/BOPA + Banking Middleware + Conversational AI Operations Center
 
 [🇪🇸 Read in Spanish](./README.es.md)
 

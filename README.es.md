@@ -1,4 +1,4 @@
-# SuperMenu
+# SuperMenu - Hub de Operaciones Empresariales | ERP/BOPA a Medida + Middleware Bancario + Centro de Operaciones con IA Conversacional
 
 [🇺🇸 Leer en Inglés](./README.md)
 

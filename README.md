@@ -37,12 +37,12 @@ Experiencia nativa con Electron conectada a producción.
 
 ## 🏗️ Arquitectura del Sistema
 
-El proyecto utiliza una **Arquitectura Modular Monorepo** desacoplada:
+El proyecto utiliza una **Arquitectura Modular Monorepo desacoplada**:
 
-**Frontend (Vercel):** React + TypeScript + CSS3. Arquitectura por features, consumo de API vía Axios con interceptores JWT.
-**Backend (Render):** Node.js + Express + TypeScript. Arquitectura en capas: `routes -> controllers -> services -> provider/database`. Despliegue continuo.
-**Base de Datos:** Supabase (PostgreSQL) con RLS, vistas optimizadas y más de 29k registros bancarios operativos.
-**Chatbot Service:** Microservicio BuilderBot + Meta Cloud API (WhatsApp) que funciona como Daemon independiente.
+**Frontend (Vercel):** React + TypeScript + CSS3. Arquitectura por features, consumo de API vía Axios con interceptores JWT.<br>
+**Backend (Render):** Node.js + Express + TypeScript. Arquitectura en capas: `routes -> controllers -> services -> provider/database`. Despliegue continuo.<br>
+**Base de Datos:** Supabase (PostgreSQL) con RLS, vistas optimizadas y más de 29k registros bancarios operativos.<br>
+**Chatbot Service:** Microservicio BuilderBot + Meta Cloud API (WhatsApp) que funciona como Daemon independiente.<br>
 
 ## 📦 Módulos del Sistema
 
@@ -86,14 +86,14 @@ Bot desplegado en WhatsApp (Meta API) integrado a PostgreSQL. Atiende consultas 
 2.  **Soft Delete (Archivado Lógico):** No se borra nada. Usa la columna `archivado BOOLEAN`. El backend filtra `WHERE archivado = FALSE`, manteniendo auditoría intacta.
 3.  **Botón Maestro Limpiar Historial:** `PATCH /api/errores/archivar-resueltos` que archiva todos los resueltos de un golpe.
 
-### 🛠️ Stack Tecnológico
+## 🛠️ Stack Tecnológico
 
 **Frontend & Desktop:** React, TypeScript, Electron, Electron-Vite, Tailwind, CSS, Axios, MUI, React Icons<br>
 **Backend:** Node.js, Express, TypeScript, TSX<br>
 **Base de datos:** PostgreSQL
 **Infraestructura:** Supabase, Vercel (Frontend), Render (Backend)
 
-### 🚀 Instalación Local
+## 🚀 Instalación Local
 
 ```bash
 # 1. Clonar

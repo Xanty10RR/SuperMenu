@@ -5,17 +5,17 @@
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Electron](https://img.shields.io/badge/Electron-2B2E3A?style=for-the-badge&logo=electron&logoColor=9FEAF9)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 
 ## 🌎 Overview
 
-**SuperMenu** - Hub de Operaciones Empresariales | ERP a Medida + Middleware Bancario + Centro de Operaciones con IA Conversacional
+**SuperMenú** es una plataforma integral de gestión operativa diseñada para centralizar y automatizar procesos empresariales internos en una sola experiencia de escritorio.
 
-SuperMenú es una plataforma integral de gestión operativa diseñada para centralizar y automatizar procesos empresariales internos en una sola experiencia de escritorio.
-Combina un **flujo ERP a medida tipo escritorio**, **middleware de gestión de convenios bancarios (BOPA)**, **logística interna**, **administración de usuarios** y un **dashboard de chatbot conversacional de WhatsApp** en un mismo sistema integrado. La aplicación está desarrollada con **Electron + React + TypeScript** y está pensada para ser modular, escalable y fácil de operar en entornos de producción.
+Combina un **flujo ERP/BOPA a medida tipo escritorio**, **middleware de gestión de convenios bancarios**, **logística interna**, **administración de usuarios** y un **dashboard de chatbot conversacional de WhatsApp** en un mismo sistema integrado. La aplicación está desarrollada con **Electron + React + TypeScript** y está pensada para ser modular, escalable y fácil de operar en entornos de producción.
 
 **🔗 Demo en vivo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/)
 

@@ -49,7 +49,7 @@ El proyecto utiliza una **Arquitectura Modular Monorepo desacoplada**:
 #### 👥 1. Módulo de Usuarios (RBAC & Seguridad)
 Corazón de la seguridad de la plataforma.
 - Gestión completa de usuarios con roles: `admin`, `jefesistemas`, `jefelogistica`, `jefecomercial`, `jeferrhh`, `jefeotros`.
-- Autenticación JWT y control de acceso por endpoint (Middleware `x-user-role`).
+- Autenticación de usuario por credenciales + bcrypt y control de acceso por endpoint (Middleware `x-user-role`).
 - Activación/desactivación de cuentas y auditoría de accesos según departamento.
 
 #### 🏦 2. Módulo de Convenios Bancarios (Core de Negocio - 29k+ Registros)

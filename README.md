@@ -38,7 +38,7 @@ Access the live product without installation.
 
 ## 📸 Screenshots
 
-| Login & Overview | Banking Agreements |
+| User Management | Banking Agreements |
 | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/d794c80f-198c-4054-aa34-8dc08ea388ad" /> | <img src="https://github.com/user-attachments/assets/b79697fd-9c14-46e2-bd80-c80379960b33" /> |
 

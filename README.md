@@ -19,8 +19,8 @@ Plataforma de escritorio SaaS de tipo **ERP / BOPA (Business Process Automation)
 
 `SuperMenu` es una aplicación de escritorio creada con el framework Electron, con una interfaz de usuario basada en React. Está diseñada para centralizar solicitudes de requisiciones, entregas, convenios bancarios, usuarios y el chatbot de whatsapp (SuperAsistente) en una única aplicación de escritorio, lo que mejora la eficiencia, el control operativo y el seguimiento de los procesos de negocio. Está configurada para empaquetarse en Windows, macOS y Linux mediante `electron-builder`.
 
-**🔗 Demo en Vivo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/)
-**☁️ Backend:** Render + Supabase (PostgreSQL)
+**🔗 Demo en Vivo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/) <br>
+**☁️ Backend:** Render + Supabase (PostgreSQL) <br>
 **🖥️ Desktop:** Electron (.exe disponible en Releases)
 
 ### 📥 ¿Cómo Evaluar el Proyecto?
@@ -69,7 +69,7 @@ Punto de partida de toda solicitud interna.
 Transforma la requisición aprobada en una operación real.
 - Trazabilidad en tiempo real con cierre histórico.
 
-**Flujo Completo:** `Creación requisición por el chatbot-> Aprobación por jefe de departamento-> Logística (Aprobación/Rechazo - Empaque/Ruta) -> Entrega y Cierre Histórico`
+**Flujo Completo:** `Creación requisición por el chatbot-> Aprobación por jefe de departamento-> Logística (confirma la aprobación o la rechaza - Empaque/Ruta) -> Entrega y Cierre Histórico`
 
 #### 🤖 5. Módulo SuperAsistente (Chatbot + Centro de Operaciones)
 
@@ -88,7 +88,7 @@ Bot desplegado en WhatsApp (Meta API) integrado a PostgreSQL. Atiende consultas 
 
 ### 🛠️ Stack Tecnológico
 
-**Frontend & Desktop:** React, TypeScript, Electron, Electron-Vite, Tailwind CSS, Material-UI, Axios
+**Frontend & Desktop:** React, TypeScript, Electron, Electron-Vite, CSS, Axios
 **Backend:** Node.js, Express, TypeScript, BuilderBot, TSX
 **Infraestructura:** Supabase (PostgreSQL), Vercel (Frontend), Render (Backend)
 
@@ -96,7 +96,7 @@ Bot desplegado en WhatsApp (Meta API) integrado a PostgreSQL. Atiende consultas 
 
 ```bash
 # 1. Clonar
-git clone https://github.com/tu-usuario/supermenu.git
+git clone https://github.com/Xanty10RR/SuperMenu
 
 # 2. Backend
 cd backend

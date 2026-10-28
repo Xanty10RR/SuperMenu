@@ -1,0 +1,33 @@
+name: Build and Release Electron App
+
+on:
+  push:
+    tags:
+      - 'v*' # Se activa automáticamente cada vez que subas un tag que empiece con 'v' (ej: v1.0.0)
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Build and Publish Electron App
+        uses: samuelmeuli/action-electron-builder@v5
+        with:
+          # GitHub provee este token automáticamente por seguridad
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Esto le dice que cree el Release en GitHub automáticamente
+          release: true

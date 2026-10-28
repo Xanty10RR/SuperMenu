@@ -48,10 +48,9 @@ Access the live product without installation.
 | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/d7967001-13d6-4fae-851c-6ec9ed68c892" /> | <img src="https://github.com/user-attachments/assets/bed3d0fc-0cbf-425a-8686-9ba9123f924c" /> |
 
-| Super Assistant Chatbot Metrics and API Error Dashboard |
-| :---: |
-| <img src="https://github.com/user-attachments/assets/d65795bc-be5e-4db5-81cd-2ea5362b5e68" /> |
-| <img src="https://github.com/user-attachments/assets/d187e1ab-23a1-4c19-a853-79e340269227" /> |
+| Operations Center - SuperAsistente Chatbot | Operations Center - API Error Dashboard |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/d65795bc-be5e-4db5-81cd-2ea5362b5e68" /> | <img src="https://github.com/user-attachments/assets/d187e1ab-23a1-4c19-a853-79e340269227" /> |
 
 ## 🏗️ System architecture
 

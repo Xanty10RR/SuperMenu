@@ -1,6 +1,6 @@
 # SuperMenu
 
-[🇪🇸 Leer en Español](./README.es.md)
+[🇪🇸 Read in Spanish](./README.es.md)
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Electron](https://img.shields.io/badge/Electron-2B2E3A?style=for-the-badge&logo=electron&logoColor=9FEAF9)

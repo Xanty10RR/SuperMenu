@@ -102,12 +102,15 @@ git clone https://github.com/Xanty10RR/SuperMenu
 # 2. Backend
 cd backend
 npm install
-# configurar .env con SUPABASE_URL, JWT, etc
+# configurar .env con SUPABASE_URL, etc...
 npm run dev
 
 # 3. Frontend
 npm install
 npm run dev
+
+# 4. Electron
+npm run electron:dev
 ``` 
 
 

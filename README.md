@@ -8,7 +8,6 @@
 ![Node.js](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 
 ## 🌎 Overview
 
@@ -33,9 +32,9 @@ Access the live product without installation.
 #### 🖥️ 2. Native desktop version (Windows)
 
 1. Go to **[Releases](../../releases)**
-2. Download win-unpacked.zip
+2. Download `win-unpacked.zip`
 3. Unzip the file
-4. Open the folder and double-click SuperMenu.exe
+4. Open the folder and double-click `SuperMenu.exe`
 
 ## 📸 Screenshots
 

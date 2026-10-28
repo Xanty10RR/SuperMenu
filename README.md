@@ -1,133 +1,139 @@
-# SuperMenú - Plataforma de Gestión Operativa Integral
+# SuperMenu
+
+[🇪🇸 Leer en Español](./README.es.md)
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Electron](https://img.shields.io/badge/Electron-2B2E3A?style=for-the-badge&logo=electron&logoColor=9FEAF9)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![Axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Node JS](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express JS](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 
-## Overview
+## 🌎 Overview
 
-Plataforma de escritorio SaaS de tipo **ERP (Enterprise Resource Planning) / BOPA (Business Process Automation)** + **Middleware Bancario** + **Conversational AI Dashboard**, desarrollada con **arquitectura modular y escalable**.
+SuperMenu is a comprehensive operational management platform designed to centralize and automate internal business processes in a single desktop experience.
 
-**SuperMenu** es una aplicación de escritorio creada con el framework Electron, con una interfaz de usuario basada en React. Está diseñada para centralizar solicitudes de requisiciones, entregas, convenios bancarios, usuarios y el chatbot de whatsapp (SuperAsistente) en una única aplicación de escritorio, lo que mejora la eficiencia, el control operativo y el seguimiento de los procesos de negocio. Está configurada para empaquetarse en Windows, macOS y Linux mediante `electron-builder`.
+It combines a **desktop ERP-style workflow**, **banking agreement management**, **internal logistics**, **user administration**, and a **WhatsApp chatbot dashboard** in one integrated system. The application is built with **Electron + React + TypeScript** and is designed to be modular, scalable, and easy to operate in production environments.
 
-**🔗 Demo en Vivo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/)<br>
-**☁️ Backend:** Render + Supabase (PostgreSQL)<br>
-**🖥️ Desktop:** Electron (.exe disponible en Releases)
+**🔗 Live Demo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/)
 
-### 📥 ¿Cómo Evaluar el Proyecto?
+**☁️ Backend:** Render + Supabase (PostgreSQL)
 
-#### 🌐 1. Versión Web (Recomendado para Reclutadores)
+**🖥️ Desktop:** Electron app ready for Windows, macOS, and Linux packaging via `electron-builder`
 
-Acceso inmediato sin instalación. Proyecto completo funcionando en producción.
+### 📥 How to evaluate the project
+
+#### 🌐 1. Web version (recommended for recruiters)
+
+Access the live product without installation.
+
 **👉 [supermenu-rho.vercel.app](https://supermenu-rho.vercel.app/)**
 
-#### 🖥️ 2. Versión de Escritorio Nativa (Windows)
+#### 🖥️ 2. Native desktop version (Windows)
 
-Experiencia nativa con Electron conectada a producción.
+1. Go to **[Releases](../../releases)**
+2. Download the `SuperMenu-Setup.exe`
+3. Install and run it
 
-1. Ve a **[Releases](../../releases)**
-2. Descarga el `SuperMenu-Setup.exe`
-3. Instala y ejecuta. ¡Ya está conectado a Supabase!
+## 🏗️ System architecture
 
-## 🏗️ Arquitectura del Sistema
+The project follows a modular and decoupled monorepo architecture:
 
-El proyecto utiliza una **Arquitectura Modular Monorepo desacoplada**:
+- **Frontend (Vercel):** React + TypeScript + CSS. Feature-based structure and API consumption through Axios.
+- **Backend (Render):** Node.js + Express + TypeScript, organized by layers: `routes -> controllers -> services -> provider/database`.
+- **Database:** Supabase (PostgreSQL) with optimized views and operational records.
+- **Chatbot service:** WhatsApp integration via Meta API and a dedicated automation flow for business processes.
 
-**- Frontend (Vercel):** React + TypeScript + CSS3. Arquitectura por features, consumo de API vía Axios con interceptores bcrypt.<br>
-**- Backend (Render):** Node.js + Express + TypeScript. Arquitectura en capas: `routes -> controllers -> services -> provider/database`. Despliegue continuo.<br>
-**- Base de Datos:** Supabase (PostgreSQL) con RLS, vistas optimizadas y más de 29k registros bancarios operativos.<br>
-**- Chatbot Service:** Microservicio BuilderBot + Meta Cloud API (WhatsApp) que funciona como Daemon independiente.<br>
+## 📦 System modules
 
-## 📦 Módulos del Sistema
+#### 👥 1. User module (RBAC & security)
 
-#### 👥 1. Módulo de Usuarios (RBAC & Seguridad)
+Core security layer of the platform.
 
-Corazón de la seguridad de la plataforma.
+- Full user management with roles such as `admin`, `jefesistemas`, `jefelogistica`, `jefecomercial`, `jeferrhh`, and `jefeotros`.
+- Authentication with credentials and bcrypt protection.
+- Access control by endpoint and department-based audit logic.
 
-- Gestión completa de usuarios con roles: `admin`, `jefesistemas`, `jefelogistica`, `jefecomercial`, `jeferrhh`, `jefeotros`.
-- Autenticación de usuario por credenciales + bcrypt y control de acceso por endpoint (Middleware `x-user-role`).
-- Activación/desactivación de cuentas y auditoría de accesos según departamento.
+#### 🏦 2. Banking agreements module (core business - 29k+ records)
 
-#### 🏦 2. Módulo de Convenios Bancarios (Core de Negocio - 29k+ Registros)
+This is the central and most complex business area of the platform.
 
-El módulo más complejo. Centraliza el ciclo de vida de convenios bancarios de recaudo **BBVA, Agrario y Red Aval**.
+- Robust service layer for dynamic CRUD flows with `COALESCE` handling and data integrity protection.
+- Hybrid smart forms using real database values for categories, owner banks, and references.
+- Controlled pagination, advanced search, secure editing, and deletion logic.
+- Excel export per bank.
 
-- **Motor Robusto:** Servicio `convenio.service.ts` con lógica INSERT/UPDATE usando `COALESCE` para manejar 20+ campos dinámicos sin romper integridad.
-- **Formularios Híbridos Inteligentes:** Inputs con `<datalist>` que consultan valores únicos reales de la BD como (Categoría, Banco Dueño, Referencia) permitiendo seleccionar o crear nuevos valores al vuelo.
-- **CRUD End-to-End:** Paginación avanzada con salto directo e instantáneo a página, búsqueda de alta densidad, edición segura (corrección de NIT) y eliminación controlada.
-- **Exportación Ejecutiva:** Descarga nativa a Excel (CSV/Blob) por banco.
+#### 📋 3. Requisition module (start of operational flow)
 
-#### 📋 3. Módulo de Requisición (Inicio del Flujo Operativo)
+Entry point for internal requests.
 
-Punto de partida de toda solicitud interna.
+- Request creation with justification, cost center, and quantities.
+- State flow: `Pending -> Approved / Rejected -> Delivered`.
+- Duplicate prevention and required-field validation.
 
-- Creación de solicitudes con justificación, centro de costo y cantidades.
-- **Flujo de Estados Inteligente:** `Pendiente -> Aprobado / Rechazado -> Entregado`.
-- Validaciones anti-duplicidad y control de campos obligatorios.
+#### 🚚 4. Logistics module (dispatch and traceability)
 
-#### 🚚 4. Módulo de Logística (Despachos y Trazabilidad)
+Turns an approved requisition into a real operational action.
 
-Transforma la requisición aprobada en una operación real.
+- Flow monitoring and historical closure with auditing.
 
-- Control de flujo por estados y cierre histórico con auditoría completa.
+**Complete flow:** `Chatbot request -> Department approval -> Logistics validation -> Delivery and historical close`
 
-**Flujo Completo:** `Creación de requisición por el chatbot-> Aprobación por jefe de departamento-> Logística (confirma la aprobación o la rechaza - Empaque/Ruta) -> Entrega y Cierre Histórico`
+#### 🤖 5. SuperAssistant module (chatbot + operations center)
 
-#### 🤖 5. Módulo SuperAsistente (Chatbot + Centro de Operaciones)
+**A) 24/7 operational chatbot**
 
-**A) Chatbot Operativo 24/7:**
-Bot desplegado en WhatsApp (Meta API) integrado a PostgreSQL. Atiende consultas de convenios y requisiciones. Cada conversación alimenta la tabla `Actividad Reciente`.
+The WhatsApp bot is connected to PostgreSQL and responds to requests about agreements and requisitions. Every interaction feeds the recent activity table.
 
-**B) Dashboard Analytics en Tiempo Real:**
+**B) Real-time analytics dashboard**
 
-- 9 Cards de métricas superiores alimentadas por `/api/chatbot/metrics` con queries SQL optimizadas y agregadas.
-- Tabla de Actividad Reciente con actualización vía `useEffect` + `setInterval` (polling corto), sin necesidad de F5.
-- Sincronización de intención/flujo del bot en vivo.
+- 9 summary metric cards fed by `/api/chatbot/metrics`.
+- Recent activity table updated via polling with `useEffect` + `setInterval`.
+- Real-time synchronization of bot intent and flow.
 
-**C) Centro de Control de Errores de API (Tu foto):**
+**C) API error control center**
 
-1.  **Daemon Inteligente de Auto-Resolución:** `setInterval` cada 30s en `server.ts`. Si detecta que internet volvió, marca automáticamente como `resuelto = TRUE` todos los errores de `timeout, ECONNRESET, network, etc`.
-2.  **Soft Delete (Archivado Lógico):** No se borra nada. Usa la columna `archivado BOOLEAN`. El backend filtra `WHERE archivado = FALSE`, manteniendo auditoría intacta.
-3.  **Botón Maestro Limpiar Historial:** `PATCH /api/errores/archivar-resueltos` que archiva todos los resueltos de un golpe.
+1. **Smart auto-resolution daemon:** `setInterval` every 30s in `server.ts` to mark recovered network issues as resolved automatically.
+2. **Soft-delete logic:** Archived records stay in the database using `archivado BOOLEAN` while active queries exclude them.
+3. **Master clear history button:** `PATCH /api/errores/archivar-resueltos` to archive all resolved errors at once.
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Technology stack
 
-**Frontend & Desktop:** React, TypeScript, Electron, Electron-Vite, CSS, Axios, MUI, React Icons<br>
-**Backend:** Node.js, Express, TypeScript, TSX<br>
-**Base de datos:** PostgreSQL
-**Infraestructura:** Supabase, Vercel (Frontend), Render (Backend)
+**Frontend & Desktop:** React, TypeScript, Electron, Electron-Vite, CSS, Axios, MUI, React Icons
 
-## 🚀 Instalación Local
+**Backend:** Node.js, Express, TypeScript, TSX
+
+**Database:** PostgreSQL
+
+**Infrastructure:** Supabase, Vercel (frontend), Render (backend)
+
+## 🚀 Local installation
 
 ```bash
-# 1. Clonar
+# 1. Clone the project
 git clone https://github.com/Xanty10RR/SuperMenu
 cd SuperMenu
 
-# 2. Instalar dependencias del proyecto principal (Electron + frontend)
+# 2. Install root dependencies (Electron + frontend)
 npm install
 
-# 3. Configurar variables de entorno
-# crear un archivo .env con las variables necesarias, por ejemplo:
+# 3. Configure environment variables
+# create a .env file with the required values, for example:
 # SUPABASE_URL=...
 # SUPABASE_ANON_KEY=...
 
-# 4. Levantar el backend
+# 4. Start the backend
 cd src/backend
 npm install
 npm run dev
 
-# 5. Regresar a la raíz y levantar la app Electron
+# 5. Go back to the root and launch the Electron app
 cd ../..
 npm run dev
 ```
 
-## Contact me
+## 📬 Contact me
 
-- 👨🏻‍💻[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/daniel-santiago-rosero-4420a91b0/)
-- 📧 [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:santiagocajamarca.37@gmail.com)
+- 👨🏻‍💻 [LinkedIn](https://www.linkedin.com/in/daniel-santiago-rosero-4420a91b0/)
+- 📧 [Gmail](mailto:santiagocajamarca.37@gmail.com)

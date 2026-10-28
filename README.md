@@ -33,8 +33,9 @@ Access the live product without installation.
 #### 🖥️ 2. Native desktop version (Windows)
 
 1. Go to **[Releases](../../releases)**
-2. Download the `SuperMenu-Setup.exe`
-3. Install and run it
+2. Download win-unpacked.zip
+3. Unzip the file
+4. Open the folder and double-click SuperMenu.exe
 
 ## 📸 Screenshots
 

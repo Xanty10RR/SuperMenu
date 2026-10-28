@@ -1,6 +1,7 @@
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Electron](https://img.shields.io/badge/Electron-2B2E3A?style=for-the-badge&logo=electron&logoColor=9FEAF9)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![Axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -19,8 +20,8 @@ Plataforma de escritorio SaaS de tipo **ERP / BOPA (Business Process Automation)
 
 `SuperMenu` es una aplicación de escritorio creada con el framework Electron, con una interfaz de usuario basada en React. Está diseñada para centralizar solicitudes de requisiciones, entregas, convenios bancarios, usuarios y el chatbot de whatsapp (SuperAsistente) en una única aplicación de escritorio, lo que mejora la eficiencia, el control operativo y el seguimiento de los procesos de negocio. Está configurada para empaquetarse en Windows, macOS y Linux mediante `electron-builder`.
 
-**🔗 Demo en Vivo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/) <br>
-**☁️ Backend:** Render + Supabase (PostgreSQL) <br>
+**🔗 Demo en Vivo:** [https://supermenu-rho.vercel.app/](https://supermenu-rho.vercel.app/)<br>
+**☁️ Backend:** Render + Supabase (PostgreSQL)<br>
 **🖥️ Desktop:** Electron (.exe disponible en Releases)
 
 ### 📥 ¿Cómo Evaluar el Proyecto?
@@ -88,9 +89,10 @@ Bot desplegado en WhatsApp (Meta API) integrado a PostgreSQL. Atiende consultas 
 
 ### 🛠️ Stack Tecnológico
 
-**Frontend & Desktop:** React, TypeScript, Electron, Electron-Vite, CSS, Axios
-**Backend:** Node.js, Express, TypeScript, BuilderBot, TSX
-**Infraestructura:** Supabase (PostgreSQL), Vercel (Frontend), Render (Backend)
+**Frontend & Desktop:** React, TypeScript, Electron, Electron-Vite, Tailwind, CSS, Axios, MUI, React Icons<br>
+**Backend:** Node.js, Express, TypeScript, TSX<br>
+**Base de datos:** PostgreSQL
+**Infraestructura:** Supabase, Vercel (Frontend), Render (Backend)
 
 ### 🚀 Instalación Local
 

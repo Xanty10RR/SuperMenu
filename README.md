@@ -1,4 +1,4 @@
-# SuperMenu
+# SuperMenu (ERP / BOPA)
 
 [🇪🇸 Read in Spanish](./README.es.md)
 

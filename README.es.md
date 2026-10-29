@@ -35,6 +35,8 @@ Acceso inmediato a la aplicación sin instalación.
 
 > 🔐 **Nota sobre permisos:** Todos los usuarios tienen acceso de visualización al contenido de la plataforma, mientras que las acciones de escritura (crear, editar, aprobar o eliminar) están restringidas por departamento y rol para garantizar el control operativo y la trazabilidad.
 
+> 💡 **Tip:** Usa `admin` para ver la plataforma completa sin restricciones.
+
 | Rol | Usuario | Contraseña | Acceso |
 | :--- | :--- | :--- | :--- |
 | **Super Admin** | `admin` | `admin` | Acceso completo a todos los módulos |
@@ -42,8 +44,6 @@ Acceso inmediato a la aplicación sin instalación.
 | Logística | `jefelogistica` | `jefelogistica` | Requisiciones + Logística |
 | Comercial | `jefecomercial` | `jefecomercial` | Convenios bancarios |
 | RRHH / Otros | `jeferrhh` / `jefeotros` | `jeferrhh` / `jefeotros` | Flujos específicos por rol |
-
-> 💡 **Tip:** Usa `admin` para ver la plataforma completa sin restricciones.
 
 #### 🖥️ 2. Versión nativa de escritorio (Windows)
 

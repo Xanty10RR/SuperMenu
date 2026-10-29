@@ -51,6 +51,20 @@ Acceso inmediato a la aplicación sin instalación.
 2. Descarga el `SuperMenu-Setup.exe`
 3. Instálalo y ejecuta la aplicación
 
+## 📸 Capturas de pantalla
+
+| Gestión de Usuarios | Convenios Bancarios |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/d794c80f-198c-4054-aa34-8dc08ea388ad" /> | <img src="https://github.com/user-attachments/assets/b79697fd-9c14-46e2-bd80-c80379960b33" /> |
+
+| Requisiciones | Logística |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/d7967001-13d6-4fae-851c-6ec9ed68c892" /> | <img src="https://github.com/user-attachments/assets/bed3d0fc-0cbf-425a-8686-9ba9123f924c" /> |
+
+| Centro de Operaciones - Chatbot SuperAsistente | Centro de Operaciones - Dashboard de Errores de API |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/d65795bc-be5e-4db5-81cd-2ea5362b5e68" /> | <img src="https://github.com/user-attachments/assets/d187e1ab-23a1-4c19-a853-79e340269227" /> |
+
 ## 🏗️ Arquitectura del sistema
 
 El proyecto sigue una arquitectura modular y desacoplada tipo monorepo:

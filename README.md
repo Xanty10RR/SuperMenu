@@ -35,6 +35,8 @@ Access the live product without installation.
 
 > 🔐 **Permissions Note:** All users have read-only access to the platform's content, while write actions (create, edit, approve, or delete) are restricted by department and role to ensure operational control and traceability.
 
+> 💡 **Tip:** Use `admin` to see the entire platform without restrictions.
+
 | Role | Username | Password | Access |
 | :--- | :--- | :--- | :--- |
 | **Super Admin** | `admin` | `admin` | Full access to all modules |
@@ -42,8 +44,6 @@ Access the live product without installation.
 | Logística | `jefelogistica` | `jefelogistica` | Requisitions + Logistics |
 | Comercial | `jefecomercial` | `jefecomercial` | Banking agreements |
 | RRHH / Otros | `jeferrhh` / `jefeotros` | `jeferrhh` / `jefeotros` | User-specific flows |
-
-> 💡 **Tip:** Use `admin` to see the entire platform without restrictions.
 
 #### 🖥️ 2. Native desktop version (Windows)
 

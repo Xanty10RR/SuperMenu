@@ -48,8 +48,9 @@ Acceso inmediato a la aplicación sin instalación.
 #### 🖥️ 2. Versión nativa de escritorio (Windows)
 
 1. Ve a **[Releases](../../releases)**
-2. Descarga el `SuperMenu-Setup.exe`
-3. Instálalo y ejecuta la aplicación
+2. Descarga `win-unpacked.zip`
+3. Descomprime el archivo
+4. Abre la carpeta y haz doble clic en `SuperMenu.exe`
 
 ## 📸 Capturas de pantalla
 

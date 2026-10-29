@@ -33,6 +33,8 @@ Access the live product without installation.
 
 **🔑 Demo Credentials (password is same as user):**
 
+> 🔐 **Permissions Note:** All users have read-only access to the platform's content, while write actions (create, edit, approve, or delete) are restricted by department and role to ensure operational control and traceability.
+
 | Role | Username | Password | Access |
 | :--- | :--- | :--- | :--- |
 | **Super Admin** | `admin` | `admin` | Full access to all modules |

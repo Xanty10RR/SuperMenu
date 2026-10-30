@@ -44,12 +44,13 @@ Acceso inmediato a la aplicación sin instalación.
 | Comercial | `jefecomercial` | `jefecomercial` | Convenios bancarios |
 | RRHH / Otros | `jeferrhh` / `jefeotros` | `jeferrhh` / `jefeotros` | Flujos específicos por rol |
 
-#### 🖥️ 2. Versión nativa de escritorio (Windows)
+#### 🖥️ 2. Versión de Escritorio Nativa (Multiplataforma)
 
 1. Ve a **[Releases](../../releases)**
-2. Descarga `win-unpacked.zip`
-3. Descomprime el archivo
-4. Abre la carpeta y haz doble clic en `SuperMenu.exe`
+2. Descarga el instalador o paquete correspondiente a tu sistema operativo:
+   - **Windows:** Descarga `super-menu-setup-1.0.0.exe` y ejecuta el instalador.
+   - **macOS:** Descarga `super-menu-1.0.0.dmg`, ábrelo y arrastra la aplicación a tu carpeta de Aplicaciones.
+   - **Linux:** Descarga `super-menu-1.0.0-x86_64.AppImage`, hazlo ejecutable y ejecútalo.
 
 ## 📸 Capturas de pantalla
 

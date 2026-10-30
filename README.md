@@ -44,12 +44,13 @@ Access the live product without installation.
 | Comercial | `jefecomercial` | `jefecomercial` | Banking agreements |
 | RRHH / Otros | `jeferrhh` / `jefeotros` | `jeferrhh` / `jefeotros` | User-specific flows |
 
-#### 🖥️ 2. Native desktop version (Windows)
+#### 🖥️ 2. Native Desktop Version (Multi-Platform)
 
 1. Go to **[Releases](../../releases)**
-2. Download `win-unpacked.zip`
-3. Unzip the file
-4. Open the folder and double-click `SuperMenu.exe`
+2. Download the installer or package corresponding to your Operating System:
+   - **Windows:** Download `super-menu-setup-1.0.0.exe` and run the installer.
+   - **macOS:** Download `super-menu-1.0.0.dmg`, open it, and drag the app to your Applications folder.
+   - **Linux:** Download `super-menu-1.0.0-x86_64.AppImage`, make it executable, and run it.
 
 ## 📸 Screenshots
 
